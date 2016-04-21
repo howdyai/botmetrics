@@ -1,0 +1,7 @@
+#flash-messages
+  - flash.each do |type, message|
+    - unless message.blank?
+      .alert(class="alert-#{type}")
+        %a.close(href='#' data-dismiss='alert') &times;
+        %span
+          = message

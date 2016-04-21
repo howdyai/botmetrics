@@ -22,5 +22,11 @@ module BotMetrics
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    config.settings = ActiveSupport::OrderedOptions.new
+    config.settings.mixpanel_token = ENV['MIXPANEL_TOKEN']
+    config.settings.ga_account_id = ENV['GA_ACCOUNT_ID']
   end
 end
+
+Settings = BotMetrics::Application.config.settings
+

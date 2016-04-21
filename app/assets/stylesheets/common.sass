@@ -1,0 +1,153 @@
+html
+  overflow-y: scroll
+
+html, body
+  height: 100%
+  padding: 0
+
+html.turbolinks-progress-bar::before
+  background-color: #3bafda !important
+  height: 2px !important
+
+body
+  font-family: "myriad-pro"
+
+  .main-container
+    padding: 0 200px
+
+  a.btn-success,
+  input[type="submit"]
+    color: #fff
+    padding: 8px 24px
+    font-size: 12px
+    line-height: 12px
+    border-radius: 4px
+    border: none
+    background-color: #3bafda
+    border-color: #3bafda
+    margin-top: 15px
+    text-transform: uppercase
+    &:disabled,
+    &:hover,
+    &:active,
+    &:focus
+      background-color: #3bafda !important
+      outline: 0px !important
+    &:disabled
+      opacity: 0.8
+  h1,h2,h3,h4
+    font-family: omnes-pro
+    font-weight: 700
+  h1
+    text-transform: lowercase
+
+  .navbar-default
+    .header-container
+      margin: 0 50px
+      .navbar-header
+        margin-bottom: 400px
+    background-color: #3bafda !important
+    font-family: "omnes-pro"
+    font-weight: 700
+    font-size: 24px !important
+    padding: 16px 0
+    margin-bottom: 0px
+    .navbar-brand
+      color: #fff
+      font-size: 36px !important
+
+  .title
+    div
+      padding: 0
+    .tagline
+      margin-top: 20px
+      font-family: omnes-pro
+      font-weight: 500
+      font-size: 30px
+  .content
+    .sign-in
+      padding: 20px 60px
+      font-size: 35px
+      margin-top: 0px
+      border-radius: 20px
+    .row.tagline
+      padding-top: 40px
+      p
+        font-weight: 500
+        font-size: 45px
+      p.components
+        margin: 10px 0
+        span
+          display: inline-block
+          padding: 10px 0 10px 90px
+          &.issue
+            background: url('homepage/issue.png') no-repeat left
+            display: none
+          &.pull-request
+            background: url('homepage/pull-request.png') no-repeat left
+            display: none
+          &.code
+            background: url('homepage/code.png') no-repeat left
+
+  #flash-messages
+    position: fixed
+    left: 0
+    top: 0
+    width: 100%
+    z-index: 9999
+
+    .alert
+      font-family: 'myriad-pro'
+      border: none
+      margin-bottom: 0
+      padding: 0 35px
+      text-shadow: none
+      text-align: center
+      font-size: 16px
+      background-color: fade-out($alert-warning-bg, 0.1)
+      border-color: $alert-warning-border
+      overflow: hidden
+
+      &, h4
+        color: $state-warning-text
+
+      &, .close
+        line-height: 38px
+
+      .close
+        right: 30px
+
+      &.slide
+        height: 0px
+        +transition(height, .5s)
+
+        &.in
+          height: 38px
+
+        &:hover
+          cursor: pointer
+
+      p
+        margin: 0
+        padding: 0 10px
+
+    .alert-success, .alert-notice, .alert.notice
+      background-color: fade-out($alert-success-bg, 0.1)
+      border-color: $alert-success-border
+
+      &, h4
+        color: $state-success-text
+
+    .alert-danger, .alert-error, .alert.error
+      background-color: fade-out($alert-danger-bg, 0.1)
+      border-color: $alert-danger-border
+
+      &, h4
+        color: $state-danger-text
+
+    .alert-info, .alert.info
+      background-color: fade-out($alert-info-bg, 0.1)
+      border-color: $alert-info-border
+
+      &, h4
+        color: $state-info-text

@@ -1,0 +1,31 @@
+%html
+%head
+  %title
+    Bot Metrics
+  = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+  = javascript_include_tag 'application', 'data-turbolinks-track' => true
+  = stylesheet_link_tag '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css', media: 'all', 'data-turbolinks-track' => true
+  %script{src:"//use.typekit.net/zwl2vnb.js"}
+  :javascript
+    try{Typekit.load();}catch(e){}
+  = csrf_meta_tags
+
+%body{class: body_classes(yield :body_classes)}
+  = render partial: 'layouts/flash', locals: { flash: flash }
+  %nav.navbar.navbar-default
+    .container-fluid.header-container
+      .navbar-header
+        %button.navbar-toggle.collapsed{type: 'button', 'data-toggle' => 'collapse'}
+          %span.sr-only
+            Toggle navigation
+          %span.icon-bar
+          %span.icon-bar
+          %span.icon-bar
+        %a.navbar-brand{href:"/"}
+          botmetrics
+  .container-fluid.main-container
+    .row.content
+      = yield
+  = render partial: 'ga'
+  = render partial: 'mixpanel'
+  = yield :page_scripts
