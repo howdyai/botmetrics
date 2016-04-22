@@ -2,6 +2,7 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
       team = Team.create!(name: 'My Team')
+      team.bots.create!(name: 'My First Bot', provider: 'slack')
       resource.team_memberships.create!(team: team, membership_type: 'owner')
     end
   end

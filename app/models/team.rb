@@ -8,6 +8,8 @@ class Team < ActiveRecord::Base
   has_many :members, through: :team_memberships, source: :user
   has_many :owners, -> { where("team_memberships.membership_type = ?", 'owner') }, through: :team_memberships, source: :user
 
+  has_many :bots
+
   protected
   def set_uid!
     self.uid = SecureRandom.hex(6) if self.uid.blank?

@@ -30,6 +30,40 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: bots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE bots (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    uid character varying NOT NULL,
+    provider character varying NOT NULL,
+    team_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: bots_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE bots_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE bots_id_seq OWNED BY bots.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -150,6 +184,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY bots ALTER COLUMN id SET DEFAULT nextval('bots_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY team_memberships ALTER COLUMN id SET DEFAULT nextval('team_memberships_id_seq'::regclass);
 
 
@@ -165,6 +206,14 @@ ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regcl
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: bots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY bots
+    ADD CONSTRAINT bots_pkey PRIMARY KEY (id);
 
 
 --
@@ -189,6 +238,20 @@ ALTER TABLE ONLY teams
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_bots_on_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_bots_on_team_id ON bots USING btree (team_id);
+
+
+--
+-- Name: index_bots_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_bots_on_uid ON bots USING btree (uid);
 
 
 --
@@ -243,6 +306,14 @@ ALTER TABLE ONLY team_memberships
 
 
 --
+-- Name: fk_rails_aed385ebc5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY bots
+    ADD CONSTRAINT fk_rails_aed385ebc5 FOREIGN KEY (team_id) REFERENCES teams(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -253,4 +324,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160421235326');
 INSERT INTO schema_migrations (version) VALUES ('20160422181209');
 
 INSERT INTO schema_migrations (version) VALUES ('20160422182306');
+
+INSERT INTO schema_migrations (version) VALUES ('20160422202903');
 

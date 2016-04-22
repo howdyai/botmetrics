@@ -35,6 +35,16 @@ describe RegistrationsController do
       expect(team.owners).to match_array [User.find_by(email: 'i@mclov.in')]
     end
 
+    it 'should create a new bot' do
+      expect { do_request }.to change(Bot, :count).by(1)
+      team = Team.last
+      bot = Bot.last
+
+      expect(bot.team).to eql team
+      expect(bot.name).to eql 'My First Bot'
+      expect(bot.provider).to eql 'slack'
+    end
+
     it 'should redirect to the team_path' do
       do_request
       team = Team.last
