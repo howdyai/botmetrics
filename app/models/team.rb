@@ -4,6 +4,9 @@ class Team < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :uid
 
+  has_many :team_memberships
+  has_many :members, through: :team_memberships, source: :user
+
   protected
   def set_uid!
     self.uid = SecureRandom.hex(6) if self.uid.blank?
