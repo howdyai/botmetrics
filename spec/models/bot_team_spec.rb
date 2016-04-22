@@ -9,5 +9,6 @@ describe BotTeam do
 
   describe 'associations' do
     it { should belong_to :bot_instance }
+    it { should have_many :bot_users }
   end
 end
