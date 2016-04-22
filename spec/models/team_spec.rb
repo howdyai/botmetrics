@@ -11,5 +11,6 @@ describe Team do
   describe 'associations' do
     it { should have_many :team_memberships }
     it { should have_many(:members).through(:team_memberships) }
+    it { should have_many(:owners).through(:team_memberships) }
   end
 end

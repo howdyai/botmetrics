@@ -6,6 +6,7 @@ class Team < ActiveRecord::Base
 
   has_many :team_memberships
   has_many :members, through: :team_memberships, source: :user
+  has_many :owners, -> { where("team_memberships.membership_type = ?", 'owner') }, through: :team_memberships, source: :user
 
   protected
   def set_uid!
