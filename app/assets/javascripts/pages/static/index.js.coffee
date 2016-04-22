@@ -10,6 +10,13 @@ class App.StaticIndex extends App.AppBase
 
   run: ->
     $(document).ready ->
+      $('#signup-modal').on 'shown.bs.modal', (e) ->
+        $('#user_email').val($('.signup-email').val())
+        if($('#user_email').val().trim() == '')
+          $('#user_email').focus()
+        else
+          $('#user_password').focus()
+
       $(document).on 'click', 'a[href^="#"]', (e) ->
         # target element id
         id = $(@).attr('href')

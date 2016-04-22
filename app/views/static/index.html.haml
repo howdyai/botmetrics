@@ -32,11 +32,23 @@
               Bot is Doing
             .row
               %p.small-print
-                Track Usage, Engagement &amp; Make Concrete Product Decisions
+                Track Usage, Engagement &amp; Make Informed Product Decisions
             .row.signup
               %input.signup-email.form-control.input-lg{type:"email", placeholder:"Your Email: alice@example.com"}
-              %a.btn.btn-lg.btn-success#get-started{href: '#get-started'}
+              %a.btn.btn-lg.btn-success#get-started{'data-toggle' => 'modal', 'data-target' => '#signup-modal'}
                 Get Started
+.modal.fade.in#signup-modal{tabindex:"-1", role:"dialog"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{type:"button", 'data-dismiss' => "modal", 'aria-label' => "Close"}
+          %span{'aria-hidden' => 'true'}
+            &times;
+        %h3.modal-title
+          Sign Up For Free
+      .modal-body
+        = render partial: 'devise/registrations/sign_up_form'
+
 .container-fluid.features-container#features
   .row.features-header.text-center
     %h1 Why should I use botmetrics?
@@ -73,7 +85,7 @@
           %a{href:"mailto:hello@zerobotlabs.com"} hello@getbotmetrics.com
         %li
           %i.fa.fa-github
-          %a{href:"https://github.com/zerobotlabs"} botmetrics
+          %a{href:"https://github.com/botmetrics"} botmetrics
         %li
           %i.fa.fa-twitter
           %a{href:"https://twitter.com/getbotmetrics"} getbotmetrics
