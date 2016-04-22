@@ -38,23 +38,116 @@ body
   h1,h2,h3,h4
     font-family: omnes-pro
     font-weight: 700
-  h1
-    text-transform: lowercase
+
+  .features-container
+    .features-header
+      h1
+        font-size: 48px
+        line-height: 48px
+        color: #434a54
+        font-weight: 300
+        font-family: myriad-pro
+        padding-top: 20px
+    .features-content
+      ul
+        padding: 20px 0 40px 0
+        li
+          margin-left: 40px
+          font-size: 24px
+          font-weight: 300
+          line-height: 42px
+
+  .footer-container
+    background-color: #2c3138
+    ul.links
+      padding: 40px 0
+      list-style: none
+      font-size: 16px
+      font-family: myriad-pro
+      li
+        color: #fff
+        margin: 10px 0
+        a, i
+          color: #fff
+
 
   .navbar-default
-    .header-container
-      margin: 0 50px
-      .navbar-header
-        margin-bottom: 400px
     background-color: #3bafda !important
     font-family: "omnes-pro"
     font-weight: 700
     font-size: 24px !important
     padding: 16px 0
     margin-bottom: 0px
-    .navbar-brand
-      color: #fff
-      font-size: 36px !important
+    .header-container
+      margin: 0 50px
+      .navbar-brand
+        color: #fff
+        font-size: 36px !important
+        &:hover
+          color: #fff
+      #header-links
+        a
+          color: #fff
+          font-size: 24px !important
+          font-weight: 300
+          display: inline-block
+          &:hover
+            border-bottom: 1px solid #fff
+      .jumbotron
+        background-color: #3bafda !important
+        padding-left: 0
+        padding-right: 0
+        padding-bottom: 0
+        .tagline
+          text-align: center
+          .signup
+            a#get-started
+              margin: -1px 0 2px 0
+              height: 46px
+              padding: 10px 16px
+              font-size: 18px
+              line-height: 1.3333333
+              border-radius: 6px
+              background-color: #fff
+              color: #3bafda !important
+              &:disabled,
+              &:hover,
+              &:active,
+              &:focus
+                background-color: #fff !important
+                color: #3bafda !important
+                outline: 0px !important
+            padding: 20px 0
+            input.signup-email
+              width: 400px
+              margin: 0 auto
+              display: inline-block
+              font-family: myriad-pro
+              color: #434a54
+              font-weight: 300
+          p
+            font-size: 48px
+            font-family: myriad-pro
+            font-weight: 500
+            color: #fff
+            display: inline-block
+            &.small-print
+              font-size: 24px
+            &.source
+              span
+                display: inline-block
+                font-family: myriad-pro
+                font-size: 48px
+                padding: 0 10px
+                color: #fff
+                &.messenger
+                  display: none
+                &.kik
+                  display: none
+                &.telegram
+                  display: none
+                &.code
+
 
   .title
     div

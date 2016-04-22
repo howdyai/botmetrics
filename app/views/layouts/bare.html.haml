@@ -12,9 +12,9 @@
 
 %body{class: body_classes(yield :body_classes)}
   = render partial: 'layouts/flash', locals: { flash: flash }
-  .container-fluid.main-container
-    .row.content
-      = yield
+  = yield
+
   = render partial: 'ga'
   = render partial: 'mixpanel'
   = yield :page_scripts
+
