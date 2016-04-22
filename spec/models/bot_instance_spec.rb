@@ -13,5 +13,6 @@ describe BotInstance do
 
   describe 'associations' do
     it { should belong_to :bot }
+    it { should have_one  :bot_team }
   end
 end
