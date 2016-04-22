@@ -14,9 +14,9 @@ describe BotsController do
     end
 
     context 'if there are no bot instances' do
-      it 'should redirect to the new_team_bot_bot_instance_path for the bot' do
+      it 'should redirect to the new_team_bot_instance_path for the bot' do
         do_request
-        expect(response).to redirect_to new_team_bot_bot_instance_path(team, bot)
+        expect(response).to redirect_to new_team_bot_instance_path(team, bot)
       end
     end
 

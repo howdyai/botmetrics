@@ -7,7 +7,7 @@ class BotsController < ApplicationController
     raise ActiveRecord::NotFound if @bot.blank?
 
     if @bot.instances.count == 0
-      redirect_to(new_team_bot_bot_instance_path(@team, @bot)) && return
+      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
     end
 
   end

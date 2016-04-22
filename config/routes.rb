@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :teams, only: [:show] do
     resources :bots, only: [:show] do
-      resources :bot_instances, only: [:new, :create]
+      resources :instances, only: [:new, :create], controller: :bot_instances
     end
   end
 
