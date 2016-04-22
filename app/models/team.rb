@@ -10,6 +10,10 @@ class Team < ActiveRecord::Base
 
   has_many :bots
 
+  def to_param
+    self.uid
+  end
+
   protected
   def set_uid!
     self.uid = SecureRandom.hex(6) if self.uid.blank?

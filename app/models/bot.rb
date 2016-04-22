@@ -5,7 +5,12 @@ class Bot < ActiveRecord::Base
   validates_uniqueness_of :uid
   validates_inclusion_of  :provider, in: %w(slack kik messenger telegram)
 
+  has_many :instances, class_name: 'BotInstance'
   belongs_to :team
+
+  def to_param
+    self.uid
+  end
 
   protected
   def set_uid!
