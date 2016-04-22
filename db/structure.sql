@@ -39,7 +39,8 @@ CREATE TABLE bot_instances (
     uid character varying NOT NULL,
     bot_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    enabled boolean DEFAULT false
 );
 
 
@@ -536,4 +537,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160422204548');
 INSERT INTO schema_migrations (version) VALUES ('20160422225034');
 
 INSERT INTO schema_migrations (version) VALUES ('20160422230945');
+
+INSERT INTO schema_migrations (version) VALUES ('20160422232133');
 
