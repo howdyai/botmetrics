@@ -73,7 +73,8 @@ CREATE TABLE bot_users (
     user_attributes json DEFAULT '{}'::json NOT NULL,
     membership_type character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    bot_instance_id integer NOT NULL
 );
 
 
@@ -359,6 +360,13 @@ CREATE UNIQUE INDEX index_bot_instances_on_uid ON bot_instances USING btree (uid
 
 
 --
+-- Name: index_bot_users_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_bot_users_on_bot_instance_id ON bot_users USING btree (bot_instance_id);
+
+
+--
 -- Name: index_bots_on_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -440,6 +448,14 @@ ALTER TABLE ONLY bots
 
 
 --
+-- Name: fk_rails_d232307517; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY bot_users
+    ADD CONSTRAINT fk_rails_d232307517 FOREIGN KEY (bot_instance_id) REFERENCES bot_instances(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -462,4 +478,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160422230945');
 INSERT INTO schema_migrations (version) VALUES ('20160422232133');
 
 INSERT INTO schema_migrations (version) VALUES ('20160424150625');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424151249');
 

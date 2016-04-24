@@ -3,5 +3,5 @@ class BotInstance < ActiveRecord::Base
   validates_uniqueness_of :uid, :token
 
   belongs_to :bot
-  has_one    :bot_team
+  has_many :users, class_name: 'BotUser'
 end
