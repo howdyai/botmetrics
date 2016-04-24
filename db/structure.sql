@@ -64,39 +64,6 @@ ALTER SEQUENCE bot_instances_id_seq OWNED BY bot_instances.id;
 
 
 --
--- Name: bot_teams; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE bot_teams (
-    id integer NOT NULL,
-    uid character varying NOT NULL,
-    team_attributes json DEFAULT '{}'::json,
-    bot_instance_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: bot_teams_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE bot_teams_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: bot_teams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE bot_teams_id_seq OWNED BY bot_teams.id;
-
-
---
 -- Name: bot_users; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
@@ -104,7 +71,6 @@ CREATE TABLE bot_users (
     id integer NOT NULL,
     uid character varying NOT NULL,
     user_attributes json DEFAULT '{}'::json NOT NULL,
-    bot_team_id integer NOT NULL,
     membership_type character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -292,13 +258,6 @@ ALTER TABLE ONLY bot_instances ALTER COLUMN id SET DEFAULT nextval('bot_instance
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY bot_teams ALTER COLUMN id SET DEFAULT nextval('bot_teams_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY bot_users ALTER COLUMN id SET DEFAULT nextval('bot_users_id_seq'::regclass);
 
 
@@ -336,14 +295,6 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 ALTER TABLE ONLY bot_instances
     ADD CONSTRAINT bot_instances_pkey PRIMARY KEY (id);
-
-
---
--- Name: bot_teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY bot_teams
-    ADD CONSTRAINT bot_teams_pkey PRIMARY KEY (id);
 
 
 --
@@ -408,20 +359,6 @@ CREATE UNIQUE INDEX index_bot_instances_on_uid ON bot_instances USING btree (uid
 
 
 --
--- Name: index_bot_teams_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE INDEX index_bot_teams_on_bot_instance_id ON bot_teams USING btree (bot_instance_id);
-
-
---
--- Name: index_bot_users_on_bot_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE INDEX index_bot_users_on_bot_team_id ON bot_users USING btree (bot_team_id);
-
-
---
 -- Name: index_bots_on_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -468,22 +405,6 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (re
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
-
-
---
--- Name: fk_rails_0fbc5d9460; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY bot_teams
-    ADD CONSTRAINT fk_rails_0fbc5d9460 FOREIGN KEY (bot_instance_id) REFERENCES bot_instances(id);
-
-
---
--- Name: fk_rails_4adc84ec41; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY bot_users
-    ADD CONSTRAINT fk_rails_4adc84ec41 FOREIGN KEY (bot_team_id) REFERENCES bot_teams(id);
 
 
 --
@@ -539,4 +460,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160422225034');
 INSERT INTO schema_migrations (version) VALUES ('20160422230945');
 
 INSERT INTO schema_migrations (version) VALUES ('20160422232133');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424150625');
 
