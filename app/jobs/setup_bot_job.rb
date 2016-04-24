@@ -11,6 +11,7 @@ class SetupBotJob < Job
   def setup_slack_bot!
     slack = Slack.new(@instance.token)
     auth_info = slack.call('auth.test', :get)
+
     if auth_info['ok']
       @instance.update_attributes!(
         uid: auth_info['user_id'],
@@ -22,6 +23,7 @@ class SetupBotJob < Job
         }
       )
       @instance.import_users!
+      Relax::Bot.start!(@instance.instance_attributes['team_id'], @instance.token, namespace: @instance.uid)
     end
   end
 end

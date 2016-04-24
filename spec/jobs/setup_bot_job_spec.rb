@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SetupBotJob do
-  let!(:bi) { create :bot_instance }
+  let!(:bi) { create :bot_instance, token: 'token' }
 
   describe '#perform' do
     context 'slack' do
@@ -9,6 +9,7 @@ describe SetupBotJob do
 
       context 'when token is valid' do
         before do
+          allow(Relax::Bot).to receive(:start!)
           stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
             to_return(status: 200, body: { ok: true, url: "https://myteam.slack.com/", team: "My Team", user: "cal", team_id: "T12345", user_id: "U12345"}.to_json)
           stub_request(:get, "https://slack.com/api/users.list?token=#{bi.token}").
@@ -177,6 +178,11 @@ describe SetupBotJob do
             expect(user3.membership_type).to eql 'deleted'
             expect(user3.uid).to eql 'UDEADBEEF3'
           end
+        end
+
+        it 'should call Relax::Bot.start' do
+          SetupBotJob.new.perform(bi.id)
+          expect(Relax::Bot).to have_received(:start!).with('T12345', 'token', namespace: 'U12345')
         end
       end
 

@@ -29,10 +29,10 @@ gem 'devise',                  '~> 3.4.1'
 # Mixpanel
 gem 'mixpanel-ruby',          '~> 2.2.0', require: 'mixpanel-ruby'
 # Redis
-gem 'relax-rb',               github: 'zerobotlabs/relax-rb', ref: 'typing', require: 'relax'
-gem 'sidekiq',                    '~> 4.1.0'
-gem 'sinatra',                    '~> 1.4.6'
-gem 'redis-namespace',            '~> 1.5.2'
+gem 'relax-rb',               '~> 0.4.0', require: 'relax'
+gem 'sidekiq',                '~> 4.1.0'
+gem 'sinatra',                '~> 1.4.6'
+gem 'redis-namespace',        '~> 1.5.2'
 
 gem 'passenger',                '~> 5.0.27'
 
