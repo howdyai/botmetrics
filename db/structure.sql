@@ -36,12 +36,13 @@ SET default_with_oids = false;
 CREATE TABLE bot_instances (
     id integer NOT NULL,
     token character varying NOT NULL,
-    uid character varying NOT NULL,
+    uid character varying,
     bot_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    enabled boolean DEFAULT false,
     provider character varying NOT NULL,
+    state character varying DEFAULT 'pending'::character varying NOT NULL,
+    CONSTRAINT uid_set_if_not_pending CHECK (((((state)::text = 'pending'::text) OR (((state)::text = 'enabled'::text) AND (uid IS NOT NULL))) OR (((state)::text = 'disabled'::text) AND (uid IS NOT NULL)))),
     CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
@@ -491,4 +492,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160424153627');
 INSERT INTO schema_migrations (version) VALUES ('20160424154450');
 
 INSERT INTO schema_migrations (version) VALUES ('20160424154957');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424155854');
 
