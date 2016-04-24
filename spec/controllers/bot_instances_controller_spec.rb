@@ -41,6 +41,7 @@ describe BotInstancesController do
       instance = bot.instances.last
       expect(instance.token).to eql 'token-deadbeef'
       expect(instance.uid).to eql 'UNESTOR1'
+      expect(instance.provider).to eql bot.provider
     end
 
     it "should redirect back to team_bot_path" do

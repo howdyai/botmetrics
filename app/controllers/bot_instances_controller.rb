@@ -8,9 +8,10 @@ class BotInstancesController < ApplicationController
   end
 
   def create
-    @instance = @bot.instances.create(instance_params)
+    @instance = @bot.instances.build(instance_params)
+    @instance.provider = @bot.provider
 
-    if @instance.persisted?
+    if @instance.save
       redirect_to team_bot_path(@team, @bot)
     else
       render :new

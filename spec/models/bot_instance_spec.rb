@@ -9,6 +9,12 @@ describe BotInstance do
     it { should validate_presence_of :uid }
     it { should validate_uniqueness_of :token }
     it { should validate_uniqueness_of :uid }
+
+    it { should allow_value('slack').for(:provider) }
+    it { should allow_value('kik').for(:provider) }
+    it { should allow_value('facebook').for(:provider) }
+    it { should allow_value('telegram').for(:provider) }
+    it { should_not allow_value('test').for(:provider) }
   end
 
   describe 'associations' do

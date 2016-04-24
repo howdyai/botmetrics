@@ -3,7 +3,7 @@ class Bot < ActiveRecord::Base
 
   validates_presence_of   :name, :team_id, :provider
   validates_uniqueness_of :uid
-  validates_inclusion_of  :provider, in: %w(slack kik messenger telegram)
+  validates_inclusion_of  :provider, in: %w(slack kik facebook telegram)
 
   has_many :instances, class_name: 'BotInstance'
   belongs_to :team

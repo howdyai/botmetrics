@@ -40,7 +40,9 @@ CREATE TABLE bot_instances (
     bot_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    enabled boolean DEFAULT false
+    enabled boolean DEFAULT false,
+    provider character varying NOT NULL,
+    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -74,7 +76,9 @@ CREATE TABLE bot_users (
     membership_type character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    bot_instance_id integer NOT NULL
+    bot_instance_id integer NOT NULL,
+    provider character varying NOT NULL,
+    CONSTRAINT valid_provider_on_bot_users CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -108,7 +112,8 @@ CREATE TABLE bots (
     provider character varying NOT NULL,
     team_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT valid_provider_on_bots CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -480,4 +485,10 @@ INSERT INTO schema_migrations (version) VALUES ('20160422232133');
 INSERT INTO schema_migrations (version) VALUES ('20160424150625');
 
 INSERT INTO schema_migrations (version) VALUES ('20160424151249');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424153627');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424154450');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424154957');
 
