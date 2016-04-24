@@ -8,6 +8,7 @@ describe BotUser do
     it { should validate_presence_of :provider }
     it { should validate_presence_of :bot_instance_id }
     it { should validate_presence_of :membership_type }
+    it { should validate_uniqueness_of(:uid).scoped_to(:bot_instance_id) }
 
     it { should allow_value('slack').for(:provider) }
     it { should allow_value('kik').for(:provider) }

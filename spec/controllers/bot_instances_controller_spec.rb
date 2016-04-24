@@ -32,6 +32,10 @@ describe BotInstancesController do
       post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param
     end
 
+    before do
+      allow(SetupBotJob).to receive(:perform_async)
+    end
+
     it 'should create a new bot instance' do
       expect {
         do_request
@@ -47,6 +51,11 @@ describe BotInstancesController do
     it "should redirect back to team_bot_path" do
       do_request
       expect(response).to redirect_to team_bot_path(team, bot)
+    end
+
+    it 'should call SetupBotJob' do
+      do_request
+      expect(SetupBotJob).to have_received(:perform_async)
     end
   end
 end

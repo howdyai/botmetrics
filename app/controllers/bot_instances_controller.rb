@@ -12,6 +12,7 @@ class BotInstancesController < ApplicationController
     @instance.provider = @bot.provider
 
     if @instance.save
+      SetupBotJob.perform_async(@instance.id)
       redirect_to team_bot_path(@team, @bot)
     else
       render :new

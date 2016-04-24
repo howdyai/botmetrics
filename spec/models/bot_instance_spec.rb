@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 describe BotInstance do
+  describe 'associations' do
+    it { should belong_to  :bot }
+    it { should have_many  :users }
+  end
+
   describe 'validations' do
     subject { create :bot_instance }
 
@@ -132,10 +137,5 @@ describe BotInstance do
         expect(bi).to be_valid
       end
     end
-  end
-
-  describe 'associations' do
-    it { should belong_to  :bot }
-    it { should have_many  :users }
   end
 end
