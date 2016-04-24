@@ -30,7 +30,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: bot_instances; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: bot_instances; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE bot_instances (
@@ -71,7 +71,7 @@ ALTER SEQUENCE bot_instances_id_seq OWNED BY bot_instances.id;
 
 
 --
--- Name: bot_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: bot_users; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE bot_users (
@@ -107,7 +107,7 @@ ALTER SEQUENCE bot_users_id_seq OWNED BY bot_users.id;
 
 
 --
--- Name: bots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: bots; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE bots (
@@ -142,7 +142,46 @@ ALTER SEQUENCE bots_id_seq OWNED BY bots.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: events; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE events (
+    id integer NOT NULL,
+    event_type character varying NOT NULL,
+    bot_instance_id integer NOT NULL,
+    bot_user_id integer,
+    is_for_bot boolean DEFAULT false NOT NULL,
+    "boolean" boolean DEFAULT false NOT NULL,
+    event_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
+    provider character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT valid_event_type_on_events CHECK (((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL))) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+);
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE events_id_seq OWNED BY events.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE schema_migrations (
@@ -151,7 +190,7 @@ CREATE TABLE schema_migrations (
 
 
 --
--- Name: team_memberships; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: team_memberships; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE team_memberships (
@@ -184,7 +223,7 @@ ALTER SEQUENCE team_memberships_id_seq OWNED BY team_memberships.id;
 
 
 --
--- Name: teams; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: teams; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE teams (
@@ -216,7 +255,7 @@ ALTER SEQUENCE teams_id_seq OWNED BY teams.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE users (
@@ -283,6 +322,13 @@ ALTER TABLE ONLY bots ALTER COLUMN id SET DEFAULT nextval('bots_id_seq'::regclas
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY team_memberships ALTER COLUMN id SET DEFAULT nextval('team_memberships_id_seq'::regclass);
 
 
@@ -301,7 +347,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 
 --
--- Name: bot_instances_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: bot_instances_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY bot_instances
@@ -309,7 +355,7 @@ ALTER TABLE ONLY bot_instances
 
 
 --
--- Name: bot_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: bot_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY bot_users
@@ -317,7 +363,7 @@ ALTER TABLE ONLY bot_users
 
 
 --
--- Name: bots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: bots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY bots
@@ -325,7 +371,15 @@ ALTER TABLE ONLY bots
 
 
 --
--- Name: team_memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: events_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: team_memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY team_memberships
@@ -333,7 +387,7 @@ ALTER TABLE ONLY team_memberships
 
 
 --
--- Name: teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY teams
@@ -341,7 +395,7 @@ ALTER TABLE ONLY teams
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -349,84 +403,98 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_bot_instances_on_bot_id ON bot_instances USING btree (bot_id);
 
 
 --
--- Name: index_bot_instances_on_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bot_instances_on_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_bot_instances_on_token ON bot_instances USING btree (token);
 
 
 --
--- Name: index_bot_instances_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bot_instances_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_bot_instances_on_uid ON bot_instances USING btree (uid);
 
 
 --
--- Name: index_bot_users_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bot_users_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_bot_users_on_bot_instance_id ON bot_users USING btree (bot_instance_id);
 
 
 --
--- Name: index_bot_users_on_uid_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bot_users_on_uid_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_bot_users_on_uid_and_bot_instance_id ON bot_users USING btree (uid, bot_instance_id);
 
 
 --
--- Name: index_bots_on_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bots_on_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_bots_on_team_id ON bots USING btree (team_id);
 
 
 --
--- Name: index_bots_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_bots_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_bots_on_uid ON bots USING btree (uid);
 
 
 --
--- Name: index_team_memberships_on_user_id_and_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_events_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_events_on_bot_instance_id ON events USING btree (bot_instance_id);
+
+
+--
+-- Name: index_events_on_bot_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_events_on_bot_user_id ON events USING btree (bot_user_id);
+
+
+--
+-- Name: index_team_memberships_on_user_id_and_team_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_team_memberships_on_user_id_and_team_id ON team_memberships USING btree (user_id, team_id);
 
 
 --
--- Name: index_teams_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_teams_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_teams_on_uid ON teams USING btree (uid);
 
 
 --
--- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 
 
 --
--- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
@@ -454,6 +522,22 @@ ALTER TABLE ONLY team_memberships
 
 ALTER TABLE ONLY bot_instances
     ADD CONSTRAINT fk_rails_6897853d8c FOREIGN KEY (bot_id) REFERENCES bots(id);
+
+
+--
+-- Name: fk_rails_6e79174e50; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT fk_rails_6e79174e50 FOREIGN KEY (bot_user_id) REFERENCES bot_users(id);
+
+
+--
+-- Name: fk_rails_9fc3b26d0b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT fk_rails_9fc3b26d0b FOREIGN KEY (bot_instance_id) REFERENCES bot_instances(id);
 
 
 --
@@ -511,4 +595,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160424161341');
 INSERT INTO schema_migrations (version) VALUES ('20160424162744');
 
 INSERT INTO schema_migrations (version) VALUES ('20160424201054');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424222520');
 
