@@ -44,7 +44,10 @@ CREATE TABLE bot_instances (
     state character varying DEFAULT 'pending'::character varying NOT NULL,
     instance_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT uid_set_if_not_pending CHECK (((((state)::text = 'pending'::text) OR (((state)::text = 'enabled'::text) AND (uid IS NOT NULL))) OR (((state)::text = 'disabled'::text) AND (uid IS NOT NULL)))),
-    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
+    CONSTRAINT validate_attributes_team_id CHECK (((((((instance_attributes ->> 'team_id'::text) IS NOT NULL) AND (length((instance_attributes ->> 'team_id'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((state)::text <> 'pending'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_team_name CHECK (((((((instance_attributes ->> 'team_name'::text) IS NOT NULL) AND (length((instance_attributes ->> 'team_name'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((state)::text <> 'pending'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_team_url CHECK (((((((instance_attributes ->> 'team_url'::text) IS NOT NULL) AND (length((instance_attributes ->> 'team_url'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((state)::text <> 'pending'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL))))
 );
 
 
@@ -497,4 +500,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160424154957');
 INSERT INTO schema_migrations (version) VALUES ('20160424155854');
 
 INSERT INTO schema_migrations (version) VALUES ('20160424161341');
+
+INSERT INTO schema_migrations (version) VALUES ('20160424162744');
 
