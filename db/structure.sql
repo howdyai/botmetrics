@@ -407,6 +407,13 @@ ALTER TABLE ONLY users
 
 
 --
+-- Name: bot_instances_team_id_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid, ((instance_attributes -> 'team_id'::text))) WHERE ((provider)::text = 'slack'::text);
+
+
+--
 -- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -609,4 +616,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160425164622');
 INSERT INTO schema_migrations (version) VALUES ('20160425212125');
 
 INSERT INTO schema_migrations (version) VALUES ('20160425215210');
+
+INSERT INTO schema_migrations (version) VALUES ('20160425220237');
 
