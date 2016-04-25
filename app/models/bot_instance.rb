@@ -9,6 +9,7 @@ class BotInstance < ActiveRecord::Base
 
   belongs_to :bot
   has_many :users, class_name: 'BotUser'
+  has_many :events
 
   def import_users!
     slack_client = Slack.new(self.token)

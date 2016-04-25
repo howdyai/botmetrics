@@ -12,6 +12,17 @@ describe RelaxService do
         RelaxService.handle(event)
         expect(ImportUsersForBotInstanceJob).to have_received(:perform_async).with(bi.id)
       end
+
+      it 'should create a new event' do
+        expect {
+          RelaxService.handle(event)
+          bi.reload
+        }.to change(bi.events, :count).by(1)
+
+        e = bi.events.last
+        expect(e.event_type).to eql 'user_added'
+        expect(e.provider).to eql 'slack'
+      end
     end
 
     context 'bot instance does not exist' do
@@ -33,6 +44,17 @@ describe RelaxService do
           RelaxService.handle(event)
           bi.reload
         }.to change(bi, :state).from('enabled').to('disabled')
+      end
+
+      it 'should create a new event' do
+        expect {
+          RelaxService.handle(event)
+          bi.reload
+        }.to change(bi.events, :count).by(1)
+
+        e = bi.events.last
+        expect(e.event_type).to eql 'bot_disabled'
+        expect(e.provider).to eql 'slack'
       end
     end
   end

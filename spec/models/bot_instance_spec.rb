@@ -4,6 +4,7 @@ describe BotInstance do
   describe 'associations' do
     it { should belong_to  :bot }
     it { should have_many  :users }
+    it { should have_many  :events }
   end
 
   describe 'validations' do
