@@ -58,4 +58,87 @@ describe RelaxService do
       end
     end
   end
+
+  describe 'message' do
+    let!(:event) do
+      Relax::Event.new(
+        team_uid: 'TCAFEDEAD',
+        user_uid: 'UDEADBEEF1',
+        channel_uid: 'DCAFEDEAD1',
+        timestamp: '123456789.0',
+        provider: 'slack',
+        im: false,
+        text: 'thanks',
+        relax_bot_uid: 'UNESTOR1',
+        namespace: 'UNESTOR1',
+        type: 'message_new'
+      )
+    end
+    let!(:user) { create :bot_user, uid: 'UDEADBEEF1', provider: 'slack', bot_instance: bi }
+
+    context 'bot instance exists' do
+      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+
+      context 'when message is not meant for the bot' do
+        it 'should create a new event' do
+          expect {
+            RelaxService.handle(event)
+            bi.reload
+          }.to change(bi.events, :count).by(1)
+
+          e = bi.events.last
+
+          expect(e.event_type).to eql 'message'
+          expect(e.user).to eql user
+          expect(e.provider).to eql 'slack'
+          expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+          expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_im).to be_falsey
+          expect(e.is_for_bot).to be_falsey
+        end
+      end
+
+      context 'when message is an IM' do
+        before { event.im = true }
+
+        it 'should create a new event' do
+          expect {
+            RelaxService.handle(event)
+            bi.reload
+          }.to change(bi.events, :count).by(1)
+
+          e = bi.events.last
+
+          expect(e.event_type).to eql 'message'
+          expect(e.user).to eql user
+          expect(e.provider).to eql 'slack'
+          expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+          expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_im).to be_truthy
+          expect(e.is_for_bot).to be_truthy
+        end
+      end
+
+      context 'when message is not an IM but meant for the bot' do
+        before { event.text = 'thanks <@UNESTOR1>!' }
+
+        it 'should create a new event' do
+          expect {
+            RelaxService.handle(event)
+            bi.reload
+          }.to change(bi.events, :count).by(1)
+
+          e = bi.events.last
+
+          expect(e.event_type).to eql 'message'
+          expect(e.user).to eql user
+          expect(e.provider).to eql 'slack'
+          expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+          expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_im).to be_falsey
+          expect(e.is_for_bot).to be_truthy
+        end
+      end
+    end
+  end
 end
