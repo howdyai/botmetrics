@@ -159,8 +159,9 @@ CREATE TABLE events (
     is_im boolean DEFAULT false NOT NULL,
     CONSTRAINT valid_event_type_on_events CHECK (((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL))) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
-    CONSTRAINT validate_attributes_channel CHECK (((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message'::text)) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL)))),
-    CONSTRAINT validate_attributes_timestamp CHECK (((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message'::text)) OR (((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message'::text)) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))))
+    CONSTRAINT validate_attributes_channel CHECK (((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_reaction CHECK (((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_timestamp CHECK (((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message'::text)) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))))
 );
 
 
@@ -606,4 +607,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160425163211');
 INSERT INTO schema_migrations (version) VALUES ('20160425164622');
 
 INSERT INTO schema_migrations (version) VALUES ('20160425212125');
+
+INSERT INTO schema_migrations (version) VALUES ('20160425215210');
 

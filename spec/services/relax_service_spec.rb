@@ -59,6 +59,49 @@ describe RelaxService do
     end
   end
 
+  describe 'message reaction' do
+    let!(:event) do
+      Relax::Event.new(
+        team_uid: 'TCAFEDEAD',
+        user_uid: 'UDEADBEEF1',
+        channel_uid: 'DCAFEDEAD1',
+        timestamp: '123456789.0',
+        provider: 'slack',
+        im: false,
+        text: ':+1:',
+        relax_bot_uid: 'UNESTOR1',
+        namespace: 'UNESTOR1',
+        type: 'reaction_added'
+      )
+    end
+
+    let!(:user) { create :bot_user, uid: 'UDEADBEEF1', provider: 'slack', bot_instance: bi }
+
+    context 'bot instance exists' do
+      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+
+      context 'when message is not meant for the bot' do
+        it 'should create a new event' do
+          expect {
+            RelaxService.handle(event)
+            bi.reload
+          }.to change(bi.events, :count).by(1)
+
+          e = bi.events.last
+
+          expect(e.event_type).to eql 'message_reaction'
+          expect(e.user).to eql user
+          expect(e.provider).to eql 'slack'
+          expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+          expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.event_attributes['reaction']).to eql ':+1:'
+          expect(e.is_im).to be_falsey
+          expect(e.is_for_bot).to be_falsey
+        end
+      end
+    end
+  end
+
   describe 'message' do
     let!(:event) do
       Relax::Event.new(

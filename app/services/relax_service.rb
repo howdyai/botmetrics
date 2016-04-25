@@ -17,14 +17,8 @@ class RelaxService
     when 'message_new'
       bi = find_bot_instance_from(event)
       return if bi.blank?
-
-      user = bi.users.find_by(uid: event.user_uid)
-      # if user is blank, then import users and try again before bailing
-      if user.blank?
-        bi.import_users!
-        user = bi.users.find_by(uid: event.user_uid)
-        return if user.blank?
-      end
+      user = find_bot_user_from(bi, event)
+      return if user.blank?
 
       bi.events.create!(
         user: user,
@@ -37,10 +31,39 @@ class RelaxService
         provider: bi.provider,
         event_type: 'message'
       )
+    when 'reaction_added'
+      bi = find_bot_instance_from(event)
+      return if bi.blank?
+      user = find_bot_user_from(bi, event)
+      return if user.blank?
+
+      bi.events.create!(
+        user: user,
+        event_attributes: {
+          channel: event.channel_uid,
+          timestamp: event.timestamp,
+          reaction: event.text
+        },
+        is_for_bot: is_for_bot?(event),
+        is_im: event.im,
+        provider: bi.provider,
+        event_type: 'message_reaction'
+      )
     end
   end
 
   private
+  def self.find_bot_user_from(bi, event)
+    user = bi.users.find_by(uid: event.user_uid)
+    # if user is blank, then import users and try again before bailing
+    if user.blank?
+      bi.import_users!
+      user = bi.users.find_by(uid: event.user_uid)
+    end
+
+    user
+  end
+
   def self.is_for_bot?(event)
     event.im || event.text.match(/<?@#{event.relax_bot_uid}[^>]?>?/).present?
   end

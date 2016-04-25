@@ -28,6 +28,28 @@ describe Event do
       it { should_not allow_value('test').for(:event_type) }
     end
 
+    context 'reaction is not null' do
+      let!(:user)  { create :bot_user }
+      let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
+
+      it "should be invalid if event_type = 'message_reaction' and reaction is NULL" do
+        event.event_type = 'message_reaction'
+        event.event_attributes[:channel] = 'CDEAD1'
+        event.event_attributes[:timestamp] = '123456789.0'
+        expect(event).to_not be_valid
+        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+      end
+
+      it "should be valid if event_type = 'message_reaction' and reaction is NOT NULL" do
+        event.event_type = 'message_reaction'
+        event.event_attributes[:channel] = 'CDEAD1'
+        event.event_attributes[:reaction] = ':+1:'
+        event.event_attributes[:timestamp] = '123456789.0'
+        expect(event).to_not be_valid
+        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+      end
+    end
+
     context 'channel is not null' do
       let!(:user)  { create :bot_user }
       let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
