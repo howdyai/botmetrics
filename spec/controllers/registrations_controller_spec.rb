@@ -11,7 +11,8 @@ describe RegistrationsController do
       {
         email: 'i@mclov.in',
         full_name: 'Mclovin',
-        password: 'password'
+        password: 'password',
+        timezone: 'Pacific Time (US & Canada)'
       }
     end
 
@@ -25,6 +26,8 @@ describe RegistrationsController do
       user = User.last
       expect(user.full_name).to eql 'Mclovin'
       expect(user.email).to eql 'i@mclov.in'
+      expect(user.timezone).to eql 'Pacific Time (US & Canada)'
+      expect(user.timezone_utc_offset).to eql -28800
     end
 
     it 'should create a new team' do

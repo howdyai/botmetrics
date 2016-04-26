@@ -278,7 +278,9 @@ CREATE TABLE users (
     current_sign_in_ip inet,
     last_sign_in_ip inet,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    timezone character varying NOT NULL,
+    timezone_utc_offset integer NOT NULL
 );
 
 
@@ -618,4 +620,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160425212125');
 INSERT INTO schema_migrations (version) VALUES ('20160425215210');
 
 INSERT INTO schema_migrations (version) VALUES ('20160425220237');
+
+INSERT INTO schema_migrations (version) VALUES ('20160425223534');
 

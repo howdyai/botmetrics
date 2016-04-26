@@ -5,4 +5,7 @@
   .col-md-4.col-xs-4.col-xs-offset-4.col-md-offset-4.footer
     = render "devise/shared/links"
 
-
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.StaticIndex();
+    App.page.run();
