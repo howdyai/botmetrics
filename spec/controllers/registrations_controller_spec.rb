@@ -16,6 +16,11 @@ describe RegistrationsController do
       }
     end
 
+    before do
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+      allow(IdentifyMixpanelUserJob).to receive(:perform_async)
+    end
+
     def do_request
       post :create, user: user_attributes
     end
@@ -52,6 +57,16 @@ describe RegistrationsController do
       do_request
       team = Team.last
       expect(response).to redirect_to team_path(team)
+    end
+
+    it 'should identify the user on Mixpanel' do
+      do_request
+      expect(IdentifyMixpanelUserJob).to have_received(:perform_async).with(User.last.id, {})
+    end
+
+    it 'should track the "User Signed Up" event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('User Signed Up', User.last.id, {})
     end
   end
 end

@@ -280,7 +280,8 @@ CREATE TABLE users (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     timezone character varying NOT NULL,
-    timezone_utc_offset integer NOT NULL
+    timezone_utc_offset integer NOT NULL,
+    mixpanel_properties json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -622,4 +623,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160425215210');
 INSERT INTO schema_migrations (version) VALUES ('20160425220237');
 
 INSERT INTO schema_migrations (version) VALUES ('20160425223534');
+
+INSERT INTO schema_migrations (version) VALUES ('20160426205144');
 

@@ -4,6 +4,15 @@ class RegistrationsController < Devise::RegistrationsController
       team = Team.create!(name: 'My Team')
       team.bots.create!(name: 'My First Bot', provider: 'slack')
       resource.team_memberships.create!(team: team, membership_type: 'owner')
+
+      mixpanel_properties = @mixpanel_attributes.dup
+      mixpanel_properties.delete('distinct_id')
+
+      resource.mixpanel_properties = mixpanel_properties
+      resource.save
+
+      IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
+      TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
     end
   end
 

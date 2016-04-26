@@ -10,6 +10,8 @@ class App.StaticIndex extends App.AppBase
 
   run: ->
     $(document).ready ->
+      mixpanel.track 'Viewed Home Page'
+
       $('#signup-modal').on 'shown.bs.modal', (e) ->
         $('#user_email').val($('.signup-email').val())
         if($('#user_email').val().trim() == '')
