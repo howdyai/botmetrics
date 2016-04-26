@@ -13,19 +13,19 @@ describe TrackMixpanelEventJob do
     context 'with an active user account' do
       it "should track the event with the user's ID set as a default property" do
         TrackMixpanelEventJob.new.perform('Site Created', user.id)
-        expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', email: user.email,
-                                                                                full_name: user.full_name,
-                                                                                first_name: user.first_name,
-                                                                                last_name: user.last_name
+        expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', '$email' => user.email,
+                                                                                '$full_name' => user.full_name,
+                                                                                '$first_name' => user.first_name,
+                                                                                '$last_name' => user.last_name
                                                                 )
       end
 
       it "should track the event with the user's ID set as a default property along with other properties passed" do
         TrackMixpanelEventJob.new.perform('Site Created', user.id, { plan_id: 1 })
-        expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', email: user.email,
-                                                                                full_name: user.full_name,
-                                                                                first_name: user.first_name,
-                                                                                last_name: user.last_name,
+        expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', '$email' => user.email,
+                                                                                '$full_name' => user.full_name,
+                                                                                '$first_name' => user.first_name,
+                                                                                '$last_name' => user.last_name,
                                                                                 plan_id: 1)
       end
 
@@ -37,10 +37,10 @@ describe TrackMixpanelEventJob do
 
         it "should track the event with the user's ID set as a default property along with mixpanel properties stored as part of the user's profile" do
           TrackMixpanelEventJob.new.perform('Site Created', user.id)
-          expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', email: user.email,
-                                                                                  full_name: user.full_name,
-                                                                                  first_name: user.first_name,
-                                                                                  last_name: user.last_name,
+          expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', '$email' => user.email,
+                                                                                  '$full_name' => user.full_name,
+                                                                                  '$first_name' => user.first_name,
+                                                                                  '$last_name' => user.last_name,
                                                                                  'initial_referrer' => '$direct',
                                                                                  'utm_source' => 'twitter')
         end
@@ -53,10 +53,10 @@ describe TrackMixpanelEventJob do
         it 'should pass along team params' do
           TrackMixpanelEventJob.new.perform('Site Created', user.id, team_id: team.id)
 
-          expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', email: user.email,
-                                                                                  full_name: user.full_name,
-                                                                                  first_name: user.first_name,
-                                                                                  last_name: user.last_name,
+          expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', '$email' => user.email,
+                                                                                  '$full_name' => user.full_name,
+                                                                                  '$first_name' => user.first_name,
+                                                                                  '$last_name' => user.last_name,
                                                                                   team_name: 'AskNestor',
                                                                                   team_members_count: 1)
         end
