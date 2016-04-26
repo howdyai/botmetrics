@@ -2,6 +2,9 @@ class StaticController < ApplicationController
   layout 'bare'
 
   def index
+    if current_user.present?
+      redirect_to(team_path(current_user.teams.first)) && return
+    end
   end
 
   def letsencrypt
