@@ -76,6 +76,7 @@ describe RelaxService do
     end
 
     let!(:user) { create :bot_user, uid: 'UDEADBEEF1', provider: 'slack', bot_instance: bi }
+    let!(:bot)  { create :bot_user, uid: 'UNESTOR1', provider: 'slack', bot_instance: bi }
 
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
@@ -95,6 +96,7 @@ describe RelaxService do
           expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
           expect(e.event_attributes['timestamp']).to eql '123456789.0'
           expect(e.event_attributes['reaction']).to eql ':+1:'
+          expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
         end
@@ -118,6 +120,7 @@ describe RelaxService do
       )
     end
     let!(:user) { create :bot_user, uid: 'UDEADBEEF1', provider: 'slack', bot_instance: bi }
+    let!(:bot)  { create :bot_user, uid: 'UNESTOR1', provider: 'slack', bot_instance: bi }
 
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
@@ -136,8 +139,33 @@ describe RelaxService do
           expect(e.provider).to eql 'slack'
           expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
           expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
+        end
+
+        context 'when message is from the bot' do
+          before do
+            event.user_uid = 'UNESTOR1'
+          end
+
+          it 'should create a new event with is_from_bot to as true' do
+            expect {
+              RelaxService.handle(event)
+              bi.reload
+            }.to change(bi.events, :count).by(1)
+
+            e = bi.events.last
+
+            expect(e.event_type).to eql 'message'
+            expect(e.user).to eql bot
+            expect(e.provider).to eql 'slack'
+            expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+            expect(e.event_attributes['timestamp']).to eql '123456789.0'
+            expect(e.is_from_bot).to be_truthy
+            expect(e.is_im).to be_falsey
+            expect(e.is_for_bot).to be_falsey
+          end
         end
       end
 
@@ -157,8 +185,33 @@ describe RelaxService do
           expect(e.provider).to eql 'slack'
           expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
           expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_truthy
           expect(e.is_for_bot).to be_truthy
+        end
+
+        context 'when message is from the bot' do
+          before do
+            event.user_uid = 'UNESTOR1'
+          end
+
+          it 'should create a new event with is_from_bot to as true' do
+            expect {
+              RelaxService.handle(event)
+              bi.reload
+            }.to change(bi.events, :count).by(1)
+
+            e = bi.events.last
+
+            expect(e.event_type).to eql 'message'
+            expect(e.user).to eql bot
+            expect(e.provider).to eql 'slack'
+            expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+            expect(e.event_attributes['timestamp']).to eql '123456789.0'
+            expect(e.is_from_bot).to be_truthy
+            expect(e.is_im).to be_truthy
+            expect(e.is_for_bot).to be_truthy
+          end
         end
       end
 
@@ -178,8 +231,33 @@ describe RelaxService do
           expect(e.provider).to eql 'slack'
           expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
           expect(e.event_attributes['timestamp']).to eql '123456789.0'
+          expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_truthy
+        end
+
+        context 'when message is from the bot' do
+          before do
+            event.user_uid = 'UNESTOR1'
+          end
+
+          it 'should create a new event with is_from_bot to as true' do
+            expect {
+              RelaxService.handle(event)
+              bi.reload
+            }.to change(bi.events, :count).by(1)
+
+            e = bi.events.last
+
+            expect(e.event_type).to eql 'message'
+            expect(e.user).to eql bot
+            expect(e.provider).to eql 'slack'
+            expect(e.event_attributes['channel']).to eql 'DCAFEDEAD1'
+            expect(e.event_attributes['timestamp']).to eql '123456789.0'
+            expect(e.is_from_bot).to be_truthy
+            expect(e.is_im).to be_falsey
+            expect(e.is_for_bot).to be_truthy
+          end
         end
       end
     end
