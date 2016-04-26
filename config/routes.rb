@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   end
 
   root 'static#index'
+
+  get '/.well-known/acme-challenge/:id' => 'static#letsencrypt'
 end
