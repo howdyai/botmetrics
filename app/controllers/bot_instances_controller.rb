@@ -15,9 +15,16 @@ class BotInstancesController < ApplicationController
 
     if @instance.save
       SetupBotJob.perform_async(@instance.id)
-      redirect_to setting_up_team_bot_instance_path(@team, @bot, @instance)
+
+      respond_to do |format|
+        format.html { redirect_to setting_up_team_bot_instance_path(@team, @bot, @instance) }
+        format.json { render json: { id: @instance.id }, status: :created }
+      end
     else
-      render :new
+      respond_to do |format|
+        format.html { render :new }
+        format.json { render json: { errors: @instance.errors.full_messages }, status: :bad_request }
+      end
     end
   end
 

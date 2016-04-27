@@ -25,37 +25,63 @@ describe BotInstancesController do
   end
 
   describe 'POST create' do
-    before { sign_in user }
     let!(:bot_instance_params) { { token: 'token-deadbeef' } }
-
-    def do_request
-      post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param
-    end
 
     before do
       allow(SetupBotJob).to receive(:perform_async)
     end
 
-    it 'should create a new bot instance' do
-      expect {
+    shared_examples 'creates and sets up a bot' do
+      it 'should create a new bot instance' do
+        expect {
+          do_request
+          bot.reload
+        }.to change(bot.instances, :count).by(1)
+
+        instance = bot.instances.last
+        expect(instance.token).to eql 'token-deadbeef'
+        expect(instance.provider).to eql bot.provider
+      end
+
+      it 'should call SetupBotJob' do
         do_request
-        bot.reload
-      }.to change(bot.instances, :count).by(1)
-
-      instance = bot.instances.last
-      expect(instance.token).to eql 'token-deadbeef'
-      expect(instance.provider).to eql bot.provider
+        expect(SetupBotJob).to have_received(:perform_async)
+      end
     end
 
-    it "should redirect back to setting_team_bot_instance_path" do
-      do_request
-      instance = bot.instances.last
-      expect(response).to redirect_to setting_up_team_bot_instance_path(team, bot, instance)
+    context 'format html' do
+      before { sign_in user }
+
+      def do_request
+        post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param
+      end
+
+      it_behaves_like 'creates and sets up a bot'
+
+      it "should redirect back to setting_team_bot_instance_path" do
+        do_request
+        instance = bot.instances.last
+        expect(response).to redirect_to setting_up_team_bot_instance_path(team, bot, instance)
+      end
     end
 
-    it 'should call SetupBotJob' do
-      do_request
-      expect(SetupBotJob).to have_received(:perform_async)
+    context 'format json' do
+      before { request.headers['Authorization'] = JsonWebToken.encode('user_id' => user.id) }
+
+      def do_request
+        post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param, format: :json
+      end
+
+      it_behaves_like 'creates and sets up a bot'
+
+      it "should respond with JSON object containing the id of the instance" do
+        do_request
+        instance = bot.instances.last
+        body = JSON.parse(response.body)
+
+        expect(response).to have_http_status :created
+        expect(body['id']).to eql instance.id
+      end
     end
   end
 end
