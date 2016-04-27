@@ -5,7 +5,6 @@ ruby '2.3.0'
 gem 'rails', '4.2.5.1'
 # Use postgresql as the database for Active Record
 gem 'pg',    '~> 0.18.2'
-gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks

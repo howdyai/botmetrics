@@ -111,7 +111,6 @@ GEM
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
     json (1.8.3)
-    libv8 (3.16.14.13)
     lograge (0.3.6)
       actionpack (>= 3)
       activesupport (>= 3)
@@ -178,7 +177,6 @@ GEM
     redis (3.2.2)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
-    ref (2.0.0)
     relax-rb (0.4.0)
       connection_pool (~> 2.2.0)
       json (~> 1.8.3)
@@ -244,9 +242,6 @@ GEM
       dante (>= 0.2.0)
       jimson-temp
       stripe (= 1.31.0)
-    therubyracer (0.12.2)
-      libv8 (~> 3.16.14.0)
-      ref
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.2)
@@ -307,7 +302,6 @@ DEPENDENCIES
   simple_form (~> 3.1.0)
   sinatra (~> 1.4.6)
   stripe-ruby-mock (~> 2.2.1)
-  therubyracer
   timecop (~> 0.7.4)
   turbolinks (~> 2.5.3)
   uglifier (~> 2.7.1)
@@ -315,4 +309,4 @@ DEPENDENCIES
   with_advisory_lock (~> 3.0.0)
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
