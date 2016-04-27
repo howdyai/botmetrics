@@ -278,7 +278,8 @@ CREATE TABLE users (
     updated_at timestamp without time zone,
     timezone character varying NOT NULL,
     timezone_utc_offset integer NOT NULL,
-    mixpanel_properties json DEFAULT '{}'::json NOT NULL
+    mixpanel_properties json DEFAULT '{}'::json NOT NULL,
+    api_key character varying
 );
 
 
@@ -484,6 +485,13 @@ CREATE UNIQUE INDEX index_teams_on_uid ON teams USING btree (uid);
 
 
 --
+-- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_users_on_api_key ON users USING btree (api_key) WHERE (api_key IS NOT NULL);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -628,4 +636,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160426223507');
 INSERT INTO schema_migrations (version) VALUES ('20160427035933');
 
 INSERT INTO schema_migrations (version) VALUES ('20160427042824');
+
+INSERT INTO schema_migrations (version) VALUES ('20160427135316');
 

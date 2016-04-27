@@ -24,6 +24,7 @@ gem 'modernizr-rails',          '~> 2.7.1'
 
 # Auth
 gem 'devise',                  '~> 3.4.1'
+gem 'jwt',                     '~> 1.5.4'
 
 # Mixpanel
 gem 'mixpanel-ruby',          '~> 2.2.0', require: 'mixpanel-ruby'

@@ -33,6 +33,7 @@ describe RegistrationsController do
       expect(user.email).to eql 'i@mclov.in'
       expect(user.timezone).to eql 'Pacific Time (US & Canada)'
       expect(user.timezone_utc_offset).to eql -28800
+      expect(user.api_key).to_not be_blank
     end
 
     it 'should create a new team' do
