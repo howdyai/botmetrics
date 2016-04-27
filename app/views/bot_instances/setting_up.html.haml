@@ -10,6 +10,15 @@
     .setup-done
       %p.status
         We've setup metrics collection for your bot. You can go to your dashboard to start analyzing how your bot is doing.
+      %p
+        You can add more instances to your bot via an HTTP API:
+      %pre.pre-scrollable
+        :preserve
+          curl -X POST \
+          -H "Authorization: #{current_user.api_key}" \
+          #{Settings.rails_host}/teams/#{@team.uid}/bots/#{@bot.uid}/instances \
+          -d "format=json&instance[token]=my-bot-token"
+
       .go-to-dashboard.text-center
         = link_to 'Go To Your Bot Dashboard', team_bot_path(@team, @bot), class: 'btn btn-lg btn-success'
 
