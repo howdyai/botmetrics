@@ -25,13 +25,23 @@
                 %li{role: 'presentation'}
                   = link_to new_team_bot_path(@team) do
                     %i.fa.fa-plus
-                    Add Another Bot
+                      Add Another Bot
+          - else
+            = link_to team_path(@team), class: 'back-button' do
+              %i.fa.fa-chevron-left
+              Back to Bot Dashboard
+
         .col-md-4.text-right
           .dropdown
             %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
               %h3.user-name= @current_user.full_name
               %span.caret
             %ul.dropdown-menu.dropdown-menu-right{role: 'menu'}
+              %li{role: 'presentation'}
+                = link_to user_path(current_user) do
+                  %i.fa.fa-user
+                  My Profile
+              %li.divider{role: 'separator'}
               %li{role: 'presentation'}
                 = link_to destroy_user_session_path do
                   %i.fa.fa-power-off

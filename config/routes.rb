@@ -11,6 +11,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :users, only: [:show] do
+    member do
+      patch :regenerate_api_key
+    end
+  end
+
   root 'static#index'
 
   get '/.well-known/acme-challenge/:id' => 'static#letsencrypt'

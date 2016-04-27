@@ -1,0 +1,9 @@
+.row
+  .col-md-8.col-md-offset-2
+    %h3 My API Key
+    %p.api-key-intro
+      This is the API key you should use to register new instances of your bot.
+    %p.api-key
+      %code= @user.api_key
+    = simple_form_for @user, url: regenerate_api_key_user_path(@user), method: :patch do |f|
+      = f.submit 'Regenerate API Key'

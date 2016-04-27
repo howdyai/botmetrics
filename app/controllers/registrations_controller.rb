@@ -9,8 +9,9 @@ class RegistrationsController < Devise::RegistrationsController
       mixpanel_properties.delete('distinct_id')
 
       resource.mixpanel_properties = mixpanel_properties
+
       if resource.api_key.blank?
-        resource.api_key = JsonWebToken.encode({'user_id' => resource.id}, 10.years.from_now)
+        resource.set_api_key!
       end
 
       resource.save

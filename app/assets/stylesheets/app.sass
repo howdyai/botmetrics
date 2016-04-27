@@ -1,4 +1,5 @@
-body.bot_instances
+body.bot_instances,
+body.users
   &.setting_up
     p
       font-size: 16px
@@ -9,6 +10,18 @@ body.bot_instances
       padding: 18px 25px
   .header-container
     margin: 0
+    .back-button
+      i
+        display: inline-block
+        font-size: 14px
+        margin-right: 5px
+        margin-top: 2px
+      color: #fff
+      &:hover,
+      &:focus
+        text-decoration: none
+        color: #fff
+
     .btn.header-button,
     .btn.profile-button
       background-color: transparent
@@ -40,3 +53,8 @@ body.bot_instances
       input[type="submit"]
         font-size: 16px
         padding: 18px 25px
+
+body.users
+  p
+    font-size: 16px
+    padding-top: 8px
