@@ -10,5 +10,6 @@ class AddStateToBotInstance < ActiveRecord::Migration
     remove_column :bot_instances, :state
     add_column :bot_instances, :enabled, :boolean, default: false
     change_column_null :bot_instances, :uid, false
+    execute "ALTER TABLE bot_instances DROP CONSTRAINT uid_set_if_not_pending"
   end
 end

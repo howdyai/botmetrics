@@ -40,18 +40,6 @@ describe BotInstance do
         bi.instance_attributes['team_id'] = 'TDEADBEEF1'
         expect(bi).to be_valid
       end
-
-      it "should be invalid if state = 'disabled' and team_id IS NULL" do
-        bi.state = 'disabled'
-        expect(bi).to_not be_valid
-        expect(bi.errors[:instance_attributes]).to eql ["team_id can't be blank"]
-      end
-
-      it "should be valid if state = 'disabled' and team_id IS NOT NULL" do
-        bi.state = 'enabled'
-        bi.instance_attributes['team_id'] = 'TDEADBEEF1'
-        expect(bi).to be_valid
-      end
     end
 
     context 'team_name is not null' do
@@ -68,18 +56,6 @@ describe BotInstance do
         bi.instance_attributes['team_name'] = 'Dead Team'
         expect(bi).to be_valid
       end
-
-      it "should be invalid if state = 'disabled' and team_name IS NULL" do
-        bi.state = 'disabled'
-        expect(bi).to_not be_valid
-        expect(bi.errors[:instance_attributes]).to eql ["team_name can't be blank"]
-      end
-
-      it "should be valid if state = 'disabled' and team_name IS NOT NULL" do
-        bi.state = 'enabled'
-        bi.instance_attributes['team_name'] = 'Dead Team'
-        expect(bi).to be_valid
-      end
     end
 
     context 'team_url is not null' do
@@ -92,18 +68,6 @@ describe BotInstance do
       end
 
       it "should be valid if state = 'enabled' and team_url IS NOT NULL" do
-        bi.state = 'enabled'
-        bi.instance_attributes['team_url'] = 'https://test.slack.com'
-        expect(bi).to be_valid
-      end
-
-      it "should be invalid if state = 'disabled' and team_url IS NULL" do
-        bi.state = 'disabled'
-        expect(bi).to_not be_valid
-        expect(bi.errors[:instance_attributes]).to eql ["team_url can't be blank"]
-      end
-
-      it "should be valid if state = 'disabled' and team_url IS NOT NULL" do
         bi.state = 'enabled'
         bi.instance_attributes['team_url'] = 'https://test.slack.com'
         expect(bi).to be_valid
@@ -125,15 +89,8 @@ describe BotInstance do
         expect(bi).to be_valid
       end
 
-      it "should be invalid if state = 'disabled' and uid IS NULL" do
+      it "should be valid if state = 'disabled' and uid IS NULL" do
         bi.state = 'disabled'
-        expect(bi).to_not be_valid
-        expect(bi.errors[:uid]).to eql ["can't be blank"]
-      end
-
-      it "should be valid if state = 'disabled' and uid IS NOT NULL" do
-        bi.state = 'disabled'
-        bi.uid = 'udeadbeef1'
         expect(bi).to be_valid
       end
     end

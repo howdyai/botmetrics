@@ -26,6 +26,9 @@ module BotMetrics
     config.settings = ActiveSupport::OrderedOptions.new
     config.settings.mixpanel_token = ENV['MIXPANEL_TOKEN']
     config.settings.ga_account_id = ENV['GA_ACCOUNT_ID']
+    config.settings.pusher_api_key = ENV['PUSHER_API_KEY']
+    config.settings.pusher_secret = ENV['PUSHER_SECRET']
+    config.settings.pusher_app_id = ENV['PUSHER_APP_ID']
   end
 end
 

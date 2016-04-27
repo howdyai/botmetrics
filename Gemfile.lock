@@ -97,6 +97,7 @@ GEM
     hashdiff (0.3.0)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
+    httpclient (2.8.0)
     i18n (0.7.0)
     jimson-temp (0.9.5)
       blankslate (>= 3.1.2)
@@ -134,6 +135,11 @@ GEM
       rack
       rake (>= 0.8.1)
     pg (0.18.4)
+    pusher (0.15.2)
+      httpclient (~> 2.5)
+      multi_json (~> 1.0)
+      pusher-signature (~> 0.1.8)
+    pusher-signature (0.1.8)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -288,6 +294,7 @@ DEPENDENCIES
   newrelic_rpm (~> 3.9.9)
   passenger (~> 5.0.27)
   pg (~> 0.18.2)
+  pusher (~> 0.15.1)
   rails (= 4.2.5.1)
   rails_12factor (~> 0.0.3)
   redis-namespace (~> 1.5.2)

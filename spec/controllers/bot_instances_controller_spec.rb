@@ -26,7 +26,7 @@ describe BotInstancesController do
 
   describe 'POST create' do
     before { sign_in user }
-    let!(:bot_instance_params) { { token: 'token-deadbeef', uid: 'UNESTOR1' } }
+    let!(:bot_instance_params) { { token: 'token-deadbeef' } }
 
     def do_request
       post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param
@@ -44,13 +44,13 @@ describe BotInstancesController do
 
       instance = bot.instances.last
       expect(instance.token).to eql 'token-deadbeef'
-      expect(instance.uid).to eql 'UNESTOR1'
       expect(instance.provider).to eql bot.provider
     end
 
-    it "should redirect back to team_bot_path" do
+    it "should redirect back to setting_team_bot_instance_path" do
       do_request
-      expect(response).to redirect_to team_bot_path(team, bot)
+      instance = bot.instances.last
+      expect(response).to redirect_to setting_up_team_bot_instance_path(team, bot, instance)
     end
 
     it 'should call SetupBotJob' do

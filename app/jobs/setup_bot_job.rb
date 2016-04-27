@@ -24,6 +24,13 @@ class SetupBotJob < Job
       )
       @instance.import_users!
       Relax::Bot.start!(@instance.instance_attributes['team_id'], @instance.token, namespace: @instance.uid)
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
+    else
+      if auth_info['error'] == 'account_inactive'
+        @instance.update_attribute(:state, 'disabled')
+      end
+      sleep(1)
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)
     end
   end
 end

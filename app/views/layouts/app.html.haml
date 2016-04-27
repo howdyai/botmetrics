@@ -1,0 +1,45 @@
+%html
+%head
+  %title
+    Bot Metrics
+  = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+  = javascript_include_tag 'application', 'data-turbolinks-track' => true
+  = stylesheet_link_tag '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css', media: 'all', 'data-turbolinks-track' => true
+  %script{src:"//use.typekit.net/zwl2vnb.js"}
+  :javascript
+    try{Typekit.load();}catch(e){}
+  = csrf_meta_tags
+
+%body{class: body_classes(yield :body_classes)}
+  = render partial: 'layouts/flash', locals: { flash: flash }
+  %nav.navbar.navbar-default
+    .container-fluid.header-container
+      .row
+        .col-md-8
+          - if @bot.present?
+            .dropdown
+              %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+                %h3.bot-name= @bot.name
+                %span.caret
+              %ul.dropdown-menu.dropdown-menu-left{role: 'menu'}
+                %li{role: 'presentation'}
+                  = link_to new_team_bot_path(@team) do
+                    %i.fa.fa-plus
+                    Add Another Bot
+        .col-md-4.text-right
+          .dropdown
+            %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+              %h3.user-name= @current_user.full_name
+              %span.caret
+            %ul.dropdown-menu.dropdown-menu-right{role: 'menu'}
+              %li{role: 'presentation'}
+                = link_to destroy_user_session_path do
+                  %i.fa.fa-power-off
+                  Sign Out
+
+  .container-fluid.content-container
+    = yield
+
+  = render partial: 'ga'
+  = render partial: 'mixpanel'
+  = yield :page_scripts

@@ -69,6 +69,8 @@ describe SetupBotJob do
               ]
             }.to_json
           )
+
+          allow(PusherJob).to receive(:perform_async)
         end
 
         it 'should enable the bot and setup team_id, team_name and team_url' do
@@ -79,6 +81,11 @@ describe SetupBotJob do
           expect(bi.instance_attributes['team_id']).to eql 'T12345'
           expect(bi.instance_attributes['team_name']).to eql 'My Team'
           expect(bi.instance_attributes['team_url']).to eql 'https://myteam.slack.com/'
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":true}")
         end
 
         context 'none of the users exist' do
@@ -189,15 +196,42 @@ describe SetupBotJob do
       context 'when token is invalid' do
         before do
           stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
-                    to_return(status: 200, body: { ok: false, error: "account_inactive" }.to_json)
+                    to_return(status: 200, body: { ok: false, error: "invalid_token" }.to_json)
+          allow(PusherJob).to receive(:perform_async)
         end
 
-        it 'should enable the bot and setup team_id, team_name and team_url' do
+        it 'should keep the bot in pending state' do
           SetupBotJob.new.perform(bi.id)
           bi.reload
           expect(bi.state).to eql 'pending'
           expect(bi.uid).to be_nil
           expect(bi.instance_attributes).to eql({})
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"invalid_token\"}")
+        end
+      end
+
+      context 'when token is for a disabled bot' do
+        before do
+          stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
+                    to_return(status: 200, body: { ok: false, error: "account_inactive" }.to_json)
+          allow(PusherJob).to receive(:perform_async)
+        end
+
+        it 'should disable the bot' do
+          SetupBotJob.new.perform(bi.id)
+          bi.reload
+          expect(bi.state).to eql 'disabled'
+          expect(bi.uid).to be_nil
+          expect(bi.instance_attributes).to eql({})
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"account_inactive\"}")
         end
       end
     end

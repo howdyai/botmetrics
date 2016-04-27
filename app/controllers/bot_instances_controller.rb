@@ -3,6 +3,8 @@ class BotInstancesController < ApplicationController
   before_filter :find_team
   before_filter :find_bot
 
+  layout 'app'
+
   def new
     @instance = @bot.instances.build
   end
@@ -13,10 +15,14 @@ class BotInstancesController < ApplicationController
 
     if @instance.save
       SetupBotJob.perform_async(@instance.id)
-      redirect_to team_bot_path(@team, @bot)
+      redirect_to setting_up_team_bot_instance_path(@team, @bot, @instance)
     else
       render :new
     end
+  end
+
+  def setting_up
+    @instance = @bot.instances.find(params[:id])
   end
 
   protected
@@ -31,6 +37,6 @@ class BotInstancesController < ApplicationController
   end
 
   def instance_params
-    params.require(:instance).permit(:token, :uid)
+    params.require(:instance).permit(:token)
   end
 end
