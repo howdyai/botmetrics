@@ -20,8 +20,17 @@ describe BotsController do
       end
     end
 
-    context 'if there are bot instances' do
+    context 'if there are bot instances (that are pending)' do
       let!(:bi1) { create :bot_instance, bot: bot }
+
+      it 'should redirect to the new_team_bot_instance_path for the bot' do
+        do_request
+        expect(response).to redirect_to new_team_bot_instance_path(team, bot)
+      end
+    end
+
+    context 'if there are bot instances (that are disabled)' do
+      let!(:bi1) { create :bot_instance, bot: bot, state: 'disabled' }
 
       it 'should render template :show' do
         do_request

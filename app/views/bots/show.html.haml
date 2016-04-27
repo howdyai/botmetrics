@@ -1,0 +1,22 @@
+.stats.row
+  .stat.col-sm-6.col-md-3
+    %h3 Total Bots
+    %p.number= @instances.count
+  .stat.col-sm-6.col-md-3
+    %h3 Bots Enabled
+    %p.number= @enabled.count
+  .stat.col-sm-6.col-md-3
+    %h3 Bots Disabled
+    %p.number= @disabled.count
+  .stat.col-sm-6.col-md-3
+    %h3 Total Users
+    %p.number= @members.count
+  .stat.col-sm-6.col-md-3
+    %h3 Total Messages
+    %p.number= @messages.count
+  .stat.col-sm-6.col-md-3
+    %h3 Messages To Your Bot
+    %p.number= @messages_to_bot.count
+  .stat.col-sm-6.col-md-3
+    %h3 Messages From Your Bot
+    %p.number= @messages_from_bot.count

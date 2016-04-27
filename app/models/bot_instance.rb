@@ -9,6 +9,10 @@ class BotInstance < ActiveRecord::Base
 
   validates_with BotInstanceAttributesValidator
 
+  scope :legit, -> { where("state <> ?", 'pending') }
+  scope :enabled, -> { where("state = ?", 'enabled') }
+  scope :disabled, -> { where("state = ?", 'disabled') }
+
   belongs_to :bot
   has_many :users, class_name: 'BotUser'
   has_many :events

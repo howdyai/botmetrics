@@ -29,7 +29,7 @@ gem 'jwt',                     '~> 1.5.4'
 # Mixpanel
 gem 'mixpanel-ruby',          '~> 2.2.0', require: 'mixpanel-ruby'
 # Redis
-gem 'relax-rb',               '~> 0.4.0', require: 'relax'
+gem 'relax-rb',               '~> 0.4.1', require: 'relax'
 gem 'sidekiq',                '~> 4.1.0'
 gem 'sinatra',                '~> 1.4.6'
 gem 'redis-namespace',        '~> 1.5.2'

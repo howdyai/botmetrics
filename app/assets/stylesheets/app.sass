@@ -1,5 +1,6 @@
 body.bot_instances,
-body.users
+body.users,
+body.bots
   &.setting_up
     p
       font-size: 16px
@@ -58,3 +59,21 @@ body.users
   p
     font-size: 16px
     padding-top: 8px
+
+body.bots
+  .stats
+    padding-top: 20px
+    .stat
+      border-radius: 5px
+      box-shadow: 0 1px 1px #dae1e3
+      min-height: 120px
+      padding: 1.25rem
+      margin: 0 1em 2em 1em
+      h3
+        color: #444
+      p.number
+        position: absolute
+        right: 10px
+        bottom: -20px
+        font-size: 64px
+
