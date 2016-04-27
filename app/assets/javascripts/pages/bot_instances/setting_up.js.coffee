@@ -16,8 +16,12 @@ class App.BotInstancesSetup extends App.AppBase
         $('.progress-bar').css('width', "100%")
         d = JSON.parse(data.message)
         if d.ok
+          $('.create-new-instance').hide()
           $('.setup-done').show()
         else
+          $('p.api').hide()
+          $('pre.api').hide()
+          $('.go-to-dashboard').hide()
           if d.error == 'invalid_auth'
             $('p.status').html("Oops, looks like this is an invalid authentication token")
           else if d.error == 'account_inactive'
