@@ -82,6 +82,24 @@ describe BotInstancesController do
         expect(response).to have_http_status :created
         expect(body['id']).to eql instance.id
       end
+
+      context 'when created_at is sent' do
+        before do
+          Timecop.freeze(Date.today - 3)
+          @now = Time.now
+          bot_instance_params.merge!(created_timestamp: @now.to_i)
+        end
+
+        after  { Timecop.return }
+
+        it_behaves_like 'creates and sets up a bot'
+
+        it 'sets the created_at timestamp to the one specified by the user' do
+          do_request
+          instance = bot.instances.last
+          expect(instance.created_at.to_i).to eql @now.to_i
+        end
+      end
     end
   end
 end

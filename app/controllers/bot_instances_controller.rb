@@ -12,6 +12,9 @@ class BotInstancesController < ApplicationController
   def create
     @instance = @bot.instances.build(instance_params)
     @instance.provider = @bot.provider
+    if (created_at = params[:instance][:created_at])
+      @instance.created_at = Time.at(created_ts.to_i)
+    end
 
     if @instance.save
       SetupBotJob.perform_async(@instance.id)
@@ -44,6 +47,6 @@ class BotInstancesController < ApplicationController
   end
 
   def instance_params
-    params.require(:instance).permit(:token)
+    params.require(:instance).permit(:token, :created_at)
   end
 end
