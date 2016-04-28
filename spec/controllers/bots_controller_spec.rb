@@ -6,6 +6,62 @@ describe BotsController do
   let!(:bot)  { create :bot, team: team }
   let!(:tm1)  { create :team_membership, team: team, user: user }
 
+  describe 'GET new' do
+    before { sign_in user }
+
+    def do_request
+      get :new, team_id: team.to_param
+    end
+
+    it 'should render template :new' do
+      do_request
+      expect(response).to render_template :new
+    end
+  end
+
+  describe 'POST create' do
+    before { sign_in user }
+
+    let!(:bot_params) { { name: 'My First Bot' } }
+
+    def do_request
+      post :create, team_id: team.to_param, bot: bot_params
+    end
+
+    it 'should create a new bot' do
+      expect {
+        do_request
+        team.reload
+      }.to change(team.bots, :count).by(1)
+
+      bot = team.bots.last
+      expect(bot.name).to eql 'My First Bot'
+      expect(bot.provider).to eql 'slack'
+    end
+
+    it 'should redirect to team_bot_path' do
+      do_request
+      bot = team.bots.last
+      expect(response).to redirect_to team_bot_path(team, bot)
+    end
+
+    context 'with invalid params' do
+      let!(:bot_params) { { name: '' } }
+
+      it 'should NOT create a new bot' do
+        expect {
+          do_request
+          team.reload
+        }.to_not change(team.bots, :count)
+      end
+
+      it 'should render template :new' do
+        do_request
+        expect(response).to render_template :new
+      end
+    end
+  end
+
   describe 'GET show' do
     before { sign_in user }
 

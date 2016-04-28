@@ -16,12 +16,17 @@
     .container-fluid.header-container
       .row
         .col-md-8
-          - if @bot.present?
+          - if @bot.present? && @bot.persisted?
             .dropdown
               %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
                 %h3.bot-name= @bot.name
                 %span.caret
               %ul.dropdown-menu.dropdown-menu-left{role: 'menu'}
+                - if (bots = @team.bots.where("bots.uid <> ?", @bot.uid)).present?
+                  - bots.each do |b|
+                    %li{role: 'presentation'}
+                      = link_to b.name, team_bot_path(@team, b)
+                  %li.divider{role: 'separator'}
                 %li{role: 'presentation'}
                   = link_to new_team_bot_path(@team) do
                     %i.fa.fa-plus

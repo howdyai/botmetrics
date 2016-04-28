@@ -4,6 +4,21 @@ class BotsController < ApplicationController
 
   layout 'app'
 
+  def new
+    @bot = @team.bots.build
+  end
+
+  def create
+    @bot = @team.bots.build(bot_params)
+    @bot.provider = 'slack'
+
+    if @bot.save
+      redirect_to team_bot_path(@team, @bot)
+    else
+      render :new
+    end
+  end
+
   def edit
     @bot = @team.bots.find_by(uid: params[:id])
     raise ActiveRecord::NotFound if @bot.blank?
