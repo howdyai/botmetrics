@@ -1,5 +1,5 @@
 web: bundle exec rails server -p $PORT
 worker: bundle exec sidekiq -q default,2 -c 2 -v
-relax_server: PORT=9998 relax
-relax_server_1: PORT=9999 relax
+relax_server: PORT=10998 relax
+relax_server_1: PORT=10999 relax
 relax_worker: bundle exec rake relax:listen_for_events
