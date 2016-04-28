@@ -21,7 +21,7 @@
               %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
                 %h3.bot-name= @bot.name
                 %span.caret
-              %ul.dropdown-menu.dropdown-menu-left{role: 'menu'}
+              %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
                 - if (bots = @team.bots.where("bots.uid <> ?", @bot.uid)).present?
                   - bots.each do |b|
                     %li{role: 'presentation'}
@@ -41,7 +41,7 @@
             %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
               %h3.user-name= @current_user.full_name
               %span.caret
-            %ul.dropdown-menu.dropdown-menu-right{role: 'menu'}
+            %ul.dropdown-menu.dropdown-menu-right{role: 'menu', "data-no-turbolink" => true}
               %li{role: 'presentation'}
                 = link_to user_path(current_user) do
                   %i.fa.fa-user
