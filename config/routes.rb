@@ -1,3 +1,5 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: :registrations }
 
@@ -20,4 +22,10 @@ Rails.application.routes.draw do
   root 'static#index'
 
   get '/.well-known/acme-challenge/:id' => 'static#letsencrypt'
+
+  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
+    username == ENV["SIDEKIQ_USERNAME"] && password == ENV["SIDEKIQ_PASSWORD"]
+  end
+
+  mount Sidekiq::Web, at: "/sidekiq"
 end
