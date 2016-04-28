@@ -1,0 +1,6 @@
+.row
+  .col-md-4.col-md-offset-4
+    = simple_form_for [@team, @bot], url: team_bot_path(@team, @bot), method: :patch do |f|
+      = f.input :name, label: "Your Bot's Name", required: true
+      = f.submit 'Save'
+

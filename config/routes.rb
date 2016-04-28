@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: :registrations }
 
   resources :teams, only: [:show] do
-    resources :bots, only: [:show, :new, :create] do
+    resources :bots, only: [:show, :new, :create, :edit, :update] do
       resources :instances, only: [:new, :create], controller: :bot_instances do
         member do
           get :setting_up
