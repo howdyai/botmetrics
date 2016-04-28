@@ -28,6 +28,7 @@ class SetupBotJob < Job
     else
       if auth_info['error'] == 'account_inactive'
         @instance.update_attribute(:state, 'disabled')
+        @instance.events.create!(event_type: 'bot_disabled', provider: @instance.provider)
       end
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)

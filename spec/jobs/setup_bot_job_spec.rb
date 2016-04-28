@@ -229,6 +229,17 @@ describe SetupBotJob do
           expect(bi.instance_attributes).to eql({})
         end
 
+        it 'should create a "bot_disabled" event' do
+          expect {
+            SetupBotJob.new.perform(bi.id)
+            bi.reload
+          }.to change(bi.events, :count).by(1)
+
+          event = bi.events.last
+          expect(event.event_type).to eql 'bot_disabled'
+          expect(event.provider).to eql 'slack'
+        end
+
         it 'should send a message to Pusher' do
           SetupBotJob.new.perform(bi.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"account_inactive\"}")
