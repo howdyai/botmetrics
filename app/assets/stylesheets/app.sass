@@ -24,6 +24,9 @@ body.teams
         text-decoration: none
         color: #fff
 
+    .btn.header-button
+      padding-left: 0
+
     .btn.header-button,
     .btn.profile-button
       background-color: transparent
@@ -61,6 +64,27 @@ body.users
     font-size: 16px
     padding-top: 8px
 
+body.bots
+  .time-segmented-controls
+    border: 1px solid #dae1e3
+    border-radius: 4px
+    margin-top: 15px
+    a
+      padding: 4px 12px
+      font-size: 12px
+      color: #737c81
+      border-right: 1px solid #dae1e3
+      &:hover,
+      &:focus
+        color: #333
+      &.active
+        color: #fff
+        background-color: #3bafda
+      &:last-child
+        padding-top: 5px
+        padding-bottom: 5px
+        border: none
+
 body.bots,
 body.teams
   background-color: rgba(59,175,218, 0.1)
@@ -80,7 +104,7 @@ body.teams
         border-color: #cbd5d8
 
   .stats
-    padding-top: 40px
+    padding-top: 25px
     a
       color: #333
       &:hover
