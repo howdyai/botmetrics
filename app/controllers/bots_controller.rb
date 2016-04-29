@@ -39,16 +39,30 @@ class BotsController < ApplicationController
     @bot = @team.bots.find_by(uid: params[:id])
     raise ActiveRecord::NotFound if @bot.blank?
 
+    @group_by = case params[:group_by]
+                when '' then 'today'
+                when nil then 'today'
+                else params[:group_by]
+                end
+
+    @start_time = case @group_by
+                  when 'today' then Time.now.in_time_zone(Time.find_zone(current_user.timezone)).beginning_of_day.utc
+                  when 'this-week' then Time.now.in_time_zone(Time.find_zone(current_user.timezone)).beginning_of_week.utc
+                  when 'this-month' then Time.now.in_time_zone(Time.find_zone(current_user.timezone)).beginning_of_month.utc
+                  when 'all-time' then Time.at(0)
+                  end
+
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
       redirect_to(new_team_bot_instance_path(@team, @bot)) && return
     end
 
     instance_ids = @instances.select(:id)
 
-    @enabled = @instances.enabled
-    @disabled = @instances.disabled
-    @members = BotUser.where("bot_instance_id IN (?)", instance_ids)
-    @messages = Event.where("bot_instance_id IN (?)", instance_ids).
+    @all = @instances.where("created_at > ?", @start_time)
+    @enabled = @instances.enabled.where("created_at > ?", @start_time)
+    @disabled = Event.where("event_type = ? AND created_at > ?", 'bot_disabled', @start_time)
+    @members = BotUser.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time)
+    @messages = Event.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time).
                       where(event_type: 'message')
 
     @messages_to_bot = @messages.where(is_for_bot: true, event_type: 'message')
