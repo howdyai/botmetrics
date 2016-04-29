@@ -415,6 +415,13 @@ CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid,
 
 
 --
+-- Name: events_channel_timestamp_message_slack; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX events_channel_timestamp_message_slack ON events USING btree (((event_attributes -> 'timestamp'::text)), ((event_attributes -> 'channel'::text))) WHERE (((provider)::text = 'slack'::text) AND ((event_type)::text = 'message'::text));
+
+
+--
 -- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -638,4 +645,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160427035933');
 INSERT INTO schema_migrations (version) VALUES ('20160427042824');
 
 INSERT INTO schema_migrations (version) VALUES ('20160427135316');
+
+INSERT INTO schema_migrations (version) VALUES ('20160429171046');
 
