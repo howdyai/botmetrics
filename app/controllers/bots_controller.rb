@@ -48,10 +48,11 @@ class BotsController < ApplicationController
     @enabled = @instances.enabled
     @disabled = @instances.disabled
     @members = BotUser.where("bot_instance_id IN (?)", instance_ids)
-    @messages = Event.where("bot_instance_id IN (?)", instance_ids)
+    @messages = Event.where("bot_instance_id IN (?)", instance_ids).
+                      where(event_type: 'message')
 
-    @messages_to_bot = @messages.where(is_for_bot: true)
-    @messages_from_bot = @messages.where(is_from_bot: true)
+    @messages_to_bot = @messages.where(is_for_bot: true, event_type: 'message')
+    @messages_from_bot = @messages.where(is_from_bot: true, event_type: 'message')
   end
 
   def find_team
