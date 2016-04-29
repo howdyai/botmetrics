@@ -11,4 +11,9 @@ module ApplicationHelper
 
     ary.join(' ').strip
   end
+
+  def show_bots_dropdown?
+    controller.controller_name == 'bot_instances' ||
+    (controller.controller_name == 'bots' && controller.action_name == 'show')
+  end
 end

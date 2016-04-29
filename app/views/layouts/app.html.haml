@@ -15,8 +15,8 @@
   %nav.navbar.navbar-default
     .container-fluid.header-container
       .row
-        .col-md-8
-          - if @bot.present? && @bot.persisted?
+        .col-md-6.col-sm-6.col-xs-6
+          - if show_bots_dropdown?
             .dropdown
               %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
                 %h3.bot-name= @bot.name
@@ -32,11 +32,21 @@
                     %i.fa.fa-plus
                     Add Another Bot
           - else
-            = link_to team_path(@team), class: 'back-button' do
-              %i.fa.fa-chevron-left
-              Back to Bot Dashboard
+            - if @bot.present?
+              - if @bot.persisted?
+                = link_to team_bot_path(@team, @bot), class: 'back-button' do
+                  %i.fa.fa-chevron-left
+                  Back to Bot Dashboard
+              - else
+                = link_to team_path(@team), class: 'back-button' do
+                  %i.fa.fa-chevron-left
+                  Back to Bot Dashboard
+            - else
+              .dropdown
+                %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+                  %h3 botmetrics
 
-        .col-md-4.text-right
+        .col-md-6.col-sm-6.col-xs-6.text-right
           .dropdown
             %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
               %h3.user-name= @current_user.full_name

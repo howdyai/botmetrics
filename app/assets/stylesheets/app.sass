@@ -1,6 +1,7 @@
 body.bot_instances,
 body.users,
-body.bots
+body.bots,
+body.teams
   &.setting_up
     p
       font-size: 16px
@@ -60,7 +61,8 @@ body.users
     font-size: 16px
     padding-top: 8px
 
-body.bots
+body.bots,
+body.teams
   background-color: rgba(59,175,218, 0.1)
   .secondary-menu
     background-color: #fff
@@ -79,6 +81,11 @@ body.bots
 
   .stats
     padding-top: 40px
+    a
+      color: #333
+      &:hover
+        text-decoration: none
+        color: #333
     .stat
       h3
         margin-top: 0
@@ -95,4 +102,3 @@ body.bots
         right: 15px
         bottom: -15px
         font-size: 64px
-
