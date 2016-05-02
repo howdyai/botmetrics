@@ -8,7 +8,7 @@ gem 'pg',    '~> 0.18.2'
 
 # Use jquery as the JavaScript library
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks',    '~> 2.5.3'
+gem 'turbolinks',    '~> 5.0.0.beta'
 gem 'excon',         '~> 0.49.0'
 gem 'with_advisory_lock',     '~> 3.0.0'
 
