@@ -65,8 +65,10 @@ class BotsController < ApplicationController
     @messages = Event.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time).
                       where(event_type: 'message', is_from_bot: false)
 
-    @messages_to_bot = @messages.where(is_for_bot: true, event_type: 'message')
-    @messages_from_bot = @messages.where(is_from_bot: true, event_type: 'message')
+    @messages_for_bot = Event.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time).
+                       where(event_type: 'message', is_for_bot: true)
+    @messages_from_bot = Event.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time).
+                       where(event_type: 'message', is_from_bot: true)
   end
 
   def find_team
