@@ -22,6 +22,9 @@ gem 'jquery-ui-rails',          '~> 5.0.3'
 gem 'simple_form',              '~> 3.1.0'
 gem 'modernizr-rails',          '~> 2.7.1'
 
+# Dashboard stuff
+gem 'groupdate',                '~> 2.5.3'
+
 # Auth
 gem 'devise',                  '~> 3.4.1'
 gem 'jwt',                     '~> 1.5.4'

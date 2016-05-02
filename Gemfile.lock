@@ -92,6 +92,8 @@ GEM
       thor (~> 0.19.1)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
+    groupdate (2.5.3)
+      activesupport (>= 3)
     haml (4.0.7)
       tilt
     hashdiff (0.3.0)
@@ -282,6 +284,7 @@ DEPENDENCIES
   excon (~> 0.49.0)
   factory_girl_rails (~> 4.5.0)
   foreman (~> 0.70.0)
+  groupdate (~> 2.5.3)
   haml (~> 4.0.6)
   jquery-rails (~> 4.0.3)
   jquery-ui-rails (~> 5.0.3)
