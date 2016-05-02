@@ -67,7 +67,11 @@ class RelaxService
   end
 
   def self.is_for_bot?(event)
-    event.im || event.text.match(/<?@#{event.relax_bot_uid}[^>]?>?/).present?
+    if event.relax_bot_uid == event.user_uid
+      false
+    else
+      event.im || event.text.match(/<?@#{event.relax_bot_uid}[^>]?>?/).present?
+    end
   end
 
   def self.find_bot_instance_from(event)

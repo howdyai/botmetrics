@@ -210,7 +210,8 @@ describe RelaxService do
             expect(e.event_attributes['timestamp']).to eql '123456789.0'
             expect(e.is_from_bot).to be_truthy
             expect(e.is_im).to be_truthy
-            expect(e.is_for_bot).to be_truthy
+            # is_for_bot will be falsey if it is_from_bot
+            expect(e.is_for_bot).to be_falsey
           end
         end
       end
@@ -256,7 +257,8 @@ describe RelaxService do
             expect(e.event_attributes['timestamp']).to eql '123456789.0'
             expect(e.is_from_bot).to be_truthy
             expect(e.is_im).to be_falsey
-            expect(e.is_for_bot).to be_truthy
+            # is_for_bot will be falsey if it is_from_bot
+            expect(e.is_for_bot).to be_falsey
           end
         end
       end
