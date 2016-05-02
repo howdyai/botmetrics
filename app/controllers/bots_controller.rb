@@ -63,7 +63,7 @@ class BotsController < ApplicationController
     @disabled = Event.where("event_type = ? AND created_at > ?", 'bot_disabled', @start_time)
     @members = BotUser.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time)
     @messages = Event.where("bot_instance_id IN (?) AND created_at > ?", instance_ids, @start_time).
-                      where(event_type: 'message')
+                      where(event_type: 'message', is_from_bot: false)
 
     @messages_to_bot = @messages.where(is_for_bot: true, event_type: 'message')
     @messages_from_bot = @messages.where(is_from_bot: true, event_type: 'message')
