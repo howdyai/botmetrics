@@ -4,9 +4,9 @@ module BotsHelper
       growth = growth * 100
       klass = growth > 0 ? 'positive' : 'negative'
 
-      icon = if growth.to_i == 0
+      icon = if growth.to_f == 0.0
                "<i class='fa fa-arrows-h'></i>"
-             elsif growth.to_i > 0
+             elsif growth.to_f > 0.0
                "<i class='fa fa-arrow-up'></i>"
              else
                "<i class='fa fa-arrow-down'></i>"
