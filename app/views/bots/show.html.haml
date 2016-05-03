@@ -13,19 +13,19 @@
 .stats.row
   .stat.col-sm-6.col-md-3
     %h3 New Bots
-    %p.number= @all.count
+    %p.number= @dashboarder.new_bots_count
   .stat.col-sm-6.col-md-3
     %h3 Bots Disabled
-    %p.number= @disabled.count
+    %p.number= @dashboarder.disabled_bots_count
   .stat.col-sm-6.col-md-3
     %h3 New Users
-    %p.number= @members.count
+    %p.number= @dashboarder.new_users_count
   .stat.col-sm-6.col-md-3
     %h3 Messages
-    %p.number= @messages.count
+    %p.number= @dashboarder.messages_count
   .stat.col-sm-6.col-md-3
     %h3 Messages To Your Bot
-    %p.number= @messages_for_bot.count
+    %p.number= @dashboarder.messages_for_bot_count
   .stat.col-sm-6.col-md-3
     %h3 Messages From Your Bot
-    %p.number= @messages_from_bot.count
+    %p.number= @dashboarder.messages_from_bot_count
