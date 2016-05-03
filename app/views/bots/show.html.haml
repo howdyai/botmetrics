@@ -36,13 +36,13 @@
     - if @show_trends
       = line_chart @dashboarder.messages
   .stat.col-sm-6.col-md-3
-    %h3 Messages To Your Bot
+    %h3 Messages To Bot
     = formatted_growth(@dashboarder.messages_for_bot_growth)
     %p.number= number_with_delimiter(@dashboarder.messages_for_bot_count)
     - if @show_trends
       = line_chart @dashboarder.messages_for_bot
   .stat.col-sm-6.col-md-3
-    %h3 Messages From Your Bot
+    %h3 Messages From Bot
     = formatted_growth(@dashboarder.messages_from_bot_growth)
     %p.number= number_with_delimiter(@dashboarder.messages_from_bot_count)
     - if @show_trends
