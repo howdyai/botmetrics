@@ -1,6 +1,26 @@
 .row
   .col-md-4.col-md-offset-4
+    %h2 Settings
+
     = simple_form_for [@team, @bot], url: team_bot_path(@team, @bot), method: :patch do |f|
       = f.input :name, label: "Your Bot's Name", required: true
       = f.submit 'Save'
+
+    %h2.api API
+    %h3 cURL
+    %p.api
+      You can add more instances to your bot via an HTTP API:
+    %pre.api.pre-scrollable
+      :preserve
+        curl -X POST \
+        -H "Authorization: #{current_user.api_key}" \
+        #{Settings.rails_host}/teams/#{@team.uid}/bots/#{@bot.uid}/instances \
+        -d "format=json&instance[token]=my-bot-token"
+    %h3 Ruby
+    %p.api
+      You can also use the Rubygem
+      %code botmetrics-rb
+      available at
+      = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
+
 
