@@ -7,29 +7,4 @@
       = f.submit 'Save'
 
     %h2.api API
-    %h3 cURL
-    %p.api
-      You can add more instances to your bot via an HTTP API:
-    %pre.api.pre-scrollable
-      :preserve
-        curl -X POST \
-        -H "Authorization: #{current_user.api_key}" \
-        #{Settings.rails_host}/teams/#{@team.uid}/bots/#{@bot.uid}/instances \
-        -d "format=json&instance[token]=my-bot-token"
-    %h3 Ruby
-    %p.api
-      You can also use the Rubygem
-      %code botmetrics-rb
-      available at
-      = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
-      Set the following environment variables in your app:
-      %pre.api.pre-scrollable
-        :preserve
-          BOTMETRICS_TEAM_ID=#{@team.uid}
-          BOTMETRICS_BOT_ID=#{@bot.uid}
-          BOTMETRICS_API_KEY=#{current_user.api_key}
-      and follow along the
-      = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
-      for the rest of the instructions.
-
-
+    = render partial: 'api'
