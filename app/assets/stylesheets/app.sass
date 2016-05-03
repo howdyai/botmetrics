@@ -65,6 +65,23 @@ body.users
     padding-top: 8px
 
 body.bots
+  .growth
+    position: absolute
+    top: 12px
+    right: 12px
+    border: 1px solid #ccc
+    border-radius: 4px
+    padding: 2px 5px
+    &.negative
+      color: #d9534f
+      border-color: #d9534f
+    &.positive
+      color: #5cb85c
+      border-color: #5cb85c
+    i
+      display: inline-block
+      margin-right: 6px
+
   .time-segmented-controls
     border: 1px solid #dae1e3
     border-radius: 4px
