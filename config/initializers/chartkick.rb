@@ -32,6 +32,8 @@ Chartkick.options = {
         }
       ]
     }
-  },
-  content_for: :charts_js
+  }
 }
+
+
+Chartkick.options[:content_for] = :charts_js if Rails.env.development?
