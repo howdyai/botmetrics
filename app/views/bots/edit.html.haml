@@ -22,5 +22,14 @@
       %code botmetrics-rb
       available at
       = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
+      Set the following environment variables in your app:
+      %pre.api.pre-scrollable
+        :preserve
+          BOTMETRICS_TEAM_ID=#{@team.uid}
+          BOTMETRICS_BOT_ID=#{@bot.uid}
+          BOTMETRICS_API_KEY=#{current_user.api_key}
+      and follow along the
+      = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
+      for the rest of the instructions.
 
 
