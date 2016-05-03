@@ -24,6 +24,7 @@ gem 'modernizr-rails',          '~> 2.7.1'
 
 # Dashboard stuff
 gem 'groupdate',                '~> 2.5.3'
+gem 'chartkick',                github: 'botmetrics/chartkick', ref: '263f8520894cc1feb266e356098fc8cecea4d7e3'
 
 # Auth
 gem 'devise',                  '~> 3.4.1'

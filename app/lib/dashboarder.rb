@@ -14,43 +14,43 @@ class Dashboarder
 
     case @group_by
     when 'today'
-      @new_bots = self.instances.group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+      @new_bots = self.instances.group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @messages_from_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: true).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).reverse_order.count
+        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
     when 'this-week'
       @new_bots = self.instances.
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @messages_from_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: true).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).reverse_order.count
+        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
     when 'this-month'
       @new_bots = self.instances.
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @messages_from_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: true).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).reverse_order.count
+        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
     when 'all-time'
       @new_bots = self.instances.count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).count
@@ -111,15 +111,17 @@ class Dashboarder
 
   private
   def count_for(var)
-    self.group_by == 'all-time' ? var : var.values[0]
+    self.group_by == 'all-time' ? var : var.values.last
   end
 
   def growth_for(var)
     if self.group_by == 'all-time'
       nil
     else
-      v1 = var.values[0].to_i
-      v2 = var.values[1].to_i
+      len = var.values.length
+
+      v1 = var.values[len-1].to_i
+      v2 = var.values[len-2].to_i
       if v2 == 0
         nil
       else

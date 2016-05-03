@@ -49,6 +49,7 @@ class BotsController < ApplicationController
       redirect_to(new_team_bot_instance_path(@team, @bot)) && return
     end
 
+    @show_trends = (@group_by != 'all-time')
     @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
     @dashboarder.init!
   end

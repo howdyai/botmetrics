@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/botmetrics/chartkick.git
+  revision: 263f8520894cc1feb266e356098fc8cecea4d7e3
+  ref: 263f8520894cc1feb266e356098fc8cecea4d7e3
+  specs:
+    chartkick (1.5.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -278,6 +285,7 @@ DEPENDENCIES
   bootstrap-sass (~> 3.3.1)
   bugsnag (~> 2.8.13)
   byebug (~> 2.0.0)
+  chartkick!
   coffee-rails (~> 4.1.0)
   database_cleaner (~> 1.3.0)
   devise (~> 3.4.1)
