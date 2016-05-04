@@ -11,39 +11,45 @@
       = link_to 'All Time', team_bot_path(@team, @bot, group_by: 'all-time'), class: (@group_by == 'all-time' ? 'btn active' : 'btn')
 
 .stats.row
-  .stat.col-sm-6.col-md-3
-    %h3 New Bots
-    = formatted_growth(@dashboarder.new_bots_growth)
-    %p.number= number_with_delimiter(@dashboarder.new_bots_count)
-    - if @show_trends
-      = line_chart @dashboarder.new_bots
-  .stat.col-sm-6.col-md-3
-    %h3 Bots Disabled
-    = formatted_growth(@dashboarder.disabled_bots_growth)
-    %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
-    - if @show_trends
-      = line_chart @dashboarder.disabled_bots
-  .stat.col-sm-6.col-md-3
-    %h3 New Users
-    = formatted_growth(@dashboarder.new_users_growth)
-    %p.number= number_with_delimiter(@dashboarder.new_users_count)
-    - if @show_trends
-      = line_chart @dashboarder.new_users
-  .stat.col-sm-6.col-md-3
-    %h3 Messages
-    = formatted_growth(@dashboarder.messages_growth)
-    %p.number= number_with_delimiter(@dashboarder.messages_count)
-    - if @show_trends
-      = line_chart @dashboarder.messages
-  .stat.col-sm-6.col-md-3
-    %h3 Messages To Bot
-    = formatted_growth(@dashboarder.messages_for_bot_growth)
-    %p.number= number_with_delimiter(@dashboarder.messages_for_bot_count)
-    - if @show_trends
-      = line_chart @dashboarder.messages_for_bot
-  .stat.col-sm-6.col-md-3
-    %h3 Messages From Bot
-    = formatted_growth(@dashboarder.messages_from_bot_growth)
-    %p.number= number_with_delimiter(@dashboarder.messages_from_bot_count)
-    - if @show_trends
-      = line_chart @dashboarder.messages_from_bot
+  = link_to new_bots_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 New Bots
+      = formatted_growth(@dashboarder.new_bots_growth)
+      %p.number= number_with_delimiter(@dashboarder.new_bots_count)
+      - if @show_trends
+        = line_chart @dashboarder.new_bots
+  = link_to disabled_bots_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 Bots Disabled
+      = formatted_growth(@dashboarder.disabled_bots_growth)
+      %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
+      - if @show_trends
+        = line_chart @dashboarder.disabled_bots
+  = link_to users_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 New Users
+      = formatted_growth(@dashboarder.new_users_growth)
+      %p.number= number_with_delimiter(@dashboarder.new_users_count)
+      - if @show_trends
+        = line_chart @dashboarder.new_users
+  = link_to messages_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 Messages
+      = formatted_growth(@dashboarder.messages_growth)
+      %p.number= number_with_delimiter(@dashboarder.messages_count)
+      - if @show_trends
+        = line_chart @dashboarder.messages
+  = link_to messages_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 Messages To Bot
+      = formatted_growth(@dashboarder.messages_for_bot_growth)
+      %p.number= number_with_delimiter(@dashboarder.messages_for_bot_count)
+      - if @show_trends
+        = line_chart @dashboarder.messages_for_bot
+  = link_to messages_team_bot_path(@team, @bot) do
+    .stat.col-sm-6.col-md-3
+      %h3 Messages From Bot
+      = formatted_growth(@dashboarder.messages_from_bot_growth)
+      %p.number= number_with_delimiter(@dashboarder.messages_from_bot_count)
+      - if @show_trends
+        = line_chart @dashboarder.messages_from_bot

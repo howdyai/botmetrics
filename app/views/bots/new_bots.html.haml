@@ -1,0 +1,17 @@
+.secondary-menu.row
+  .col-md-2.col-sm-2.col-xs-2
+    #report-range
+      %i.fa.fa-calendar
+      %span
+      %b.caret
+  .col-md-10.col-sm-10.col-xs-10.text-right
+    .btn-group.time-segmented-controls
+      = link_to 'Day', team_bot_path(@team, @bot), class: (@group_by == 'day' ? 'btn active' : 'btn')
+      = link_to 'Week', team_bot_path(@team, @bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn')
+      = link_to 'Month', team_bot_path(@team, @bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn')
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.BotsNewBots();
+    App.page.run();
+

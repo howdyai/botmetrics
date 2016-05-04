@@ -54,6 +54,21 @@ class BotsController < ApplicationController
     @dashboarder.init!
   end
 
+  def new_bots
+    @bot = @team.bots.find_by(uid: params[:id])
+    raise ActiveRecord::NotFound if @bot.blank?
+
+    @group_by = case params[:group_by]
+                when '' then 'day'
+                when nil then 'day'
+                else params[:group_by]
+                end
+
+    if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
+      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
+    end
+  end
+
   def find_team
     @team = current_user.teams.find_by(uid: params[:team_id])
     raise ActiveRecord::RecordNotFound if @team.blank?

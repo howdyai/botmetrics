@@ -6,6 +6,7 @@
 #= require bootstrap-sprockets
 #= require pusher-3.0/pusher-min
 #= require moment-2.13.0/moment
+#= require daterangepicker/daterangepicker
 #= require chart.js-2.0.0-beta2/Chart
 #= require chartkick
 #
@@ -14,3 +15,4 @@
 #= require pages/app/base
 #= require pages/static/index
 #= require pages/bot_instances/setting_up
+#= require pages/bots/new_bots

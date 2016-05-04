@@ -2,7 +2,6 @@ window.App ||= {}
 
 class App.Base
   constructor: ->
-    Turbolinks.enableProgressBar()
     self = this
     $(document).ready ->
       self.setupMixpanelTracking()

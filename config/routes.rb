@@ -5,6 +5,13 @@ Rails.application.routes.draw do
 
   resources :teams, only: [:show] do
     resources :bots, only: [:show, :new, :create, :edit, :update] do
+      member do
+        get :new_bots
+        get :disabled_bots
+        get :users
+        get :messages
+      end
+
       resources :instances, only: [:new, :create], controller: :bot_instances do
         member do
           get :setting_up
