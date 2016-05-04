@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/botmetrics/chartkick.git
-  revision: 263f8520894cc1feb266e356098fc8cecea4d7e3
-  ref: 263f8520894cc1feb266e356098fc8cecea4d7e3
+  revision: fd3918c0113fe75ddff3b0bc4dea446b56364ca6
+  ref: fd3918c0113fe75ddff3b0bc4dea446b56364ca6
   specs:
     chartkick (1.5.0)
 

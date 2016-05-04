@@ -1,4 +1,61 @@
 module BotsHelper
+  def solo_chartjs_opts
+    {
+      library: {
+        scales: {
+          xAxes: [
+            {
+              time: {
+                displayFormats: {
+                  'day': 'MMM D',
+                  'week': 'MMM D'
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  end
+
+  def dashboard_chartjs_opts
+    {
+      height: '100px',
+      library: {
+        elements: {
+          point: {
+            radius: 0
+          },
+          line: {
+            borderWidth: 6,
+            lineTension: 0.0
+          },
+        },
+        scales: {
+          xAxes: [{display: false}],
+          yAxes: [
+            {
+              color: '#fff',
+              ticks: {
+                fontSize: 8,
+                fontColor: '#fff'
+              },
+              gridLines: {
+                drawOnChartArea: false,
+                color: '#fff',
+                drawTicks: false
+              },
+              scaleLabel: {
+                fontSize: 0,
+                fontColor:'#fff'
+              }
+            }
+          ]
+        }
+      }
+    }
+  end
+
   def formatted_growth(growth)
     if growth.present?
       growth = growth * 100

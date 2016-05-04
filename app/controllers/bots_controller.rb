@@ -58,15 +58,33 @@ class BotsController < ApplicationController
     @bot = @team.bots.find_by(uid: params[:id])
     raise ActiveRecord::NotFound if @bot.blank?
 
+
+    if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
+      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
+    end
+
     @group_by = case params[:group_by]
                 when '' then 'day'
                 when nil then 'day'
                 else params[:group_by]
                 end
 
-    if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
-      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
-    end
+    @start = params[:start].to_s.in_time_zone(current_user.timezone)
+    @start = (Time.now - 6.days).in_time_zone(current_user.timezone) if @start.blank?
+    @end  = params[:end].to_s.in_time_zone(current_user.timezone)
+    @end = @start + 6.days if @end.blank?
+
+    @start = @start.beginning_of_day
+    @end = @end.end_of_day
+
+    @new_bots = case @group_by
+                when 'day'
+                  @instances.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @instances.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @instances.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
   end
 
   def find_team
