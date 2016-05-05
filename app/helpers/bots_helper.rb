@@ -2,9 +2,28 @@ module BotsHelper
   def solo_chartjs_opts
     {
       library: {
+        elements: {
+          point: {
+            radius: 6
+          },
+          line: {
+            borderWidth: 5,
+            lineTension: 0.0
+          },
+        },
         scales: {
+          yAxes: [
+            {
+              ticks: {
+                fontSize: 16
+              }
+            }
+          ],
           xAxes: [
             {
+              ticks: {
+                fontSize: 16
+              },
               time: {
                 displayFormats: {
                   'day': 'MMM D',
