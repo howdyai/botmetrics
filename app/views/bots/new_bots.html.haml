@@ -10,9 +10,10 @@
       = link_to 'Week', new_bots_team_bot_path(@team, @bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
       = link_to 'Month', new_bots_team_bot_path(@team, @bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
 
-.graph.row
-  .col-md-12.col-sm-12.col-xs-12.graph-container
-    = line_chart @new_bots, solo_chartjs_opts
+.container-fluid.graph-container
+  .graph.row
+    .col-md-12.col-sm-12.col-xs-12.graph-container
+      = line_chart @new_bots, solo_chartjs_opts
 
 - content_for :page_scripts do
   :javascript
