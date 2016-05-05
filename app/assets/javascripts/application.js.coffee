@@ -16,4 +16,4 @@
 #= require pages/app/base
 #= require pages/static/index
 #= require pages/bot_instances/setting_up
-#= require pages/bots/new_bots
+#= require pages/bots/bots_detail

@@ -1,6 +1,7 @@
 class BotsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_team
+  before_filter :find_bot, except: [:new, :create]
 
   layout 'app'
 
@@ -20,14 +21,9 @@ class BotsController < ApplicationController
   end
 
   def edit
-    @bot = @team.bots.find_by(uid: params[:id])
-    raise ActiveRecord::NotFound if @bot.blank?
   end
 
   def update
-    @bot = @team.bots.find_by(uid: params[:id])
-    raise ActiveRecord::NotFound if @bot.blank?
-
     if @bot.update_attributes(bot_params)
       redirect_to team_bot_path(@team, @bot)
     else
@@ -36,9 +32,6 @@ class BotsController < ApplicationController
   end
 
   def show
-    @bot = @team.bots.find_by(uid: params[:id])
-    raise ActiveRecord::NotFound if @bot.blank?
-
     @group_by = case params[:group_by]
                 when '' then 'today'
                 when nil then 'today'
@@ -55,10 +48,33 @@ class BotsController < ApplicationController
   end
 
   def new_bots
-    @bot = @team.bots.find_by(uid: params[:id])
-    raise ActiveRecord::NotFound if @bot.blank?
+    init_detail_view!
 
+    @new_bots = case @group_by
+                when 'day'
+                  @instances.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @instances.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @instances.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
 
+  def disabled_bots
+    init_detail_view!
+    @events = Event.where(event_type: 'bot_disabled', bot_instance_id: @instances.select(:id))
+    @events = case @group_by
+                when 'day'
+                  @events.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @events.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @events.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
+
+  protected
+  def init_detail_view!
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
       redirect_to(new_team_bot_instance_path(@team, @bot)) && return
     end
@@ -76,15 +92,6 @@ class BotsController < ApplicationController
 
     @start = @start.beginning_of_day
     @end = @end.end_of_day
-
-    @new_bots = case @group_by
-                when 'day'
-                  @instances.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
-                when 'week'
-                  @instances.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
-                when 'month'
-                  @instances.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
-                end
   end
 
   def find_team
@@ -92,7 +99,11 @@ class BotsController < ApplicationController
     raise ActiveRecord::RecordNotFound if @team.blank?
   end
 
-  protected
+  def find_bot
+    @bot = @team.bots.find_by(uid: params[:id])
+    raise ActiveRecord::NotFound if @bot.blank?
+  end
+
   def bot_params
     params.require(:bot).permit(:name)
   end

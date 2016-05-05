@@ -2,7 +2,7 @@
 
 window.App ||= {}
 
-class App.BotsNewBots extends App.AppBase
+class App.BotsDetail extends App.AppBase
   constructor: (@start, @end) ->
     @start = moment(@start)
     @end = moment(@end)

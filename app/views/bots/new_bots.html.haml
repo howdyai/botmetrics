@@ -16,6 +16,6 @@
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.BotsNewBots(#{@start.to_json}, #{@end.to_json});
+    App.page = new App.BotsDetail(#{@start.to_json}, #{@end.to_json});
     App.page.run();
 
