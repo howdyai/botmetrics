@@ -19,6 +19,18 @@
       BOTMETRICS_TEAM_ID=#{@team.uid}
       BOTMETRICS_BOT_ID=#{@bot.uid}
       BOTMETRICS_API_KEY=#{current_user.api_key}
+%h3.api Node.JS
+%p.api
+  You can also use the NPM module
+  %code botmetrics.js
+  available at
+  = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js'
+  Set the following environment variables in your app:
+  %pre.api.pre-scrollable
+    :preserve
+      BOTMETRICS_TEAM_ID=#{@team.uid}
+      BOTMETRICS_BOT_ID=#{@bot.uid}
+      BOTMETRICS_API_KEY=#{current_user.api_key}
 %p.api
   and follow along the
   = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
