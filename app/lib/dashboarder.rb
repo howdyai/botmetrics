@@ -17,8 +17,8 @@ class Dashboarder
       @new_bots = self.instances.group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
         group_by_day(:created_at, last: 7, time_zone: self.timezone).count
-      @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_day(:created_at, last: 7, time_zone: self.timezone).count
+      @new_users = BotUser.where(bot_instance_id: instance_ids).joins(:bot_instance).
+        group_by_day("bot_instances.created_at", last: 7, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
         group_by_day(:created_at, last: 7, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
@@ -30,8 +30,8 @@ class Dashboarder
         group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
         group_by_week(:created_at, last: 4, time_zone: self.timezone).count
-      @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_week(:created_at, last: 4, time_zone: self.timezone).count
+      @new_users = BotUser.where(bot_instance_id: instance_ids).joins(:bot_instance).
+        group_by_week("bot_instances.created_at", last: 4, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
         group_by_week(:created_at, last: 4, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
@@ -43,8 +43,8 @@ class Dashboarder
         group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @disabled_bots = Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids).
         group_by_month(:created_at, last: 12, time_zone: self.timezone).count
-      @new_users = BotUser.where(bot_instance_id: instance_ids).
-        group_by_month(:created_at, last: 12, time_zone: self.timezone).count
+      @new_users = BotUser.where(bot_instance_id: instance_ids).joins(:bot_instance).
+        group_by_month("bot_instances.created_at", last: 12, time_zone: self.timezone).count
       @messages = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false).
         group_by_month(:created_at, last: 12, time_zone: self.timezone).count
       @messages_for_bot = Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true).
