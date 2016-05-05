@@ -5,6 +5,7 @@ class UsersController < ApplicationController
   def show
     @user = current_user
     @team = @user.teams.first
+    @bot = @team.bots.first
   end
 
   def regenerate_api_key
