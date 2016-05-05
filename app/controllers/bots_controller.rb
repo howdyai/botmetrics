@@ -86,6 +86,45 @@ class BotsController < ApplicationController
                 end
   end
 
+  def messages
+    init_detail_view!
+    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_from_bot: false)
+    @messages = case @group_by
+                when 'day'
+                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
+
+  def messages_to_bot
+    init_detail_view!
+    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_for_bot: true)
+    @messages = case @group_by
+                when 'day'
+                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
+
+  def messages_from_bot
+    init_detail_view!
+    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_from_bot: true)
+    @messages = case @group_by
+                when 'day'
+                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
+
   protected
   def init_detail_view!
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0

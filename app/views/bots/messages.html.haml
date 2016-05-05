@@ -1,0 +1,24 @@
+.secondary-menu.row
+  .col-md-3.col-sm-3.col-xs-6
+    %h2 All Messages
+  .col-md-9.col-sm-9.col-xs-6.text-right
+    #report-range.pull-right
+      %i.fa.fa-calendar
+      %span
+      %b.caret
+    .btn-group.time-segmented-controls.pull-right
+      = link_to 'Day', messages_team_bot_path(@team, @bot), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
+      = link_to 'Week', messages_team_bot_path(@team, @bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
+      = link_to 'Month', messages_team_bot_path(@team, @bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
+
+.container-fluid.graph-container
+  .graph.row
+    .col-md-12.col-sm-12.col-xs-12.graph-container
+      = line_chart @messages, solo_chartjs_opts
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.BotsDetail(#{@start.to_json}, #{@end.to_json});
+    App.page.run();
+
+

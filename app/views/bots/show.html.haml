@@ -39,14 +39,14 @@
       %p.number= number_with_delimiter(@dashboarder.messages_count)
       - if @show_trends
         = line_chart @dashboarder.messages, dashboard_chartjs_opts
-  = link_to messages_team_bot_path(@team, @bot) do
+  = link_to messages_to_bot_team_bot_path(@team, @bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages To Bot
       = formatted_growth(@dashboarder.messages_for_bot_growth)
       %p.number= number_with_delimiter(@dashboarder.messages_for_bot_count)
       - if @show_trends
         = line_chart @dashboarder.messages_for_bot, dashboard_chartjs_opts
-  = link_to messages_team_bot_path(@team, @bot) do
+  = link_to messages_from_bot_team_bot_path(@team, @bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages From Bot
       = formatted_growth(@dashboarder.messages_from_bot_growth)

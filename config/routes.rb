@@ -10,6 +10,8 @@ Rails.application.routes.draw do
         get :disabled_bots
         get :users
         get :messages
+        get :messages_to_bot
+        get :messages_from_bot
       end
 
       resources :instances, only: [:new, :create], controller: :bot_instances do

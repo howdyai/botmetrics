@@ -1,11 +1,12 @@
 .secondary-menu.row
   .col-md-3.col-sm-3.col-xs-6
-    #report-range
+    %h2 Bots Disabled
+  .col-md-9.col-sm-9.col-xs-6
+    #report-range.pull-right
       %i.fa.fa-calendar
       %span
       %b.caret
-  .col-md-9.col-sm-9.col-xs-6.text-right
-    .btn-group.time-segmented-controls
+    .btn-group.time-segmented-controls.pull-right
       = link_to 'Day', disabled_bots_team_bot_path(@team, @bot), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
       = link_to 'Week', disabled_bots_team_bot_path(@team, @bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
       = link_to 'Month', disabled_bots_team_bot_path(@team, @bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
