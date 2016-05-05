@@ -73,6 +73,19 @@ class BotsController < ApplicationController
                 end
   end
 
+  def users
+    init_detail_view!
+    @users = BotUser.where(bot_instance_id: @instances.select(:id))
+    @users = case @group_by
+                when 'day'
+                  @users.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'week'
+                  @users.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                when 'month'
+                  @users.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                end
+  end
+
   protected
   def init_detail_view!
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
