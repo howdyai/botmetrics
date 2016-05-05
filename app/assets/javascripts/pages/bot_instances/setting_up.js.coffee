@@ -21,6 +21,7 @@ class App.BotInstancesSetup extends App.AppBase
         else
           $('p.api').hide()
           $('pre.api').hide()
+          $('h3.api').hide()
           $('.go-to-dashboard').hide()
           if d.error == 'invalid_auth'
             $('p.status').html("Oops, looks like this is an invalid authentication token")
