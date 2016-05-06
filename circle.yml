@@ -1,0 +1,14 @@
+machine:
+  environment:
+    REDIS_URL: redis://localhost:6379
+    JSON_WEB_TOKEN_SECRET: json_web_token_secret
+    PUSHER_API_KEY: pusher-api-key
+    PUSHER_SECRET: pusher-secret
+    PUSHER_APP_ID: pusher-app-id
+    PUSHER_URL: https://test:test@api.pusherapp.com/apps/1111
+    RELAX_BOTS_KEY: bot_metrics_teams
+    RELAX_BOTS_PUBSUB: bot_metrics_pubsub
+    RELAX_EVENTS_QUEUE: bot_metrics_mq
+    RELAX_MUTEX_KEY: bot_metrics_mutex
+    RELAX_SEND_BOT_REPLIES: true
+    RAILS_HOST: http://localhost:9000
