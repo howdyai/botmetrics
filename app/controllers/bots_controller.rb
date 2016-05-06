@@ -68,14 +68,22 @@ class BotsController < ApplicationController
 
   def disabled_bots
     init_detail_view!
-    @events = Event.where(event_type: 'bot_disabled', bot_instance_id: @instances.select(:id))
+    @events = Event.where(event_type: 'bot_disabled', bot_instance_id: @instances.select(:id), created_at: @start.utc..@end.utc)
+
+    @tableized = @instances.
+                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, e.c_at AS last_event_at").
+                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
+                    joins("INNER JOIN (SELECT bot_instance_id, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'bot_disabled' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
+                    where("bot_instances.id IN (?)", @events.select(:bot_instance_id)).
+                    order("last_event_at DESC")
+
     @events = case @group_by
                 when 'day'
-                  @events.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @events.group_by_day(:created_at, time_zone: current_user.timezone).count
                 when 'week'
-                  @events.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @events.group_by_week(:created_at, time_zone: current_user.timezone).count
                 when 'month'
-                  @events.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @events.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
   end
 
