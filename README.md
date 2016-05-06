@@ -10,6 +10,10 @@
 5. Run `./script/server` to start the server
 6. Visit [localhost:9000](http://localhost:9000)
 
+## CircleCI
+
+[![Circle CI](https://circleci.com/gh/zerobotlabs/bot_metrics.svg?style=svg&circle-token=363a196aec860f76e2ab58360a13f0621d043b9e)](https://circleci.com/gh/zerobotlabs/bot_metrics)
+
 ## Setting up Production Database
 
 1. Run `heroku pg:backups capture -a botmetrix` to get the latest backup
