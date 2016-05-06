@@ -49,14 +49,20 @@ class BotsController < ApplicationController
 
   def new_bots
     init_detail_view!
+    @tableized = @instances.
+                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
+                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
+                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
+                    where("bot_instances.created_at" => @start.utc..@end.utc).
+                    order("bot_instances.created_at DESC")
 
     @new_bots = case @group_by
                 when 'day'
-                  @instances.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @instances.group_by_day("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 when 'week'
-                  @instances.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @instances.group_by_week("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 when 'month'
-                  @instances.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @instances.group_by_month("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 end
   end
 
