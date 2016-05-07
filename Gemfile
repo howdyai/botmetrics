@@ -30,6 +30,10 @@ gem 'chartkick',                github: 'botmetrics/chartkick', ref: 'fd3918c011
 gem 'devise',                  '~> 3.4.1'
 gem 'jwt',                     '~> 1.5.4'
 
+# Pagination
+gem 'will_paginate',           '~> 3.1.0'
+gem 'will_paginate-bootstrap', '~> 1.0.1'
+
 # Mixpanel
 gem 'mixpanel-ruby',          '~> 2.2.0', require: 'mixpanel-ruby'
 # Redis

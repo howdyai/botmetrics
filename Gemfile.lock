@@ -275,6 +275,9 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
+    will_paginate (3.1.0)
+    will_paginate-bootstrap (1.0.1)
+      will_paginate (>= 3.0.3)
     with_advisory_lock (3.0.0)
       activerecord (>= 3.2)
       thread_safe
@@ -323,6 +326,8 @@ DEPENDENCIES
   turbolinks (~> 5.0.0.beta)
   uglifier (~> 2.7.1)
   webmock (~> 1.22.3)
+  will_paginate (~> 3.1.0)
+  will_paginate-bootstrap (~> 1.0.1)
   with_advisory_lock (~> 3.0.0)
 
 BUNDLED WITH

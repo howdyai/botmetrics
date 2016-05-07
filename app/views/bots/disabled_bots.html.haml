@@ -33,6 +33,8 @@
               %td= b.users_count
               %td= b.last_event_at.present? ? "#{time_ago_in_words(b.last_event_at)} ago" : 'no messages yet'
 
+      = will_paginate @tableized, renderer: BootstrapPagination::Rails
+
 - content_for :page_scripts do
   :javascript
     App.page = new App.BotsDetail(#{@start.to_json}, #{@end.to_json});
