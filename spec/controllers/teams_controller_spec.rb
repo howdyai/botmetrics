@@ -12,25 +12,11 @@ describe TeamsController do
       get :show, id: team.to_param
     end
 
-    context 'if there are multiple bots' do
-      before do
-        create :bot, team: team
-        create :bot, team: team
-      end
+    let!(:bot) { create :bot, team: team }
 
-      it 'should render template :show' do
-        do_request
-        expect(response).to render_template :show
-      end
-    end
-
-    context 'if there is only one bot' do
-      let!(:bot) { create :bot, team: team }
-
-      it 'should redirect to the team_bot_path for the bot' do
-        do_request
-        expect(response).to redirect_to team_bot_path(team, bot)
-      end
+    it 'should redirect to the team_bot_path for the bot' do
+      do_request
+      expect(response).to redirect_to team_bot_path(team, bot)
     end
   end
 end
