@@ -6,6 +6,8 @@ class UsersController < ApplicationController
     @user = current_user
     @team = @user.teams.first
     @bot = @team.bots.first
+
+    TrackMixpanelEventJob.perform_async('Viewed User Profile Page', current_user.id)
   end
 
   def regenerate_api_key
@@ -14,6 +16,8 @@ class UsersController < ApplicationController
     @user.save
 
     flash[:info] = "Regenerated your API Key!"
+    TrackMixpanelEventJob.perform_async('Regenerated API Key', current_user.id)
+
     redirect_to user_path(@user)
   end
 end
