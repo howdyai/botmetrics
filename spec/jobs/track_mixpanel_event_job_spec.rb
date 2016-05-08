@@ -45,22 +45,6 @@ describe TrackMixpanelEventJob do
                                                                                  'utm_source' => 'twitter')
         end
       end
-
-      context 'team_id is passed along' do
-        let!(:team) { create :team, name: 'AskNestor' }
-        let!(:tm)   { create :team_membership, team: team, user: user }
-
-        it 'should pass along team params' do
-          TrackMixpanelEventJob.new.perform('Site Created', user.id, team_id: team.id)
-
-          expect(mixpanel).to have_received(:track).with(user.id, 'Site Created', '$email' => user.email,
-                                                                                  '$full_name' => user.full_name,
-                                                                                  '$first_name' => user.first_name,
-                                                                                  '$last_name' => user.last_name,
-                                                                                  team_name: 'AskNestor',
-                                                                                  team_members_count: 1)
-        end
-      end
     end
   end
 end

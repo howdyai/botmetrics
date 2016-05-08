@@ -15,13 +15,6 @@ class TrackMixpanelEventJob < Job
           default_properties.merge!(mixpanel_properties)
         end
 
-        if (team_id = properties.delete(:team_id)).present?
-          team = user.teams.find_by_id(team_id)
-          if team.present?
-            default_properties.merge!(team_name: team.name, team_members_count: team.members.count)
-          end
-        end
-
         default_properties.merge!(properties)
       end
 
