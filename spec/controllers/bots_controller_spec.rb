@@ -7,7 +7,10 @@ describe BotsController do
   let!(:tm1)  { create :team_membership, team: team, user: user }
 
   describe 'GET new' do
-    before { sign_in user }
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
 
     def do_request
       get :new, team_id: team.to_param
@@ -17,10 +20,18 @@ describe BotsController do
       do_request
       expect(response).to render_template :new
     end
+
+    it 'should track the event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed New Bot Page', user.id)
+    end
   end
 
   describe 'POST create' do
-    before { sign_in user }
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
 
     let!(:bot_params) { { name: 'My First Bot' } }
 
@@ -45,6 +56,11 @@ describe BotsController do
       expect(response).to redirect_to team_bot_path(team, bot)
     end
 
+    it 'should track the event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Created Bot', user.id)
+    end
+
     context 'with invalid params' do
       let!(:bot_params) { { name: '' } }
 
@@ -59,11 +75,19 @@ describe BotsController do
         do_request
         expect(response).to render_template :new
       end
+
+      it 'should NOT track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
+      end
     end
   end
 
   describe 'GET show' do
-    before { sign_in user }
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
 
     def do_request
       get :show, team_id: team.to_param, id: bot.to_param
@@ -74,6 +98,11 @@ describe BotsController do
         do_request
         expect(response).to redirect_to new_team_bot_instance_path(team, bot)
       end
+
+      it 'should NOT track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
+      end
     end
 
     context 'if there are bot instances (that are pending)' do
@@ -82,6 +111,11 @@ describe BotsController do
       it 'should redirect to the new_team_bot_instance_path for the bot' do
         do_request
         expect(response).to redirect_to new_team_bot_instance_path(team, bot)
+      end
+
+      it 'should NOT track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
       end
     end
 
@@ -92,11 +126,19 @@ describe BotsController do
         do_request
         expect(response).to render_template :show
       end
+
+      it 'should track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Bot Dashboard Page', user.id)
+      end
     end
   end
 
   describe 'GET edit' do
-    before { sign_in user }
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
 
     def do_request
       get :edit, team_id: team.to_param, id: bot.to_param
@@ -106,10 +148,18 @@ describe BotsController do
       do_request
       expect(response).to render_template :edit
     end
+
+    it 'should track the event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Edit Bot Page', user.id)
+    end
   end
 
   describe 'PATCH update' do
-    before { sign_in user }
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
 
     let!(:bot_params) { { name: 'Nestor Dev' } }
 
@@ -129,6 +179,11 @@ describe BotsController do
       expect(response).to redirect_to team_bot_path(team, bot)
     end
 
+    it 'should track the event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Updated Bot', user.id)
+    end
+
     context 'without a valid name' do
       let!(:bot_params) { { name: '' } }
 
@@ -142,6 +197,11 @@ describe BotsController do
       it 'should render template :edit' do
         do_request
         expect(response).to render_template :edit
+      end
+
+      it 'should NOT track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
       end
     end
   end

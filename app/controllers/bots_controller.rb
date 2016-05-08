@@ -7,6 +7,7 @@ class BotsController < ApplicationController
 
   def new
     @bot = @team.bots.build
+    TrackMixpanelEventJob.perform_async('Viewed New Bot Page', current_user.id)
   end
 
   def create
@@ -15,16 +16,19 @@ class BotsController < ApplicationController
 
     if @bot.save
       redirect_to team_bot_path(@team, @bot)
+      TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)
     else
       render :new
     end
   end
 
   def edit
+    TrackMixpanelEventJob.perform_async('Viewed Edit Bot Page', current_user.id)
   end
 
   def update
     if @bot.update_attributes(bot_params)
+      TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
       redirect_to team_bot_path(@team, @bot)
     else
       render :edit
@@ -45,6 +49,7 @@ class BotsController < ApplicationController
     @show_trends = (@group_by != 'all-time')
     @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
     @dashboarder.init!
+    TrackMixpanelEventJob.perform_async('Viewed Bot Dashboard Page', current_user.id)
   end
 
   def new_bots
@@ -65,6 +70,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @instances.group_by_month("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed New Bots Dashboard Page', current_user.id)
   end
 
   def disabled_bots
@@ -87,6 +93,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @events.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed Disabled Bots Dashboard Page', current_user.id)
   end
 
   def users
@@ -100,6 +107,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @users.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed New Users Dashboard Page', current_user.id)
   end
 
   def messages
@@ -113,6 +121,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed All Messages Dashboard Page', current_user.id)
   end
 
   def messages_to_bot
@@ -126,6 +135,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed Messages To Bot Dashboard Page', current_user.id)
   end
 
   def messages_from_bot
@@ -139,6 +149,7 @@ class BotsController < ApplicationController
                 when 'month'
                   @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
                 end
+    TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
 
   protected
