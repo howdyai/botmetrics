@@ -1,6 +1,7 @@
 class SetupBotJob < Job
-  def perform(bot_instance_id)
+  def perform(bot_instance_id, user_id)
     @instance = BotInstance.find(bot_instance_id)
+    @user = User.find(user_id)
 
     case @instance.provider
     when 'slack' then setup_slack_bot!
@@ -25,6 +26,7 @@ class SetupBotJob < Job
       @instance.import_users!
       Relax::Bot.start!(@instance.instance_attributes['team_id'], @instance.token, namespace: @instance.uid)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
     else
       if auth_info['error'] == 'account_inactive'
         @instance.update_attribute(:state, 'disabled')
@@ -32,6 +34,7 @@ class SetupBotJob < Job
       end
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: auth_info['error'])
     end
   end
 end

@@ -13,6 +13,8 @@ describe BotInstancesController do
       get :new, team_id: team.to_param, bot_id: bot.to_param
     end
 
+    before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
+
     it 'should render template :new' do
       do_request
       expect(response).to render_template :new
@@ -22,6 +24,11 @@ describe BotInstancesController do
       do_request
       expect(assigns(:instance)).to_not be_nil
     end
+
+    it 'should track the event on Mixpanel' do
+      do_request
+      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed New Bot Instance Page', user.id)
+    end
   end
 
   describe 'POST create' do
@@ -29,6 +36,7 @@ describe BotInstancesController do
 
     before do
       allow(SetupBotJob).to receive(:perform_async)
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     shared_examples 'creates and sets up a bot' do
@@ -45,7 +53,13 @@ describe BotInstancesController do
 
       it 'should call SetupBotJob' do
         do_request
-        expect(SetupBotJob).to have_received(:perform_async)
+        instance= bot.instances.last
+        expect(SetupBotJob).to have_received(:perform_async).with(instance.id, user.id)
+      end
+
+      it 'should track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Started Bot Instance Creation', user.id)
       end
     end
 

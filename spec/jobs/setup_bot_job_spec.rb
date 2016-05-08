@@ -1,11 +1,15 @@
 require 'spec_helper'
 
 describe SetupBotJob do
-  let!(:bi) { create :bot_instance, token: 'token' }
+  let!(:bi)   { create :bot_instance, token: 'token' }
+  let!(:user) { create :user }
 
   describe '#perform' do
     context 'slack' do
-      before { bi.update_attribute(:provider, 'slack') }
+      before do
+        bi.update_attribute(:provider, 'slack')
+        allow(TrackMixpanelEventJob).to receive(:perform_async)
+      end
 
       context 'when token is valid' do
         before do
@@ -74,7 +78,7 @@ describe SetupBotJob do
         end
 
         it 'should enable the bot and setup team_id, team_name and team_url' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           bi.reload
           expect(bi.state).to eql 'enabled'
           expect(bi.uid).to eql 'U12345'
@@ -84,14 +88,19 @@ describe SetupBotJob do
         end
 
         it 'should send a message to Pusher' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":true}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'enabled')
         end
 
         context 'none of the users exist' do
           it 'should add three users' do
             expect {
-              SetupBotJob.new.perform(bi.id)
+              SetupBotJob.new.perform(bi.id, user.id)
               bi.reload
             }.to change(bi.users, :count).by(3)
 
@@ -143,7 +152,7 @@ describe SetupBotJob do
 
           it 'should only add the new users and update info on existing users' do
             expect {
-              SetupBotJob.new.perform(bi.id)
+              SetupBotJob.new.perform(bi.id, user.id)
               bi.reload
             }.to change(bi.users, :count).by(2)
 
@@ -188,7 +197,7 @@ describe SetupBotJob do
         end
 
         it 'should call Relax::Bot.start' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           expect(Relax::Bot).to have_received(:start!).with('T12345', 'token', namespace: 'U12345')
         end
       end
@@ -201,7 +210,7 @@ describe SetupBotJob do
         end
 
         it 'should keep the bot in pending state' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           bi.reload
           expect(bi.state).to eql 'pending'
           expect(bi.uid).to be_nil
@@ -209,8 +218,13 @@ describe SetupBotJob do
         end
 
         it 'should send a message to Pusher' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"invalid_token\"}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'invalid_token')
         end
       end
 
@@ -222,7 +236,7 @@ describe SetupBotJob do
         end
 
         it 'should disable the bot' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           bi.reload
           expect(bi.state).to eql 'disabled'
           expect(bi.uid).to be_nil
@@ -231,7 +245,7 @@ describe SetupBotJob do
 
         it 'should create a "bot_disabled" event' do
           expect {
-            SetupBotJob.new.perform(bi.id)
+            SetupBotJob.new.perform(bi.id, user.id)
             bi.reload
           }.to change(bi.events, :count).by(1)
 
@@ -241,8 +255,13 @@ describe SetupBotJob do
         end
 
         it 'should send a message to Pusher' do
-          SetupBotJob.new.perform(bi.id)
+          SetupBotJob.new.perform(bi.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"account_inactive\"}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'account_inactive')
         end
       end
     end

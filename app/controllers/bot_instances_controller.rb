@@ -7,6 +7,7 @@ class BotInstancesController < ApplicationController
 
   def new
     @instance = @bot.instances.build
+    TrackMixpanelEventJob.perform_async('Viewed New Bot Instance Page', current_user.id)
   end
 
   def create
@@ -17,7 +18,8 @@ class BotInstancesController < ApplicationController
     end
 
     if @instance.save
-      SetupBotJob.perform_async(@instance.id)
+      TrackMixpanelEventJob.perform_async('Started Bot Instance Creation', current_user.id)
+      SetupBotJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|
         format.html { redirect_to setting_up_team_bot_instance_path(@team, @bot, @instance) }
