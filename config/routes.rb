@@ -20,6 +20,8 @@ Rails.application.routes.draw do
         get :setting_up
       end
     end
+
+    resources :messages, only: [:create]
   end
 
   resources :users, only: [:show] do

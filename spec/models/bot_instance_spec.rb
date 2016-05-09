@@ -2,29 +2,30 @@ require 'rails_helper'
 
 describe BotInstance do
   describe 'associations' do
-    it { should belong_to  :bot }
-    it { should have_many  :users }
-    it { should have_many  :events }
+    it { is_expected.to belong_to :bot }
+    it { is_expected.to have_many :users }
+    it { is_expected.to have_many :events }
+    it { is_expected.to have_many :messages }
   end
 
   describe 'validations' do
     subject { create :bot_instance }
 
-    it { should validate_presence_of :token }
-    it { should validate_presence_of :bot_id }
-    it { should validate_presence_of :provider }
-    it { should validate_uniqueness_of :token }
+    it { is_expected.to validate_presence_of :token }
+    it { is_expected.to validate_presence_of :bot_id }
+    it { is_expected.to validate_presence_of :provider }
+    it { is_expected.to validate_uniqueness_of :token }
 
-    it { should allow_value('slack').for(:provider) }
-    it { should allow_value('kik').for(:provider) }
-    it { should allow_value('facebook').for(:provider) }
-    it { should allow_value('telegram').for(:provider) }
-    it { should_not allow_value('test').for(:provider) }
+    it { is_expected.to allow_value('slack').for(:provider) }
+    it { is_expected.to allow_value('kik').for(:provider) }
+    it { is_expected.to allow_value('facebook').for(:provider) }
+    it { is_expected.to allow_value('telegram').for(:provider) }
+    it { is_expected.to_not allow_value('test').for(:provider) }
 
-    it { should allow_value('pending').for(:state) }
-    it { should allow_value('enabled').for(:state) }
-    it { should allow_value('disabled').for(:state) }
-    it { should_not allow_value('test').for(:state) }
+    it { is_expected.to allow_value('pending').for(:state) }
+    it { is_expected.to allow_value('enabled').for(:state) }
+    it { is_expected.to allow_value('disabled').for(:state) }
+    it { is_expected.to_not allow_value('test').for(:state) }
 
     context 'team_id is not null' do
       let!(:bi) { build :bot_instance, uid: 'UNESTOR1', instance_attributes: { 'team_url': 'https://test.com', 'team_name': 'Dead Team'} }

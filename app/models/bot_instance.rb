@@ -1,4 +1,9 @@
 class BotInstance < ActiveRecord::Base
+  belongs_to :bot
+  has_many :users, class_name: 'BotUser'
+  has_many :events
+  has_many :messages
+
   validates_presence_of :token, :bot_id, :provider
   validates_uniqueness_of :token
   validates_inclusion_of  :provider, in: %w(slack kik facebook telegram)
@@ -9,13 +14,14 @@ class BotInstance < ActiveRecord::Base
 
   validates_with BotInstanceAttributesValidator
 
-  scope :legit, -> { where("state <> ?", 'pending') }
-  scope :enabled, -> { where("state = ?", 'enabled') }
-  scope :disabled, -> { where("state = ?", 'disabled') }
+  scope :legit,     -> { where("state <> ?", 'pending') }
+  scope :enabled,   -> { where("state = ?", 'enabled') }
+  scope :disabled,  -> { where("state = ?", 'disabled') }
 
-  belongs_to :bot
-  has_many :users, class_name: 'BotUser'
-  has_many :events
+  def self.find_by_bot_and_team!(bot, team_id)
+    bot_instance = BotInstance.where(bot_id: bot.id).where("instance_attributes->>'team_id' = ?", team_id).first
+    bot_instance.presence || (raise ActiveRecord::RecordNotFound)
+  end
 
   def import_users!
     slack_client = Slack.new(self.token)
