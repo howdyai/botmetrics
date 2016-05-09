@@ -7,9 +7,9 @@
       %span
       %b.caret
     .btn-group.time-segmented-controls.pull-right
-      = link_to 'Day', new_bots_bot_path(@bot), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
-      = link_to 'Week', new_bots_bot_path(@bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
-      = link_to 'Month', new_bots_bot_path(@bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
+      = link_to 'Day', new_bots_bot_dashboards_path(@bot), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
+      = link_to 'Week', new_bots_bot_dashboards_path(@bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
+      = link_to 'Month', new_bots_bot_dashboards_path(@bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
 
 .container-fluid.graph-container
   .graph.row

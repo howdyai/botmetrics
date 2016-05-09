@@ -4,13 +4,15 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: :registrations }
 
   resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
-    member do
-      get :new_bots
-      get :disabled_bots
-      get :users
-      get :messages
-      get :messages_to_bot
-      get :messages_from_bot
+    resources :dashboards, only: [] do
+      collection do
+        get :new_bots
+        get :disabled_bots
+        get :users
+        get :all_messages
+        get :messages_to_bot
+        get :messages_from_bot
+      end
     end
 
     resources :instances, only: [:new, :create], controller: :bot_instances do

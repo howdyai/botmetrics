@@ -1,7 +1,8 @@
 body.bot_instances,
 body.users,
 body.bots,
-body.teams
+body.teams,
+body.dashboards
   &.setting_up
     p
       font-size: 16px
@@ -64,7 +65,8 @@ body.users
     font-size: 16px
     padding-top: 8px
 
-body.bots
+body.bots,
+body.dashboards
   &.edit
     h2
       padding-bottom: 5px
@@ -114,12 +116,12 @@ body.bots
         padding-bottom: 5px
         border: none
 
-body.bots.new_bots,
-body.bots.disabled_bots,
-body.bots.users,
-body.bots.messages,
-body.bots.messages_to_bot,
-body.bots.messages_from_bot
+body.dashboards.new_bots,
+body.dashboards.disabled_bots,
+body.dashboards.users,
+body.dashboards.all_messages,
+body.dashboards.messages_to_bot,
+body.dashboards.messages_from_bot
   .tableized
     margin-top: 40px
   .graph-container
@@ -141,7 +143,8 @@ body.bots.messages_from_bot
       margin-right: 5px
 
 body.bots,
-body.teams
+body.teams,
+body.dashboards
   background-color: rgba(59,175,218, 0.1)
   .secondary-menu
     background-color: #fff
