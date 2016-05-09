@@ -16,6 +16,28 @@
     .col-md-12.col-sm-12.col-xs-12.graph-container
       = line_chart @messages, solo_chartjs_opts
 
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Team
+            %th URL
+            %th Members
+            %th Created
+            %th Sent From Bot
+            %th Last Message From Bot
+        %tbody
+          - @tableized.each do |b|
+            - _url = b.instance_attributes['team_url']
+            - _name = b.instance_attributes['team_name']
+            %tr{class: b.id}
+              %td= _name
+              %td= _url.present? ? link_to(_url, _url) : ''
+              %td= b.users_count
+              %td= "#{time_ago_in_words(b.created_at)} ago"
+              %td= b.events_count
+              %td= b.last_event_at.present? ? "#{time_ago_in_words(b.last_event_at)} ago" : 'no messages yet'
+      = will_paginate @tableized, renderer: BootstrapPagination::Rails
+
 - content_for :page_scripts do
   :javascript
     App.page = new App.BotsDetail(#{@start.to_json}, #{@end.to_json});
