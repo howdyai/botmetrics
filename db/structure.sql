@@ -23,11 +23,58 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: bot_collaborators; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE bot_collaborators (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    bot_id integer NOT NULL,
+    collaborator_type character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: bot_collaborators_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE bot_collaborators_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bot_collaborators_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE bot_collaborators_id_seq OWNED BY bot_collaborators.id;
+
 
 --
 -- Name: bot_instances; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -306,6 +353,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY bot_collaborators ALTER COLUMN id SET DEFAULT nextval('bot_collaborators_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY bot_instances ALTER COLUMN id SET DEFAULT nextval('bot_instances_id_seq'::regclass);
 
 
@@ -349,6 +403,14 @@ ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regcl
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: bot_collaborators_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY bot_collaborators
+    ADD CONSTRAINT bot_collaborators_pkey PRIMARY KEY (id);
 
 
 --
@@ -419,6 +481,27 @@ CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid,
 --
 
 CREATE UNIQUE INDEX events_channel_timestamp_message_slack ON events USING btree (((event_attributes -> 'timestamp'::text)), ((event_attributes -> 'channel'::text))) WHERE (((provider)::text = 'slack'::text) AND ((event_type)::text = 'message'::text));
+
+
+--
+-- Name: index_bot_collaborators_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_bot_collaborators_on_bot_id ON bot_collaborators USING btree (bot_id);
+
+
+--
+-- Name: index_bot_collaborators_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_bot_collaborators_on_user_id ON bot_collaborators USING btree (user_id);
+
+
+--
+-- Name: index_bot_collaborators_on_user_id_and_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_bot_collaborators_on_user_id_and_bot_id ON bot_collaborators USING btree (user_id, bot_id);
 
 
 --
@@ -559,6 +642,14 @@ ALTER TABLE ONLY events
 
 
 --
+-- Name: fk_rails_8c888664b2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY bot_collaborators
+    ADD CONSTRAINT fk_rails_8c888664b2 FOREIGN KEY (bot_id) REFERENCES bots(id);
+
+
+--
 -- Name: fk_rails_9fc3b26d0b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -580,6 +671,14 @@ ALTER TABLE ONLY bots
 
 ALTER TABLE ONLY bot_users
     ADD CONSTRAINT fk_rails_d232307517 FOREIGN KEY (bot_instance_id) REFERENCES bot_instances(id);
+
+
+--
+-- Name: fk_rails_d9f77fff58; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY bot_collaborators
+    ADD CONSTRAINT fk_rails_d9f77fff58 FOREIGN KEY (user_id) REFERENCES users(id);
 
 
 --
@@ -647,4 +746,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160427042824');
 INSERT INTO schema_migrations (version) VALUES ('20160427135316');
 
 INSERT INTO schema_migrations (version) VALUES ('20160429171046');
+
+INSERT INTO schema_migrations (version) VALUES ('20160509172149');
 
