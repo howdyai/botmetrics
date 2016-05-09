@@ -67,6 +67,14 @@ class DashboardsController < ApplicationController
   def all_messages
     init_detail_view!
     @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_from_bot: false)
+    @tableized = @instances.
+                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
+                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
+                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 'f' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
+                    where("bot_instances.id IN (?)", @messages.select(:bot_instance_id)).
+                    order("last_event_at DESC").
+                    page(params[:page])
+
     @messages = case @group_by
                 when 'day'
                   @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
