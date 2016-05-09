@@ -16,7 +16,7 @@
 
 ## Setting up Production Database
 
-1. Add a `production` remote: `git remote add production <heroku-url>`
+1. Add a `production` remote: `git remote add production https://git.heroku.com/botmetrix.git`
 2. Install [Parity gem](https://github.com/thoughtbot/parity): `gem install parity`
 3. Restore from production: `development restore production`
 4. Save the password for the user `admins@asknestor.me` to "password123"
