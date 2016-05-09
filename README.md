@@ -16,10 +16,9 @@
 
 ## Setting up Production Database
 
-1. Run `heroku pg:backups capture -a botmetrix` to get the latest backup
-2. Run `heroku pg:backups public-url -a botmetrix` and download the file
-3. Run `./script/botmetrics_pg_restore.sh <path-to-dump>` which will
-   dump the production database to your local database
+1. Add a `production` remote: `git remote add production <heroku-url>`
+2. Install [Parity gem](https://github.com/thoughtbot/parity): `gem install parity`
+3. Restore from production: `development restore production`
 4. Save the password for the user `admins@asknestor.me` to "password123"
    or something similar using Rails console and login to the website.
 
