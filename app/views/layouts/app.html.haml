@@ -1,73 +1,73 @@
 %html
-%head
-  %title
-    Bot Metrics
-  = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
-  = javascript_include_tag 'application', 'data-turbolinks-track' => true, 'data-turbolinks-eval' => false
-  = stylesheet_link_tag '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css', media: 'all', 'data-turbolinks-track' => true
-  = favicon_link_tag 'favicon.ico', rel: 'shortcut icon'
+  %head
+    %title
+      Bot Metrics
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true, 'data-turbolinks-eval' => false
+    = stylesheet_link_tag '//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css', media: 'all', 'data-turbolinks-track' => true
+    = favicon_link_tag 'favicon.ico', rel: 'shortcut icon'
 
-  %script{src:"//use.typekit.net/zwl2vnb.js"}
-  :javascript
-    try{Typekit.load();}catch(e){}
-  = csrf_meta_tags
+    %script{src:'//use.typekit.net/zwl2vnb.js'}
+    :javascript
+      try{Typekit.load();}catch(e){}
+    = csrf_meta_tags
 
-%body{class: body_classes(yield :body_classes)}
-  = render partial: 'layouts/flash', locals: { flash: flash }
-  %nav.navbar.navbar-default
-    .container-fluid.header-container
-      .row
-        .col-md-6.col-sm-6.col-xs-6
-          - if show_bots_dropdown?
-            .dropdown
-              %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-                %h3.bot-name= @bot.name
-                %span.caret
-              %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
-                - if (bots = @team.bots.where("bots.uid <> ?", @bot.uid)).present?
-                  - bots.each do |b|
-                    %li{role: 'presentation'}
-                      = link_to b.name, team_bot_path(@team, b)
-                  %li.divider{role: 'separator'}
-                %li{role: 'presentation'}
-                  = link_to new_team_bot_path(@team) do
-                    %i.fa.fa-plus
-                    Add Another Bot
-          - else
-            - if @bot.present?
-              - if @bot.persisted?
-                = link_to team_bot_path(@team, @bot), class: 'back-button' do
-                  %i.fa.fa-chevron-left
-                  Back to Bot Dashboard
-              - else
-                = link_to team_path(@team), class: 'back-button' do
-                  %i.fa.fa-chevron-left
-                  Back to Bot Dashboard
-            - else
+  %body{class: body_classes(yield :body_classes)}
+    = render partial: 'layouts/flash', locals: { flash: flash }
+    %nav.navbar.navbar-default
+      .container-fluid.header-container
+        .row
+          .col-md-6.col-sm-6.col-xs-6
+            - if show_bots_dropdown?
               .dropdown
                 %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-                  %h3 botmetrics
+                  %h3.bot-name= @bot.name
+                  %span.caret
+                %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
+                  - if (bots = @team.bots.where("bots.uid <> ?", @bot.uid)).present?
+                    - bots.each do |b|
+                      %li{role: 'presentation'}
+                        = link_to b.name, team_bot_path(@team, b)
+                    %li.divider{role: 'separator'}
+                  %li{role: 'presentation'}
+                    = link_to new_team_bot_path(@team) do
+                      %i.fa.fa-plus
+                      Add Another Bot
+            - else
+              - if @bot.present?
+                - if @bot.persisted?
+                  = link_to team_bot_path(@team, @bot), class: 'back-button' do
+                    %i.fa.fa-chevron-left
+                    Back to Bot Dashboard
+                - else
+                  = link_to team_path(@team), class: 'back-button' do
+                    %i.fa.fa-chevron-left
+                    Back to Bot Dashboard
+              - else
+                .dropdown
+                  %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+                    %h3 botmetrics
 
-        .col-md-6.col-sm-6.col-xs-6.text-right
-          .dropdown
-            %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-              %h3.user-name= @current_user.full_name
-              %span.caret
-            %ul.dropdown-menu.dropdown-menu-right{role: 'menu', "data-no-turbolink" => true}
-              %li{role: 'presentation'}
-                = link_to user_path(current_user) do
-                  %i.fa.fa-user
-                  My Profile
-              %li.divider{role: 'separator'}
-              %li{role: 'presentation'}
-                = link_to destroy_user_session_path do
-                  %i.fa.fa-power-off
-                  Sign Out
+          .col-md-6.col-sm-6.col-xs-6.text-right
+            .dropdown
+              %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+                %h3.user-name= @current_user.full_name
+                %span.caret
+              %ul.dropdown-menu.dropdown-menu-right{role: 'menu', "data-no-turbolink" => true}
+                %li{role: 'presentation'}
+                  = link_to user_path(current_user) do
+                    %i.fa.fa-user
+                    My Profile
+                %li.divider{role: 'separator'}
+                %li{role: 'presentation'}
+                  = link_to destroy_user_session_path do
+                    %i.fa.fa-power-off
+                    Sign Out
 
-  .container-fluid.content-container
-    = yield
+    .container-fluid.content-container
+      = yield
 
-  = render partial: 'ga'
-  = render partial: 'mixpanel'
-  = yield :page_scripts
-  = yield :charts_js
+    = render partial: 'ga'
+    = render partial: 'mixpanel'
+    = yield :page_scripts
+    = yield :charts_js
