@@ -16,6 +16,27 @@
     .col-md-12.col-sm-12.col-xs-12.graph-container
       = line_chart @users, solo_chartjs_opts
 
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Full Name
+            %th Nickname
+            %th Email
+            %th Team
+            %th Created
+        %tbody
+          - @tableized.each do |u|
+            - _bi = u.bot_instance
+            - _url = _bi.instance_attributes['team_url']
+            - _name = _bi.instance_attributes['team_name']
+            %tr{class: u.id}
+              %td= u.user_attributes['full_name']
+              %td= u.user_attributes['nickname']
+              %td= u.user_attributes['email']
+              %td= _name
+              %td= "#{time_ago_in_words(_bi.created_at)} ago"
+      = will_paginate @tableized, renderer: BootstrapPagination::Rails
+
 - content_for :page_scripts do
   :javascript
     App.page = new App.BotsDetail(#{@start.to_json}, #{@end.to_json});

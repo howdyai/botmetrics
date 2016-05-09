@@ -49,14 +49,17 @@ class DashboardsController < ApplicationController
 
   def users
     init_detail_view!
-    @users = BotUser.where(bot_instance_id: @instances.select(:id))
+    @users = BotUser.where(bot_instance_id: @instances.select(:id)).joins(:bot_instance).
+                     where("bot_instances.created_at" => @start.utc..@end.utc)
+    @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
+
     @users = case @group_by
                 when 'day'
-                  @users.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @users.group_by_day("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 when 'week'
-                  @users.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @users.group_by_week("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 when 'month'
-                  @users.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @users.group_by_month("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
                 end
     TrackMixpanelEventJob.perform_async('Viewed New Users Dashboard Page', current_user.id)
   end
