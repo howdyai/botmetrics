@@ -1,12 +1,15 @@
 class Bot < ActiveRecord::Base
   before_validation :set_uid!
 
-  validates_presence_of   :name, :team_id, :provider
+  validates_presence_of   :name, :provider
   validates_uniqueness_of :uid
   validates_inclusion_of  :provider, in: %w(slack kik facebook telegram)
 
   has_many :instances, class_name: 'BotInstance'
-  belongs_to :team
+
+  has_many :bot_collaborators
+  has_many :collaborators, through: :bot_collaborators, source: :user
+  has_many :owners, -> { where("bot_collaborators.collaborator_type" => 'owner') }, through: :bot_collaborators, source: :user
 
   def to_param
     self.uid

@@ -2,15 +2,14 @@ require 'spec_helper'
 
 describe BotInstancesController do
   let!(:user) { create :user }
-  let!(:team) { create :team }
-  let!(:bot)  { create :bot, team: team }
-  let!(:tm1)  { create :team_membership, team: team, user: user }
+  let!(:bot)  { create :bot }
+  let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
 
   describe 'GET new' do
     before { sign_in user }
 
     def do_request
-      get :new, team_id: team.to_param, bot_id: bot.to_param
+      get :new, bot_id: bot.to_param
     end
 
     before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
@@ -67,15 +66,15 @@ describe BotInstancesController do
       before { sign_in user }
 
       def do_request
-        post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param
+        post :create, instance: bot_instance_params, bot_id: bot.to_param
       end
 
       it_behaves_like 'creates and sets up a bot'
 
-      it "should redirect back to setting_team_bot_instance_path" do
+      it "should redirect back to setting_bot_instance_path" do
         do_request
         instance = bot.instances.last
-        expect(response).to redirect_to setting_up_team_bot_instance_path(team, bot, instance)
+        expect(response).to redirect_to setting_up_bot_instance_path(bot, instance)
       end
     end
 
@@ -83,7 +82,7 @@ describe BotInstancesController do
       before { request.headers['Authorization'] = JsonWebToken.encode('user_id' => user.id) }
 
       def do_request
-        post :create, instance: bot_instance_params, team_id: team.to_param, bot_id: bot.to_param, format: :json
+        post :create, instance: bot_instance_params, bot_id: bot.to_param, format: :json
       end
 
       it_behaves_like 'creates and sets up a bot'

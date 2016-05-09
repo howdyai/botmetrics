@@ -4,8 +4,6 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_many :team_memberships
-  has_many :teams, through: :team_memberships
   has_many :bot_collaborators
   has_many :bots, through: :bot_collaborators
 

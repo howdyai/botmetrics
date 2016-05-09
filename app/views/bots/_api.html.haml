@@ -5,7 +5,7 @@
   :preserve
     curl -X POST \
     -H "Authorization: #{current_user.api_key}" \
-    #{Settings.rails_host}/teams/#{@team.uid}/bots/#{@bot.uid}/instances \
+    #{Settings.rails_host}/bots/#{@bot.uid}/instances \
     -d "format=json&instance[token]=my-bot-token"
 %h3.api Ruby
 %p.api
@@ -16,7 +16,6 @@
   Set the following environment variables in your app:
   %pre.api.pre-scrollable
     :preserve
-      BOTMETRICS_TEAM_ID=#{@team.uid}
       BOTMETRICS_BOT_ID=#{@bot.uid}
       BOTMETRICS_API_KEY=#{current_user.api_key}
 %h3.api Node.JS
@@ -28,7 +27,6 @@
   Set the following environment variables in your app:
   %pre.api.pre-scrollable
     :preserve
-      BOTMETRICS_TEAM_ID=#{@team.uid}
       BOTMETRICS_BOT_ID=#{@bot.uid}
       BOTMETRICS_API_KEY=#{current_user.api_key}
 %p.api

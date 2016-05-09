@@ -1,9 +1,8 @@
 class RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
-      team = Team.create!(name: 'My Team')
-      team.bots.create!(name: 'My First Bot', provider: 'slack')
-      resource.team_memberships.create!(team: team, membership_type: 'owner')
+      bot = Bot.create!(name: 'My First Bot', provider: 'slack')
+      resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner')
 
       mixpanel_properties = @mixpanel_attributes.dup
       mixpanel_properties.delete('distinct_id')
@@ -37,6 +36,6 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(resource)
-    team_path(resource.teams.first)
+    bot_path(resource.bots.first)
   end
 end

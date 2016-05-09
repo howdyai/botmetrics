@@ -3,7 +3,7 @@ class StaticController < ApplicationController
 
   def index
     if current_user.present?
-      redirect_to(team_path(current_user.teams.first)) && return
+      redirect_to(bot_path(current_user.bots.first)) && return
     end
   end
 

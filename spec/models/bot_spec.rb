@@ -5,7 +5,6 @@ describe Bot do
     subject { create :bot }
     it { should validate_presence_of :name }
     it { should validate_presence_of :provider }
-    it { should validate_presence_of :team_id }
     it { should validate_uniqueness_of :uid }
 
     it { should allow_value('slack').for(:provider) }
@@ -16,7 +15,9 @@ describe Bot do
   end
 
   describe 'associations' do
-    it { should belong_to :team }
     it { should have_many :instances }
+    it { should have_many :bot_collaborators }
+    it { should have_many(:collaborators).through(:bot_collaborators) }
+    it { should have_many(:owners).through(:bot_collaborators) }
   end
 end

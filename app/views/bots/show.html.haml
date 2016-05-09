@@ -1,52 +1,52 @@
 .secondary-menu.row
   .col-md-4.col-sm-4.col-xs-4
-    = link_to edit_team_bot_path(@team, @bot), class: 'btn btn-lg btn-success btn-settings' do
+    = link_to edit_bot_path(@bot), class: 'btn btn-lg btn-success btn-settings' do
       %i.fa.fa-cog
       Bot Settings
   .col-md-8.col-sm-8.col-xs-8.text-right
     .btn-group.time-segmented-controls
-      = link_to 'Today', team_bot_path(@team, @bot), class: (@group_by == 'today' ? 'btn active' : 'btn')
-      = link_to 'This Week', team_bot_path(@team, @bot, group_by: 'this-week'), class: (@group_by == 'this-week' ? 'btn active' : 'btn')
-      = link_to 'This Month', team_bot_path(@team, @bot, group_by: 'this-month'), class: (@group_by == 'this-month' ? 'btn active' : 'btn')
-      = link_to 'All Time', team_bot_path(@team, @bot, group_by: 'all-time'), class: (@group_by == 'all-time' ? 'btn active' : 'btn')
+      = link_to 'Today', bot_path(@bot), class: (@group_by == 'today' ? 'btn active' : 'btn')
+      = link_to 'This Week', bot_path(@bot, group_by: 'this-week'), class: (@group_by == 'this-week' ? 'btn active' : 'btn')
+      = link_to 'This Month', bot_path(@bot, group_by: 'this-month'), class: (@group_by == 'this-month' ? 'btn active' : 'btn')
+      = link_to 'All Time', bot_path(@bot, group_by: 'all-time'), class: (@group_by == 'all-time' ? 'btn active' : 'btn')
 
 .stats.row
-  = link_to new_bots_team_bot_path(@team, @bot) do
+  = link_to new_bots_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 New Bots
       = formatted_growth(@dashboarder.new_bots_growth)
       %p.number= number_with_delimiter(@dashboarder.new_bots_count)
       - if @show_trends
         = line_chart @dashboarder.new_bots, dashboard_chartjs_opts
-  = link_to disabled_bots_team_bot_path(@team, @bot) do
+  = link_to disabled_bots_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 Bots Disabled
       = formatted_growth(@dashboarder.disabled_bots_growth)
       %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
       - if @show_trends
         = line_chart @dashboarder.disabled_bots, dashboard_chartjs_opts
-  = link_to users_team_bot_path(@team, @bot) do
+  = link_to users_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 New Users
       = formatted_growth(@dashboarder.new_users_growth)
       %p.number= number_with_delimiter(@dashboarder.new_users_count)
       - if @show_trends
         = line_chart @dashboarder.new_users, dashboard_chartjs_opts
-  = link_to messages_team_bot_path(@team, @bot) do
+  = link_to messages_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages
       = formatted_growth(@dashboarder.messages_growth)
       %p.number= number_with_delimiter(@dashboarder.messages_count)
       - if @show_trends
         = line_chart @dashboarder.messages, dashboard_chartjs_opts
-  = link_to messages_to_bot_team_bot_path(@team, @bot) do
+  = link_to messages_to_bot_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages To Bot
       = formatted_growth(@dashboarder.messages_for_bot_growth)
       %p.number= number_with_delimiter(@dashboarder.messages_for_bot_count)
       - if @show_trends
         = line_chart @dashboarder.messages_for_bot, dashboard_chartjs_opts
-  = link_to messages_from_bot_team_bot_path(@team, @bot) do
+  = link_to messages_from_bot_bot_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages From Bot
       = formatted_growth(@dashboarder.messages_from_bot_growth)

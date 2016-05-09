@@ -2,9 +2,8 @@ require 'spec_helper'
 
 describe BotsController do
   let!(:user) { create :user }
-  let!(:team) { create :team }
-  let!(:bot)  { create :bot, team: team }
-  let!(:tm1)  { create :team_membership, team: team, user: user }
+  let!(:bot)  { create :bot  }
+  let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
 
   describe 'GET new' do
     before do
@@ -13,7 +12,7 @@ describe BotsController do
     end
 
     def do_request
-      get :new, team_id: team.to_param
+      get :new
     end
 
     it 'should render template :new' do
@@ -36,24 +35,24 @@ describe BotsController do
     let!(:bot_params) { { name: 'My First Bot' } }
 
     def do_request
-      post :create, team_id: team.to_param, bot: bot_params
+      post :create, bot: bot_params
     end
 
     it 'should create a new bot' do
       expect {
         do_request
-        team.reload
-      }.to change(team.bots, :count).by(1)
+        user.reload
+      }.to change(user.bots, :count).by(1)
 
-      bot = team.bots.last
+      bot = user.bots.last
       expect(bot.name).to eql 'My First Bot'
       expect(bot.provider).to eql 'slack'
     end
 
-    it 'should redirect to team_bot_path' do
+    it 'should redirect to bot_path' do
       do_request
-      bot = team.bots.last
-      expect(response).to redirect_to team_bot_path(team, bot)
+      bot = user.bots.last
+      expect(response).to redirect_to bot_path(bot)
     end
 
     it 'should track the event on Mixpanel' do
@@ -67,8 +66,8 @@ describe BotsController do
       it 'should NOT create a new bot' do
         expect {
           do_request
-          team.reload
-        }.to_not change(team.bots, :count)
+          user.reload
+        }.to_not change(user.bots, :count)
       end
 
       it 'should render template :new' do
@@ -90,13 +89,13 @@ describe BotsController do
     end
 
     def do_request
-      get :show, team_id: team.to_param, id: bot.to_param
+      get :show, id: bot.to_param
     end
 
     context 'if there are no bot instances' do
-      it 'should redirect to the new_team_bot_instance_path for the bot' do
+      it 'should redirect to the new_bot_instance_path for the bot' do
         do_request
-        expect(response).to redirect_to new_team_bot_instance_path(team, bot)
+        expect(response).to redirect_to new_bot_instance_path(bot)
       end
 
       it 'should NOT track the event on Mixpanel' do
@@ -108,9 +107,9 @@ describe BotsController do
     context 'if there are bot instances (that are pending)' do
       let!(:bi1) { create :bot_instance, bot: bot }
 
-      it 'should redirect to the new_team_bot_instance_path for the bot' do
+      it 'should redirect to the new_bot_instance_path for the bot' do
         do_request
-        expect(response).to redirect_to new_team_bot_instance_path(team, bot)
+        expect(response).to redirect_to new_bot_instance_path(bot)
       end
 
       it 'should NOT track the event on Mixpanel' do
@@ -141,7 +140,7 @@ describe BotsController do
     end
 
     def do_request
-      get :edit, team_id: team.to_param, id: bot.to_param
+      get :edit, id: bot.to_param
     end
 
     it 'should render template :edit' do
@@ -164,7 +163,7 @@ describe BotsController do
     let!(:bot_params) { { name: 'Nestor Dev' } }
 
     def do_request
-      patch :update, team_id: team.to_param, id: bot.to_param, bot: bot_params
+      patch :update, id: bot.to_param, bot: bot_params
     end
 
     it 'should update the name of the bot' do
@@ -174,9 +173,9 @@ describe BotsController do
       }.to change(bot, :name).to('Nestor Dev')
     end
 
-    it 'should redirect to team_bot_path' do
+    it 'should redirect to bot_path' do
       do_request
-      expect(response).to redirect_to team_bot_path(team, bot)
+      expect(response).to redirect_to bot_path(bot)
     end
 
     it 'should track the event on Mixpanel' do

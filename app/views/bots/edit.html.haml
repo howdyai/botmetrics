@@ -2,7 +2,7 @@
   .col-md-4.col-md-offset-4
     %h2 Settings
 
-    = simple_form_for [@team, @bot], url: team_bot_path(@team, @bot), method: :patch do |f|
+    = simple_form_for [@bot], url: bot_path(@bot), method: :patch do |f|
       = f.input :name, label: "Your Bot's Name", required: true
       = f.submit 'Save'
 

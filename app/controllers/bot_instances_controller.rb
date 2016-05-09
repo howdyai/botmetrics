@@ -1,6 +1,5 @@
 class BotInstancesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_team
   before_filter :find_bot
 
   layout 'app'
@@ -22,7 +21,7 @@ class BotInstancesController < ApplicationController
       SetupBotJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|
-        format.html { redirect_to setting_up_team_bot_instance_path(@team, @bot, @instance) }
+        format.html { redirect_to setting_up_bot_instance_path(@bot, @instance) }
         format.json { render json: { id: @instance.id }, status: :created }
       end
     else
@@ -38,13 +37,8 @@ class BotInstancesController < ApplicationController
   end
 
   protected
-  def find_team
-    @team = current_user.teams.find_by(uid: params[:team_id])
-    raise ActiveRecord::RecordNotFound if @team.blank?
-  end
-
   def find_bot
-    @bot = @team.bots.find_by(uid: params[:bot_id])
+    @bot = current_user.bots.find_by(uid: params[:bot_id])
     raise ActiveRecord::RecordNotFound if @bot.blank?
   end
 

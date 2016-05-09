@@ -3,21 +3,19 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: :registrations }
 
-  resources :teams, only: [:show] do
-    resources :bots, only: [:show, :new, :create, :edit, :update] do
-      member do
-        get :new_bots
-        get :disabled_bots
-        get :users
-        get :messages
-        get :messages_to_bot
-        get :messages_from_bot
-      end
+  resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
+    member do
+      get :new_bots
+      get :disabled_bots
+      get :users
+      get :messages
+      get :messages_to_bot
+      get :messages_from_bot
+    end
 
-      resources :instances, only: [:new, :create], controller: :bot_instances do
-        member do
-          get :setting_up
-        end
+    resources :instances, only: [:new, :create], controller: :bot_instances do
+      member do
+        get :setting_up
       end
     end
   end

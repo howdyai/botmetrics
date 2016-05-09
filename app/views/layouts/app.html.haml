@@ -24,23 +24,23 @@
                   %h3.bot-name= @bot.name
                   %span.caret
                 %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
-                  - if (bots = @team.bots.where("bots.uid <> ?", @bot.uid)).present?
+                  - if (bots = current_user.bots.where("bots.uid <> ?", @bot.uid)).present?
                     - bots.each do |b|
                       %li{role: 'presentation'}
-                        = link_to b.name, team_bot_path(@team, b)
+                        = link_to b.name, bot_path(b)
                     %li.divider{role: 'separator'}
                   %li{role: 'presentation'}
-                    = link_to new_team_bot_path(@team) do
+                    = link_to new_bot_path do
                       %i.fa.fa-plus
                       Add Another Bot
             - else
               - if @bot.present?
                 - if @bot.persisted?
-                  = link_to team_bot_path(@team, @bot), class: 'back-button' do
+                  = link_to bot_path(@bot), class: 'back-button' do
                     %i.fa.fa-chevron-left
                     Back to Bot Dashboard
                 - else
-                  = link_to team_path(@team), class: 'back-button' do
+                  = link_to bot_path(current_user.bots.first), class: 'back-button' do
                     %i.fa.fa-chevron-left
                     Back to Bot Dashboard
               - else

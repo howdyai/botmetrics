@@ -4,8 +4,7 @@ class UsersController < ApplicationController
 
   def show
     @user = current_user
-    @team = @user.teams.first
-    @bot = @team.bots.first
+    @bot = @user.bots.first
 
     TrackMixpanelEventJob.perform_async('Viewed User Profile Page', current_user.id)
   end

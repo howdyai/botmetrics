@@ -36,28 +36,20 @@ describe RegistrationsController do
       expect(user.api_key).to_not be_blank
     end
 
-    it 'should create a new team' do
-      expect { do_request }.to change(Team, :count).by(1)
-      team = Team.last
-      expect(team.name).to eql 'My Team'
-      expect(team.members).to match_array [User.find_by(email: 'i@mclov.in')]
-      expect(team.owners).to match_array [User.find_by(email: 'i@mclov.in')]
-    end
-
     it 'should create a new bot' do
       expect { do_request }.to change(Bot, :count).by(1)
-      team = Team.last
       bot = Bot.last
+      user = User.last
 
-      expect(bot.team).to eql team
+      expect(bot.owners).to match_array [user]
       expect(bot.name).to eql 'My First Bot'
       expect(bot.provider).to eql 'slack'
     end
 
-    it 'should redirect to the team_path' do
+    it 'should redirect to the bot_path' do
       do_request
-      team = Team.last
-      expect(response).to redirect_to team_path(team)
+      bot = Bot.last
+      expect(response).to redirect_to bot_path(bot)
     end
 
     it 'should identify the user on Mixpanel' do

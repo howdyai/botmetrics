@@ -1,7 +1,0 @@
-.stats.row
-  - @team.bots.each do |bot|
-    = link_to team_bot_path(@team, bot) do
-      .stat.col-sm-6.col-md-3
-        %h3= bot.name
-        %p.number= bot.instances.where(state: 'enabled').count
-

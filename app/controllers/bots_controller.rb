@@ -1,22 +1,32 @@
 class BotsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_team
-  before_filter :find_bot, except: [:new, :create]
+  before_filter :find_bot, except: [:new, :create, :index]
 
   layout 'app'
 
   def new
-    @bot = @team.bots.build
+    @bot = current_user.bots.build
     TrackMixpanelEventJob.perform_async('Viewed New Bot Page', current_user.id)
   end
 
+  def index
+    redirect_to bot_path(current_user.bots.first)
+  end
+
   def create
-    @bot = @team.bots.build(bot_params)
+    @bot = Bot.new(bot_params)
     @bot.provider = 'slack'
 
     if @bot.save
-      redirect_to team_bot_path(@team, @bot)
-      TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)
+      bc = current_user.bot_collaborators.create(bot: @bot, collaborator_type: 'owner')
+      if bc.persisted?
+        redirect_to bot_path(@bot)
+        TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)
+      else
+        @bot.destroy
+        @bot.errors.base.add 'unexpected error while creating your bot'
+        render :new
+      end
     else
       render :new
     end
@@ -29,7 +39,7 @@ class BotsController < ApplicationController
   def update
     if @bot.update_attributes(bot_params)
       TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
-      redirect_to team_bot_path(@team, @bot)
+      redirect_to bot_path(@bot)
     else
       render :edit
     end
@@ -43,7 +53,7 @@ class BotsController < ApplicationController
                 end
 
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
-      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
+      redirect_to(new_bot_instance_path(@bot)) && return
     end
 
     @show_trends = (@group_by != 'all-time')
@@ -155,7 +165,7 @@ class BotsController < ApplicationController
   protected
   def init_detail_view!
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
-      redirect_to(new_team_bot_instance_path(@team, @bot)) && return
+      redirect_to(new_bot_instance_path(@bot)) && return
     end
 
     @group_by = case params[:group_by]
@@ -173,13 +183,8 @@ class BotsController < ApplicationController
     @end = @end.end_of_day
   end
 
-  def find_team
-    @team = current_user.teams.find_by(uid: params[:team_id])
-    raise ActiveRecord::RecordNotFound if @team.blank?
-  end
-
   def find_bot
-    @bot = @team.bots.find_by(uid: params[:id])
+    @bot = current_user.bots.find_by(uid: params[:id])
     raise ActiveRecord::NotFound if @bot.blank?
   end
 
