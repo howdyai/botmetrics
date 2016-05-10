@@ -42,7 +42,7 @@ class RelaxService
       user = find_bot_user_from(bi, event)
       return if user.blank?
 
-      bi.events.create!(
+      event = bi.events.create(
         user: user,
         event_attributes: {
           channel: event.channel_uid,
@@ -55,6 +55,10 @@ class RelaxService
         provider: bi.provider,
         event_type: 'message_reaction'
       )
+
+      unless event.persisted?
+        Rails.logger.error "Couldn't save event: #{event.inspect}"
+      end
     end
   end
 
