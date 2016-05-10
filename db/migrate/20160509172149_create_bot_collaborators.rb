@@ -9,13 +9,5 @@ class CreateBotCollaborators < ActiveRecord::Migration
     end
 
     add_index :bot_collaborators, [:user_id, :bot_id], unique: true
-
-    User.find_each do |user|
-      user.teams.each do |team|
-        team.bots.each do |bot|
-          BotCollaborator.create!(bot: bot, user: user, collaborator_type: 'owner')
-        end
-      end
-    end
   end
 end
