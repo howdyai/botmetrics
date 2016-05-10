@@ -56,7 +56,9 @@ class RelaxService
         event_type: 'message_reaction'
       )
 
-      unless event.persisted?
+      if event.persisted?
+        Rails.logger.info "Saved event: #{event.inspect}"
+      else
         Rails.logger.error "Couldn't save event: #{event.inspect}"
       end
     end
