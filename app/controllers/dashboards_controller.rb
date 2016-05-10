@@ -66,7 +66,11 @@ class DashboardsController < ApplicationController
 
   def all_messages
     init_detail_view!
-    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_from_bot: false)
+    @messages = Event.where(bot_instance_id: @instances.select(:id),
+                            event_type: 'message',
+                            is_from_bot: false,
+                            created_at: @start.utc..@end.utc)
+
     @tableized = @instances.
                     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
                     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
@@ -77,18 +81,22 @@ class DashboardsController < ApplicationController
 
     @messages = case @group_by
                 when 'day'
-                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
                 when 'week'
-                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
                 when 'month'
-                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
+
     TrackMixpanelEventJob.perform_async('Viewed All Messages Dashboard Page', current_user.id)
   end
 
   def messages_to_bot
     init_detail_view!
-    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_for_bot: true)
+    @messages = Event.where(bot_instance_id: @instances.select(:id),
+                            event_type: 'message',
+                            is_for_bot: true,
+                            created_at: @start.utc..@end.utc)
     @tableized = @instances.
                     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
                     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
@@ -99,18 +107,22 @@ class DashboardsController < ApplicationController
 
     @messages = case @group_by
                 when 'day'
-                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
                 when 'week'
-                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
                 when 'month'
-                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
     TrackMixpanelEventJob.perform_async('Viewed Messages To Bot Dashboard Page', current_user.id)
   end
 
   def messages_from_bot
     init_detail_view!
-    @messages = Event.where(bot_instance_id: @instances.select(:id), event_type: 'message', is_from_bot: true)
+    @messages = Event.where(bot_instance_id: @instances.select(:id),
+                            event_type: 'message',
+                            is_from_bot: true,
+                            created_at: @start.utc..@end.utc)
+
     @tableized = @instances.
                     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
                     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
@@ -121,12 +133,13 @@ class DashboardsController < ApplicationController
 
     @messages = case @group_by
                 when 'day'
-                  @messages.group_by_day(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
                 when 'week'
-                  @messages.group_by_week(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
                 when 'month'
-                  @messages.group_by_month(:created_at, range: @start..@end, time_zone: current_user.timezone).count
+                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
+
     TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
 
