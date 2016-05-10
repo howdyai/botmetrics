@@ -16,9 +16,13 @@ class RelaxService
       end
     when 'message_new'
       bi = find_bot_instance_from(event)
-      return if bi.blank?
+      if bi.blank?
+        Rails.logger.error "couldn't find bot instance for #{event.inspect}"
+      end
       user = find_bot_user_from(bi, event)
-      return if user.blank?
+      if user.blank?
+        Rails.logger.error "couldn't find bot instance for #{event.inspect}"
+      end
 
       bi.events.create!(
         user: user,
