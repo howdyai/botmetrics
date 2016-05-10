@@ -15,9 +15,9 @@
       = render partial: 'bots/api'
 
       .go-to-dashboard.text-center
-        = link_to 'Go To Your Bot Dashboard', team_bot_path(@team, @bot), class: 'btn btn-lg btn-success'
+        = link_to 'Go To Your Bot Dashboard', bot_path(@team, @bot), class: 'btn btn-lg btn-success'
       .create-new-instance.text-center
-        = link_to 'Create another instance', new_team_bot_instance_path(@team, @bot), class: 'btn btn-lg btn-success'
+        = link_to 'Create another instance', new_bot_instance_path(@team, @bot), class: 'btn btn-lg btn-success'
 
 - content_for :page_scripts do
   :javascript
