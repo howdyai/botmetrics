@@ -4,7 +4,7 @@
       %h3.text-center Let's setup the first instance of your bot
     - else
       %h3.text-center Setup Another Instance of your Bot
-    = simple_form_for [@team, @bot, @instance], url: team_bot_instances_path, as: :instance, method: :post do |f|
+    = simple_form_for [@bot, @instance], url: bot_instances_path, as: :instance, method: :post do |f|
       = f.input :token, label: "Your Bot's Token", required: true
       = f.input :provider, collection: {Slack: 'slack'}, label: 'What Bot Is It?', selected: 'slack'
       %p.disclaimer
