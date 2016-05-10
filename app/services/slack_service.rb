@@ -31,6 +31,11 @@ class SlackService
     end
 
     def slack_opts
-      { channel: channel, text: message.text, attachments: message.attachments }.delete_if { |_, v| v.blank? }
+      {
+        as_user: 'true',
+        channel: channel,
+        text: message.text,
+        attachments: message.attachments
+      }.delete_if { |_, v| v.blank? }
     end
 end

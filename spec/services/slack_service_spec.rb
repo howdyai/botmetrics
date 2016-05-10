@@ -55,7 +55,7 @@ RSpec.describe SlackService do
           with(
             'chat.postMessage',
             'POST',
-            { channel: '123', text: user_message.text }
+            { as_user: 'true', channel: '123', text: user_message.text }
           )
 
         service.send_now
@@ -70,7 +70,7 @@ RSpec.describe SlackService do
           with(
             'chat.postMessage',
             'POST',
-            { channel: chan_message.channel, text: chan_message.text }
+            { as_user: 'true', channel: chan_message.channel, text: chan_message.text }
           )
 
         service.send_now
