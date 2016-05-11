@@ -66,14 +66,14 @@ RSpec.describe SlackService do
       let(:service) { SlackService.new(chan_message) }
 
       it 'works' do
-        expect(fake_slack).to receive(:call).
+        service.send_now
+
+        expect(fake_slack).to have_received(:call).
           with(
             'chat.postMessage',
             'POST',
             { as_user: 'true', channel: chan_message.channel, text: chan_message.text }
           )
-
-        service.send_now
       end
     end
   end

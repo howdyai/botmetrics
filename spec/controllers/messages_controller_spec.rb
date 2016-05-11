@@ -13,11 +13,12 @@ RSpec.describe MessagesController do
     context 'success' do
       let(:params) { { message: { team_id: team_id, channel: 'abc123', text: 'Hello World'} } }
 
-      it 'sends message and returns success' do
-        expect(SendMessageJob).to receive(:perform_async)
+      before { allow(SendMessageJob).to receive(:perform_async) }
 
+      it 'sends message and returns success' do
         do_request
 
+        expect(SendMessageJob).to have_received(:perform_async).with(Message.last.id)
         expect(Message.last.bot_instance).to eq bot_instance
         expect(response.status).to eq 202
       end
