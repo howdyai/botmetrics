@@ -237,10 +237,11 @@ CREATE TABLE messages (
     message_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
     text text,
     attachments text,
-    response character varying,
     bot_instance_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
+    sent boolean DEFAULT false,
+    response jsonb DEFAULT '{}'::jsonb,
     CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
     CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
 );
@@ -673,4 +674,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160509172149');
 INSERT INTO schema_migrations (version) VALUES ('20160509173152');
 
 INSERT INTO schema_migrations (version) VALUES ('20160511094756');
+
+INSERT INTO schema_migrations (version) VALUES ('20160511102827');
+
+INSERT INTO schema_migrations (version) VALUES ('20160511104446');
 
