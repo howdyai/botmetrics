@@ -19,7 +19,7 @@ RSpec.describe MessagesController do
         do_request
 
         expect(Message.last.bot_instance).to eq bot_instance
-        expect(response.status).to eq 200
+        expect(response.status).to eq 202
       end
     end
 

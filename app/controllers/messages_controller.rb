@@ -10,7 +10,7 @@ class MessagesController < ApplicationController
     if message_object = message.save_for(@bot_instance)
       SendMessageJob.perform_async(message_object.id)
 
-      head :ok
+      head :accepted
     else
       head :bad_request
     end
