@@ -4,11 +4,11 @@ module Messages
 
     validates_presence_of :team_id
 
-    validates_presence_of :channel,     if: Proc.new { |obj| obj.user.blank? }
-    validates_presence_of :user,        if: Proc.new { |obj| obj.channel.blank? }
+    validates_presence_of :channel,     if: ->(obj) { obj.user.blank? }
+    validates_presence_of :user,        if: ->(obj) { obj.channel.blank? }
 
-    validates_presence_of :text,        if: Proc.new { |obj| obj.attachments.blank? }
-    validates_presence_of :attachments, if: Proc.new { |obj| obj.text.blank? }
+    validates_presence_of :text,        if: ->(obj) { obj.attachments.blank? }
+    validates_presence_of :attachments, if: ->(obj) { obj.text.blank? }
 
     def model_params
       {
@@ -21,6 +21,7 @@ module Messages
 
     def save_for(bot_instance)
       message = bot_instance.messages.build(model_params)
+
       if valid? && message.save
         message
       else
