@@ -19,7 +19,7 @@ class MessagesController < ApplicationController
   private
 
   def find_bot
-    @bot = Bot.find(params[:bot_id])
+    @bot = Bot.find_by!(uid: params[:bot_id])
   end
 
   def find_bot_instance

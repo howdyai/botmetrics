@@ -7,7 +7,7 @@ RSpec.describe MessagesController do
 
   describe '#create' do
     def do_request
-      post :create, { bot_id: bot.id }.merge(params)
+      post :create, { bot_id: bot.uid }.merge(params)
     end
 
     context 'success' do
