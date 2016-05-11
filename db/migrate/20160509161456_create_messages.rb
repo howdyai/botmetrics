@@ -1,8 +1,8 @@
 class CreateMessages < ActiveRecord::Migration
   def change
     create_table :messages do |t|
+      t.string  :provider
       t.jsonb   :message_attributes, null: false, default: {}
-      t.string  :user
       t.text    :text
       t.text    :attachments
       t.string  :response
@@ -11,5 +11,7 @@ class CreateMessages < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index :messages, :bot_instance_id
   end
 end

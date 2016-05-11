@@ -34,7 +34,7 @@ RSpec.describe Messages::Slack do
 
     it 'prepares model params' do
       message  = Messages::Slack.new(team_id: 'T1234', user: 'U5678', text: 'OK!')
-      expected = { message_attributes: { team_id: 'T1234' }, user: 'U5678', text: 'OK!' }
+      expected = { message_attributes: { team_id: 'T1234' , user: 'U5678' }, text: 'OK!' }
 
       expect(message.model_params).to eq expected
     end
@@ -48,7 +48,7 @@ RSpec.describe Messages::Slack do
   end
 
   describe '#save_for' do
-    let(:bot_instance) { create(:bot_instance) }
+    let(:bot_instance) { create(:bot_instance, provider: 'slack') }
 
     context 'valid' do
       let(:message) { Messages::Slack.new(team_id: 'T1234', channel: 'C5678', text: 'OK!') }
@@ -58,6 +58,7 @@ RSpec.describe Messages::Slack do
           message.save_for(bot_instance)
         }.to change(Message, :count).by(1)
 
+        expect(Message.last.provider).to eq 'slack'
         expect(Message.last.team_id).to eq 'T1234'
       end
 

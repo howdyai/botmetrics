@@ -233,14 +233,16 @@ ALTER SEQUENCE events_id_seq OWNED BY events.id;
 
 CREATE TABLE messages (
     id integer NOT NULL,
+    provider character varying,
     message_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
-    "user" character varying,
     text text,
     attachments text,
     response character varying,
     bot_instance_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
+    CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
 );
 
 
@@ -509,6 +511,13 @@ CREATE INDEX index_events_on_bot_user_id ON events USING btree (bot_user_id);
 
 
 --
+-- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_messages_on_bot_instance_id ON messages USING btree (bot_instance_id);
+
+
+--
 -- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -662,4 +671,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160509161456');
 INSERT INTO schema_migrations (version) VALUES ('20160509172149');
 
 INSERT INTO schema_migrations (version) VALUES ('20160509173152');
+
+INSERT INTO schema_migrations (version) VALUES ('20160511094756');
 

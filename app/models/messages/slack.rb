@@ -13,7 +13,6 @@ module Messages
     def model_params
       {
         message_attributes: message_attributes,
-        user: user,
         text: text,
         attachments: attachments
       }.delete_if { |_, v| v.blank? }
@@ -32,7 +31,7 @@ module Messages
     private
 
       def message_attributes
-        { team_id: team_id, channel: channel }.delete_if { |_, v| v.blank? }
+        { team_id: team_id, channel: channel, user: user }.delete_if { |_, v| v.blank? }
       end
   end
 end
