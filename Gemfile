@@ -56,6 +56,7 @@ group :development, :test do
   gem 'rspec-its',                '~> 1.2.0'
   gem 'byebug',                   '~> 2.0.0'
   gem 'timecop',                  '~> 0.7.4'
+  gem 'pry-rails'
 end
 
 group :test do
