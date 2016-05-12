@@ -17,6 +17,7 @@ class BotInstance < ActiveRecord::Base
   scope :legit,     -> { where("state <> ?", 'pending') }
   scope :enabled,   -> { where("state = ?", 'enabled') }
   scope :disabled,  -> { where("state = ?", 'disabled') }
+  scope :pending,   -> { where("state <> ?", 'pending') }
 
   def self.find_by_bot_and_team!(bot, team_id)
     bot_instance = BotInstance.where(bot_id: bot.id).where("instance_attributes->>'team_id' = ?", team_id).first

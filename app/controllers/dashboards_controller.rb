@@ -1,10 +1,11 @@
 class DashboardsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_bot
+  before_filter :find_instances
+  before_filter :init_detail_view!
   layout 'app'
 
   def new_bots
-    init_detail_view!
     @tableized = @instances.
                     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
                     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
@@ -25,7 +26,6 @@ class DashboardsController < ApplicationController
   end
 
   def disabled_bots
-    init_detail_view!
     @events = Event.where(event_type: 'bot_disabled', bot_instance_id: @instances.select(:id), created_at: @start.utc..@end.utc)
 
     @tableized = @instances.
@@ -48,7 +48,6 @@ class DashboardsController < ApplicationController
   end
 
   def users
-    init_detail_view!
     @users = BotUser.where(bot_instance_id: @instances.select(:id)).joins(:bot_instance).
                      where("bot_instances.created_at" => @start.utc..@end.utc)
     @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
@@ -65,7 +64,6 @@ class DashboardsController < ApplicationController
   end
 
   def all_messages
-    init_detail_view!
     @messages = Event.where(bot_instance_id: @instances.select(:id),
                             event_type: 'message',
                             is_from_bot: false,
@@ -92,7 +90,6 @@ class DashboardsController < ApplicationController
   end
 
   def messages_to_bot
-    init_detail_view!
     @messages = Event.where(bot_instance_id: @instances.select(:id),
                             event_type: 'message',
                             is_for_bot: true,
@@ -117,7 +114,6 @@ class DashboardsController < ApplicationController
   end
 
   def messages_from_bot
-    init_detail_view!
     @messages = Event.where(bot_instance_id: @instances.select(:id),
                             event_type: 'message',
                             is_from_bot: true,
@@ -139,29 +135,19 @@ class DashboardsController < ApplicationController
                 when 'month'
                   @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
                 end
-
     TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
 
   protected
-  def init_detail_view!
-    if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
-      redirect_to(new_bot_instance_path(@bot)) && return
+  def find_instances
+    if (@instances = @bot.instances.pending).count == 0
+      return redirect_to(new_bot_instance_path(@bot))
     end
+  end
 
-    @group_by = case params[:group_by]
-                when '' then 'day'
-                when nil then 'day'
-                else params[:group_by]
-                end
-
-    @start = params[:start].to_s.in_time_zone(current_user.timezone)
-    @start = (Time.now - 6.days).in_time_zone(current_user.timezone) if @start.blank?
-    @end  = params[:end].to_s.in_time_zone(current_user.timezone)
-    @end = @start + 6.days if @end.blank?
-
-    @start = @start.beginning_of_day
-    @end = @end.end_of_day
+  def init_detail_view!
+    @group_by = params[:group_by].presence || 'day'
+    @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call
   end
 
   def find_bot
