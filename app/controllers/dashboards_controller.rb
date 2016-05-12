@@ -1,8 +1,8 @@
 class DashboardsController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :find_bot
-  before_filter :find_instances
-  before_filter :init_detail_view!
+  before_action :authenticate_user!
+  before_action :find_bot
+  before_action :find_instances
+  before_action :init_detail_view!
   layout 'app'
 
   def new_bots
