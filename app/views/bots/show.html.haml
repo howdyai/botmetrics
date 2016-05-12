@@ -1,8 +1,6 @@
 .secondary-menu.row
   .col-md-4.col-sm-4.col-xs-4
-    = link_to edit_bot_path(@bot), class: 'btn btn-lg btn-success btn-settings' do
-      %i.fa.fa-cog
-      Bot Settings
+    %h2 All Metrics
   .col-md-8.col-sm-8.col-xs-8.text-right
     .btn-group.time-segmented-controls
       = link_to 'Today', bot_path(@bot), class: (@group_by == 'today' ? 'btn active' : 'btn')

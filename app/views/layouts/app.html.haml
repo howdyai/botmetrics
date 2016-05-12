@@ -14,58 +14,66 @@
 
   %body{class: body_classes(yield :body_classes)}
     = render partial: 'layouts/flash', locals: { flash: flash }
-    %nav.navbar.navbar-default
-      .container-fluid.header-container
-        .row
-          .col-md-6.col-sm-6.col-xs-6
-            - if show_bots_dropdown?
-              .dropdown
-                %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-                  %h3.bot-name= @bot.name
-                  %span.caret
-                %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
-                  - if (bots = current_user.bots.where("bots.uid <> ?", @bot.uid)).present?
-                    - bots.each do |b|
-                      %li{role: 'presentation'}
-                        = link_to b.name, bot_path(b)
-                    %li.divider{role: 'separator'}
+    - if @bot.present? && @bot.persisted?
+      .row.main
+        .sidebar-section
+          .dropdown
+            %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
+              %h3.bot-name= truncate(@bot.name, length: 20)
+              %span.caret
+            %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
+              - if (bots = current_user.bots.where("bots.uid <> ?", @bot.uid)).present?
+                - bots.each do |b|
                   %li{role: 'presentation'}
-                    = link_to new_bot_path do
-                      %i.fa.fa-plus
-                      Add Another Bot
-            - else
-              - if @bot.present?
-                - if @bot.persisted?
-                  = link_to bot_path(@bot), class: 'back-button' do
-                    %i.fa.fa-chevron-left
-                    Back to Bot Dashboard
-                - else
-                  = link_to bot_path(current_user.bots.first), class: 'back-button' do
-                    %i.fa.fa-chevron-left
-                    Back to Bot Dashboard
-              - else
-                .dropdown
-                  %button.header-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-                    %h3 botmetrics
-
-          .col-md-6.col-sm-6.col-xs-6.text-right
-            .dropdown
-              %button.profile-button.btn.btn-outline.dropdown-toggle{'data-toggle' => 'dropdown'}
-                %h3.user-name= @current_user.full_name
-                %span.caret
-              %ul.dropdown-menu.dropdown-menu-right{role: 'menu', "data-no-turbolink" => true}
-                %li{role: 'presentation'}
-                  = link_to user_path(current_user) do
-                    %i.fa.fa-user
-                    My Profile
+                    = link_to b.name, bot_path(b)
                 %li.divider{role: 'separator'}
-                %li{role: 'presentation'}
-                  = link_to destroy_user_session_path do
-                    %i.fa.fa-power-off
-                    Sign Out
+              %li{role: 'presentation'}
+                = link_to '#', data: {toggle: "modal", target: "#new-bot-modal" } do
+                  %i.fa.fa-plus
+                  Add Another Bot
+          %ul.menu.nav
+            %li
+              = link_to bot_path(@bot), class: menu_class('metrics') do
+                %i.fa.fa-line-chart
+                Metrics
+            %li
+              = link_to '#', class: menu_class('notifications') do
+                %i.fa.fa-comment
+                Notifications
+            %li
+              = link_to '#', class: menu_class('analyze') do
+                %i.fa.fa-pie-chart
+                Analyze
+          %ul.menu.footer
+            %li
+              = link_to edit_bot_path(@bot), class: menu_class('bot-settings') do
+                %i.fa.fa-cog
+                Settings
+            %li
+              = link_to user_path(current_user, bot_id: @bot.to_param), class: menu_class('my-profile') do
+                %i.fa.fa-user
+                My Profile
+            %li
+              = link_to destroy_user_session_path do
+                %i.fa.fa-power-off
+                Sign Out
 
-    .container-fluid.content-container
+    .col-md-12.content-container
       = yield
+
+    #new-bot-modal.modal.fade
+      .modal-dialog{role: 'document'}
+        .modal-content
+          .modal-header
+            %button.close{type:"button",  'data-dismiss' => "modal", 'aria-label' => "Close"}
+              %span{'aria-hidden' => "true"}
+                &times;
+            %h4.modal-title#myModalLabel
+              Create a New Bot
+          .modal-body
+            = simple_form_for current_user.bots.new, url: bots_path, method: :post do |f|
+              = f.input :name, label: "Your Bot's Name", required: true
+              = f.submit 'Start Collecting Metrics'
 
     = render partial: 'ga'
     = render partial: 'mixpanel'

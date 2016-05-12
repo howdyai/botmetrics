@@ -1,7 +1,11 @@
 .secondary-menu.row
-  .col-md-3.col-sm-3.col-xs-6
+  .col-md-4.col-sm-3.col-xs-6
+    = link_to bot_path(@bot), class: 'breadcrumb' do
+      %h2 All Metrics
+    %span.breadcrumb-separator
+      \/
     %h2 Bots Disabled
-  .col-md-9.col-sm-9.col-xs-6
+  .col-md-8.col-sm-9.col-xs-6
     #report-range.pull-right
       %i.fa.fa-calendar
       %span

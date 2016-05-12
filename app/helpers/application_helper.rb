@@ -1,4 +1,16 @@
 module ApplicationHelper
+  def menu_class(link)
+    if (controller.controller_name == 'dashboards' ||
+       (controller.controller_name == 'bots' && controller.action_name == 'show')) &&
+       link == 'metrics'
+      'active'
+    elsif controller.controller_name == 'bots' && controller.action_name == 'edit' && link == 'bot-settings'
+      'active'
+    elsif controller.controller_name == 'users' && controller.action_name == 'show' && link == 'my-profile'
+      'active'
+    end
+  end
+
   def body_classes(classes=nil)
     ary = [Rails.application.class.to_s.split("::").first.downcase]
     ary << controller.controller_name

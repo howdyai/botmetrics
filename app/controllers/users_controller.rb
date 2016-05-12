@@ -4,7 +4,7 @@ class UsersController < ApplicationController
 
   def show
     @user = current_user
-    @bot = @user.bots.first
+    @bot = params[:bot_id].present? ? @user.bots.find_by(uid: params[:bot_id]) : @user.bots.first
 
     TrackMixpanelEventJob.perform_async('Viewed User Profile Page', current_user.id)
   end

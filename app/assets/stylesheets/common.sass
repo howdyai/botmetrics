@@ -22,6 +22,60 @@ body
     outline-offset: 0px !important
     box-shadow: none !important
 
+  #new-bot-modal
+    z-index: 99999
+
+  .sidebar-section
+    z-index: 9999
+    width: 200px
+    height: auto !important
+    min-height: 100%
+    padding: 0px
+    position: fixed
+    background: #2c3138
+
+    .dropdown-menu-left
+      left: 25px
+
+    .btn.header-button
+      padding: 15px 25px
+      background-color: transparent
+      h3
+        font-size: 16px
+        display: inline-block
+        color: #fff
+        margin-right: 5px
+        margin-top: 0
+        margin-bottom: 0
+      span.caret
+        color: #fff
+    ul.menu
+      padding: 0
+      &.footer
+        position: absolute
+        bottom: 0
+        width: 100%
+        padding: 0
+      &.nav
+        padding-top: 45px
+      list-style: none
+      li
+        a
+          i
+            display: inline-block
+            margin-right: 5px
+          display: block
+          padding: 0 35px
+          font-size: 16px
+          line-height: 42px
+          color: #99a0a9
+          text-decoration: none
+          &:hover
+            background: rgba(255, 255, 255, .05)
+          &.active
+            color: #fff
+            background: rgba(255, 255, 255, .1)
+
   a.btn-success,
   input[type="submit"]
     color: #fff
