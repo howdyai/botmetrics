@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe UsersController do
+RSpec.describe UsersController do
   let!(:user) { create :user }
 
   describe 'PATCH regenerate_api_key' do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe TrackMixpanelEventJob do
+RSpec.describe TrackMixpanelEventJob do
   describe '#perform' do
     let!(:user)     { create :user, email: 'i@mclov.in', first_name: 'Mc', last_name: 'Lovin', full_name: 'Mc Lovin' }
     let!(:mixpanel) { instance_double('Mixpanel::Tracker') }

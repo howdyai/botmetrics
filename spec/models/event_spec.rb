@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Event do
+RSpec.describe Event do
   describe 'associations' do
     it { should belong_to :bot_instance }
     it { should belong_to :user }

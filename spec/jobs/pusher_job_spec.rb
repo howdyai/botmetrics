@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PusherJob do
+RSpec.describe PusherJob do
   describe '#perform' do
     let!(:channel)  { 'channel' }
     let!(:message)  { 'message' }

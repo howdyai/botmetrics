@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe BotInstance do
+RSpec.describe BotInstance do
   describe 'associations' do
     it { is_expected.to belong_to :bot }
     it { is_expected.to have_many :users }

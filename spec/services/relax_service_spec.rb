@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe RelaxService do
+RSpec.describe RelaxService do
   describe 'team_joined' do
     let!(:event) { Relax::Event.new(team_uid: 'TDEADBEEF', namespace: 'UNESTOR1', type: 'team_joined') }
     before { allow(ImportUsersForBotInstanceJob).to receive(:perform_async) }

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BotInstancesController do
+RSpec.describe BotInstancesController do
   let!(:user) { create :user }
   let!(:bot)  { create :bot }
   let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }

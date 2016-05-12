@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Bot do
+RSpec.describe Bot do
   describe 'validations' do
     subject { create :bot }
     it { should validate_presence_of :name }

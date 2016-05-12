@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BotUser do
+RSpec.describe BotUser do
   describe 'validations' do
     subject { create :bot_user }
 

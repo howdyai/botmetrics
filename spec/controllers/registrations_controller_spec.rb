@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe RegistrationsController do
+RSpec.describe RegistrationsController do
   # needed for devise shit
   before :each do
     @request.env["devise.mapping"] = Devise.mappings[:user]
