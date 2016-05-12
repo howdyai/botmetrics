@@ -81,19 +81,18 @@
         %li
           © Ze Robot Labs Inc – 2015-2016
         %li
-          %i.fa.fa-user-secret
+          = icon('user-secret')
           %a{href:"/privacy"} Privacy Policy
         %li
-          %i.fa.fa-envelope-o
+          = icon('envelope-o')
           %a{href:"mailto:hello@zerobotlabs.com"} hello@getbotmetrics.com
         %li
-          %i.fa.fa-github
+          = icon('github')
           %a{href:"https://github.com/botmetrics"} botmetrics
         %li
-          %i.fa.fa-twitter
+          = icon('twitter')
           %a{href:"https://twitter.com/getbotmetrics"} getbotmetrics
 - content_for :page_scripts do
   :javascript
     App.page = new App.StaticIndex();
     App.page.run();
-

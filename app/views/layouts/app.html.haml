@@ -30,33 +30,33 @@
                 %li.divider{role: 'separator'}
               %li{role: 'presentation'}
                 = link_to '#', data: {toggle: "modal", target: "#new-bot-modal" } do
-                  %i.fa.fa-plus
+                  = icon('plus')
                   Add Another Bot
           %ul.menu.nav
             %li
               = link_to bot_path(@bot), class: menu_class('metrics') do
-                %i.fa.fa-line-chart
+                = icon('line-chart')
                 Metrics
             %li
               = link_to bot_notifications_path(@bot), class: menu_class('notifications') do
-                %i.fa.fa-comment
+                = icon('comment')
                 Notifications
             %li
               = link_to bot_analytics_path(@bot), class: menu_class('analyze') do
-                %i.fa.fa-pie-chart
+                = icon('pie-chart')
                 Analyze
           %ul.menu.footer
             %li
               = link_to edit_bot_path(@bot), class: menu_class('bot-settings') do
-                %i.fa.fa-cog
+                = icon('cog')
                 Settings
             %li
               = link_to user_path(current_user, bot_id: @bot.to_param), class: menu_class('my-profile') do
-                %i.fa.fa-user
+                = icon('user')
                 My Profile
             %li
               = link_to destroy_user_session_path do
-                %i.fa.fa-power-off
+                = icon('power-off')
                 Sign Out
 
     .col-md-12.content-container
