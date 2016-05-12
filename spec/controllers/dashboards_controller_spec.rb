@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DashboardsController do
-  def expect_track_mixpanel_event_job__have_received(message, user_id)
+  def expect_track_mixpanel_event_job_to_have_received(message, user_id)
     expect(TrackMixpanelEventJob).to have_received(:perform_async).with(message, user_id)
   end
 
@@ -27,7 +27,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed New Bots Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed New Bots Dashboard Page', user.id)
     end
   end
 
@@ -53,7 +53,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed Disabled Bots Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed Disabled Bots Dashboard Page', user.id)
     end
   end
 
@@ -79,7 +79,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed New Users Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed New Users Dashboard Page', user.id)
     end
   end
 
@@ -105,7 +105,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed All Messages Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed All Messages Dashboard Page', user.id)
     end
   end
 
@@ -131,7 +131,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed Messages To Bot Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed Messages To Bot Dashboard Page', user.id)
     end
   end
 
@@ -157,7 +157,7 @@ RSpec.describe DashboardsController do
 
     it 'should track the event on Mixpanel' do
       do_request
-      expect_track_mixpanel_event_job__have_received('Viewed Messages From Bot Dashboard Page', user.id)
+      expect_track_mixpanel_event_job_to_have_received('Viewed Messages From Bot Dashboard Page', user.id)
     end
   end
 end
