@@ -1,6 +1,6 @@
 class BotsController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :find_bot, except: [:new, :create, :index]
+  before_action :authenticate_user!
+  before_action :find_bot, except: [:new, :create, :index]
 
   layout 'app'
 

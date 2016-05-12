@@ -1,6 +1,6 @@
 class BotInstancesController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :find_bot
+  before_action :authenticate_user!
+  before_action :find_bot
 
   layout 'app'
 
