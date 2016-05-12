@@ -2,7 +2,8 @@ body.bot_instances,
 body.users,
 body.bots,
 body.teams,
-body.dashboards
+body.dashboards,
+body.notifications
   &.setting_up
     p
       font-size: 16px
@@ -69,6 +70,7 @@ body.users
 body.bots,
 body.bot_instances,
 body.dashboards,
+body.notifications,
 body.users
   &.edit
     h2.api
@@ -162,6 +164,7 @@ body.dashboards.messages_from_bot
 body.bots,
 body.teams,
 body.dashboards,
+body.notifications,
 body.users,
 body.bot_instances
   background-color: rgba(227,231,242, 0.1)
@@ -209,3 +212,13 @@ body.bot_instances
         bottom: -15px
         font-size: 64px
         z-index: 99999
+
+body.notifications
+  .notifications-container
+    margin-top: 25px
+
+  .btn-group
+    margin-top: 15px
+
+  .failures
+    color: $alert-danger-text

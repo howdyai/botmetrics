@@ -65,6 +65,16 @@ RSpec.describe Messages::Slack do
       it 'returns object' do
         expect(message.save_for(bot_instance)).to be_an_instance_of(Message)
       end
+
+      context 'with notification' do
+        let(:notification) { create(:notification) }
+
+        it 'saves with notification' do
+          message_object = message.save_for(bot_instance, notification: notification)
+
+          expect(message_object.notification).to eq notification
+        end
+      end
     end
 
     context 'invalid' do

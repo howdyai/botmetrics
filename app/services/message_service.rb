@@ -1,17 +1,19 @@
-class SlackService
+class MessageService
   def initialize(message)
     @message      = message
     @bot_instance = message.bot_instance
   end
 
   def send_now
+    message.update(sent: true)
+
     return false if !@bot_instance.state == 'enabled'
-    return false if channel.blank? || (message.text.blank? && message.attachments.blank?)
+    return false if channel.blank?
 
     response = slack.call('chat.postMessage', 'POST', slack_opts)
 
     if response['ok']
-      message.update(sent: true, response: response)
+      message.update(success: true, response: response)
       response['ok']
     else
       error!(response)
@@ -46,7 +48,7 @@ class SlackService
     end
 
     def error!(response)
-      message.update(response: response)
+      message.update(success: false, response: response)
       nil
     end
 end

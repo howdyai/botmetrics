@@ -1,0 +1,29 @@
+.secondary-menu.row
+  .col-md-6.col-sm-3.col-xs-6
+    = link_to bot_notifications_path(@bot), class: 'breadcrumb' do
+      %h2 All Notifications
+    %span.breadcrumb-separator
+      \/
+    %h2 Notification
+
+.container-fluid.notifications-container
+  .row
+    .col-sm-8.col-sm-offset-2
+      %p
+        %strong Notification to #{pluralize(@notification.bot_user_ids.count, 'User')}
+
+      .progress.progress-striped.active
+        .progress-bar.progress-bar-success{role: "progressbar", 'aria-valuenow' => "0", 'aria-valuemin' => "0", 'aria-valuemax' => "100", data: { sent: @notification.messages.sent.count, total: @notification.bot_user_ids.count } }
+          %span.progress-sent  #{@notification.messages.sent.count}
+          \/
+          %span.progress-total #{@notification.bot_user_ids.count}
+
+      .failures
+        %ul
+          - @notification.messages.failure.each do |message|
+            %li Failed to send message to #{message.user}
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.NotificationSendingProgress(#{@notification.id.to_json}, #{Settings.pusher_api_key.to_json});
+    App.page.run();

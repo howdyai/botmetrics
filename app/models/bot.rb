@@ -11,6 +11,8 @@ class Bot < ActiveRecord::Base
   has_many :collaborators, through: :bot_collaborators, source: :user
   has_many :owners, -> { where("bot_collaborators.collaborator_type" => 'owner') }, through: :bot_collaborators, source: :user
 
+  has_many :notifications
+
   def to_param
     self.uid
   end

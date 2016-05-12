@@ -6,6 +6,8 @@ module ApplicationHelper
       'active'
     elsif controller.controller_name == 'bots' && controller.action_name == 'edit' && link == 'bot-settings'
       'active'
+    elsif controller.controller_name == 'notifications' && link == 'notifications'
+      'active'
     elsif controller.controller_name == 'users' && controller.action_name == 'show' && link == 'my-profile'
       'active'
     end

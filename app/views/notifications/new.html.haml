@@ -1,0 +1,19 @@
+.secondary-menu.row
+  .col-md-6.col-sm-3.col-xs-6
+    = link_to bot_notifications_path(@bot), class: 'breadcrumb' do
+      %h2 All Notifications
+    %span.breadcrumb-separator
+      \/
+    %h2 New Notification
+
+.container-fluid.notifications-container
+  .row
+    .col-sm-8.col-sm-offset-2
+      = simple_form_for [@bot, @notification] do |f|
+        = f.input :content, input_html: { rows: 10 }
+
+        - @notification.bot_user_ids.each do |bot_user_id|
+          = f.input :bot_user_ids, as: :hidden, input_html: { name: 'notification[bot_user_ids][]', value: bot_user_id }
+
+        - count = @notification.bot_user_ids.size
+        = f.submit "Send Notification to #{pluralize(count, 'User')}", data: { confirm: "Sure? This message will be going out to #{pluralize(count, 'User')}."}

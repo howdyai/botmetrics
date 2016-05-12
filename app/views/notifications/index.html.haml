@@ -1,0 +1,31 @@
+.secondary-menu.row
+  .col-md-4.col-sm-4.col-xs-4
+    %h2 All Notifications
+  .col-md-8.col-sm-8.col-xs-8.text-right
+    .btn-group
+      = link_to new_bot_notification_path(@bot), class: 'btn btn-primary' do
+        New Notification
+
+.container-fluid.notifications-container
+  .row
+    .col-sm-8.col-sm-offset-2
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Content
+            %th Sent Count
+            %th Success Count
+            %th Failure Count
+            %th Total Count
+            %th Created
+        %tbody
+          - @notifications.each do |notification|
+            %tr
+              %td= truncate(notification.content, length: 25)
+              %td= notification.messages.sent.count
+              %td= notification.messages.success.count
+              %td= notification.messages.failure.count
+              %td= notification.bot_user_ids.count
+              %td= link_to "#{time_ago_in_words(notification.created_at)} ago", [@bot, notification]
+
+      = will_paginate @notifications, renderer: BootstrapPagination::Rails

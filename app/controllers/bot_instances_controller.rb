@@ -37,10 +37,6 @@ class BotInstancesController < ApplicationController
   end
 
   protected
-  def find_bot
-    @bot = current_user.bots.find_by(uid: params[:bot_id])
-    raise ActiveRecord::RecordNotFound if @bot.blank?
-  end
 
   def instance_params
     params.require(:instance).permit(:token, :created_at)

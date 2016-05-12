@@ -240,8 +240,10 @@ CREATE TABLE messages (
     bot_instance_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    sent boolean DEFAULT false,
+    success boolean DEFAULT false,
     response jsonb DEFAULT '{}'::jsonb,
+    notification_id integer,
+    sent boolean DEFAULT false,
     CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
     CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
 );
@@ -264,6 +266,39 @@ CREATE SEQUENCE messages_id_seq
 --
 
 ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
+
+
+--
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE notifications (
+    id integer NOT NULL,
+    content text,
+    bot_user_ids text[] DEFAULT '{}'::text[],
+    bot_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
@@ -368,6 +403,13 @@ ALTER TABLE ONLY messages ALTER COLUMN id SET DEFAULT nextval('messages_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -417,6 +459,14 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY messages
     ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -519,6 +569,20 @@ CREATE INDEX index_messages_on_bot_instance_id ON messages USING btree (bot_inst
 
 
 --
+-- Name: index_messages_on_notification_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_messages_on_notification_id ON messages USING btree (notification_id);
+
+
+--
+-- Name: index_notifications_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_notifications_on_bot_id ON notifications USING btree (bot_id);
+
+
+--
 -- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -562,6 +626,14 @@ ALTER TABLE ONLY bot_instances
 
 
 --
+-- Name: fk_rails_6931938b29; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY notifications
+    ADD CONSTRAINT fk_rails_6931938b29 FOREIGN KEY (bot_id) REFERENCES bots(id);
+
+
+--
 -- Name: fk_rails_6e79174e50; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -583,6 +655,14 @@ ALTER TABLE ONLY bot_collaborators
 
 ALTER TABLE ONLY events
     ADD CONSTRAINT fk_rails_9fc3b26d0b FOREIGN KEY (bot_instance_id) REFERENCES bot_instances(id);
+
+
+--
+-- Name: fk_rails_cbba591a9a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT fk_rails_cbba591a9a FOREIGN KEY (notification_id) REFERENCES notifications(id);
 
 
 --
@@ -678,4 +758,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160511094756');
 INSERT INTO schema_migrations (version) VALUES ('20160511102827');
 
 INSERT INTO schema_migrations (version) VALUES ('20160511104446');
+
+INSERT INTO schema_migrations (version) VALUES ('20160512144506');
+
+INSERT INTO schema_migrations (version) VALUES ('20160516132302');
 

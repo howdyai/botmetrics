@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe SlackService do
+RSpec.describe MessageService do
   let(:user_message) { create(:message, :to_user) }
   let(:chan_message) { create(:message, :to_channel) }
 
@@ -50,31 +50,15 @@ RSpec.describe SlackService do
 
       context 'bot instance is not enabled' do
         let(:bot_state) { 'pending' }
-        let(:message) { Message.new(bot_instance: bot_instance) }
-        let(:service) { SlackService.new(message) }
-
-        it { expect(service.send_now).to be_falsy }
-      end
-
-      context 'channel is blank' do
-        let(:bot_state) { 'enabled' }
-        let(:message) { Message.new(bot_instance: bot_instance, text: 'text')}
-        let(:service) { SlackService.new(message) }
-
-        it { expect(service.send_now).to be_falsy }
-      end
-
-      context 'text and attachments are blank' do
-        let(:bot_state) { 'enabled' }
-        let(:message) { Message.new(bot_instance: bot_instance, message_attributes: { channel: 'C123' })}
-        let(:service) { SlackService.new(message) }
+        let(:message) { create(:message, :to_user, bot_instance: bot_instance) }
+        let(:service) { MessageService.new(message) }
 
         it { expect(service.send_now).to be_falsy }
       end
     end
 
     context 'user message' do
-      let(:service) { SlackService.new(user_message) }
+      let(:service) { MessageService.new(user_message) }
 
       it 'works' do
         expect_slack_find_user(user_message.user, { 'ok' => true, 'channel' => { 'id' => '123' } })
@@ -83,6 +67,7 @@ RSpec.describe SlackService do
         service.send_now
 
         expect(user_message.sent).to be_truthy
+        expect(user_message.success).to be_truthy
         expect(user_message.response).to match(success)
       end
 
@@ -91,7 +76,8 @@ RSpec.describe SlackService do
 
         service.send_now
 
-        expect(user_message.sent).to be_falsy
+        expect(user_message.sent).to be_truthy
+        expect(user_message.success).to be_falsy
         expect(user_message.response).to eq({ 'ok' => false, 'error' => 'user_not_found' })
       end
 
@@ -101,13 +87,14 @@ RSpec.describe SlackService do
 
         service.send_now
 
-        expect(user_message.sent).to be_falsy
+        expect(user_message.sent).to be_truthy
+        expect(user_message.success).to be_falsy
         expect(user_message.response).to eq(failure)
       end
     end
 
     context 'channel message' do
-      let(:service) { SlackService.new(chan_message) }
+      let(:service) { MessageService.new(chan_message) }
 
       it 'works' do
         expect_slack_send_message(chan_message.channel, chan_message.text, success)
@@ -115,6 +102,7 @@ RSpec.describe SlackService do
         service.send_now
 
         expect(chan_message.sent).to be_truthy
+        expect(chan_message.success).to be_truthy
         expect(chan_message.response).to eq(success)
       end
 
@@ -123,7 +111,8 @@ RSpec.describe SlackService do
 
         service.send_now
 
-        expect(chan_message.sent).to be_falsy
+        expect(chan_message.sent).to be_truthy
+        expect(chan_message.success).to be_falsy
         expect(chan_message.response).to eq(failure)
       end
     end

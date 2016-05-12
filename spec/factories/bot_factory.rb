@@ -1,6 +1,5 @@
 FactoryGirl.define do
-  factory :bot do
-    sequence(:name)     { |n| "Bot #{n}" }
-    provider            "slack"
+  factory :notification do
+    content 'Hello World!'
   end
 end

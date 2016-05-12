@@ -18,8 +18,8 @@ module Messages
       }.delete_if { |_, v| v.blank? }
     end
 
-    def save_for(bot_instance)
-      message = bot_instance.messages.build(model_params)
+    def save_for(bot_instance, opts = {})
+      message = bot_instance.messages.build(model_params.merge(opts))
 
       if valid? && message.save
         message

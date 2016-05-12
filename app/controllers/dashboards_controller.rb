@@ -92,6 +92,7 @@ class DashboardsController < ApplicationController
   end
 
   protected
+
   def find_instances
     if (@instances = @bot.instances.pending).count == 0
       return redirect_to(new_bot_instance_path(@bot))
@@ -101,10 +102,5 @@ class DashboardsController < ApplicationController
   def init_detail_view!
     @group_by = params[:group_by].presence || 'day'
     @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call
-  end
-
-  def find_bot
-    @bot = current_user.bots.find_by(uid: params[:bot_id])
-    raise ActiveRecord::NotFound if @bot.blank?
   end
 end

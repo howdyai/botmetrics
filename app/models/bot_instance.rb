@@ -107,4 +107,8 @@ class BotInstance < ActiveRecord::Base
 
     membership_type
   end
+
+  def team_id
+    instance_attributes['team_id']
+  end
 end

@@ -12,3 +12,4 @@ machine:
     RELAX_MUTEX_KEY: bot_metrics_mutex
     RELAX_SEND_BOT_REPLIES: true
     RAILS_HOST: http://localhost:9000
+    SLACK_API_URL: http://localhost:9000/slack_api_mocks
