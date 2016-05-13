@@ -41,4 +41,8 @@ Rails.application.routes.draw do
   end
 
   mount Sidekiq::Web, at: "/sidekiq"
+
+  unless Rails.env.production?
+    mount SlackApiMocks, at: "/slack_api_mocks"
+  end
 end

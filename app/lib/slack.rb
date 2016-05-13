@@ -1,6 +1,8 @@
 require 'uri'
 
 class Slack
+  API_URL = ENV['SLACK_API_URL']
+
   def initialize(token)
     @token = token
   end
@@ -18,7 +20,7 @@ class Slack
       connect_timeout: 360
     }
 
-    url = "https://slack.com/api/#{slack_api}"
+    url = "#{API_URL}/#{slack_api}"
 
     if method.to_s.downcase == 'get'
       url = "#{url}?#{encoded_params}"

@@ -1,4 +1,6 @@
 RSpec.describe SetupBotJob do
+  let(:api) { ENV['SLACK_API_URL'] }
+
   let!(:bi)   { create :bot_instance, token: 'token' }
   let!(:user) { create :user }
 
@@ -12,9 +14,9 @@ RSpec.describe SetupBotJob do
       context 'when token is valid' do
         before do
           allow(Relax::Bot).to receive(:start!)
-          stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
             to_return(status: 200, body: { ok: true, url: "https://myteam.slack.com/", team: "My Team", user: "cal", team_id: "T12345", user_id: "U12345"}.to_json)
-          stub_request(:get, "https://slack.com/api/users.list?token=#{bi.token}").
+          stub_request(:get, "#{api}/users.list?token=#{bi.token}").
             to_return(status: 200, body:
             {
               "ok" => true,
@@ -202,7 +204,7 @@ RSpec.describe SetupBotJob do
 
       context 'when token is invalid' do
         before do
-          stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
                     to_return(status: 200, body: { ok: false, error: "invalid_token" }.to_json)
           allow(PusherJob).to receive(:perform_async)
         end
@@ -228,7 +230,7 @@ RSpec.describe SetupBotJob do
 
       context 'when token is for a disabled bot' do
         before do
-          stub_request(:get, "https://slack.com/api/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
                     to_return(status: 200, body: { ok: false, error: "account_inactive" }.to_json)
           allow(PusherJob).to receive(:perform_async)
         end
