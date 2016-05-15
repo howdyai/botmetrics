@@ -96,4 +96,24 @@ RSpec.describe BotInstance do
       end
     end
   end
+
+  describe '.with_new_bots' do
+    let(:start_time) { Time.current }
+    let(:end_time) { Time.current + 6.days }
+
+    before do
+      travel_to Time.new(2016, 05, 01)
+      create :bot_instance
+      create :bot_instance, created_at: Time.current + 1.days
+      create :bot_instance, created_at: Time.current - 7.days
+      create :bot_instance, created_at: Time.current + 7.days
+    end
+    after { travel_back }
+
+    it 'returns instances within correct ranges and order by created at' do
+      result = described_class.with_new_bots(start_time, end_time)
+
+      expect(result.map(&:id)).to eq [2, 1]
+    end
+  end
 end

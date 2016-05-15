@@ -26,8 +26,8 @@ RSpec.configure do |config|
   FactoryGirl.reload
   I18n.backend.reload!
 
+  config.include ActiveSupport::Testing::TimeHelpers
   config.include FactoryGirl::Syntax::Methods
-
   config.include Devise::TestHelpers, type: :controller
 
   # rspec-expectations config goes here. You can use an alternate

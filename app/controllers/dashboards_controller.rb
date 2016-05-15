@@ -6,13 +6,7 @@ class DashboardsController < ApplicationController
   layout 'app'
 
   def new_bots
-    @tableized = @instances.
-                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-                    where("bot_instances.created_at" => @start.utc..@end.utc).
-                    order("bot_instances.created_at DESC").
-                    page(params[:page])
+    @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
 
     @new_bots = case @group_by
                 when 'day'
