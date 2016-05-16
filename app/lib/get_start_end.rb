@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class GetStartEnd
-  def initialize(start_date, end_date, user_time_zone)
+  def initialize(start_date, end_date, user_time_zone = 'UTC')
     @start_date = start_date
     @end_date = end_date
     @user_time_zone = user_time_zone
@@ -7,7 +9,7 @@ class GetStartEnd
 
   def call
     start = start_date.to_s.in_time_zone(user_time_zone)
-    start = (Time.now - 6.days).in_time_zone(user_time_zone) if start.blank?
+    start = (Time.current - 6.days).in_time_zone(user_time_zone) if start.blank?
     _end  = end_date.to_s.in_time_zone(user_time_zone)
     _end  = start + 6.days if _end.blank?
 
