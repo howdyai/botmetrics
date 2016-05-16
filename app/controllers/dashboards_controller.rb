@@ -7,7 +7,9 @@ class DashboardsController < ApplicationController
 
   def new_bots
     @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
+
     @new_bots = GetBotInstancesCountByUnit.new(@group_by, @instances, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+
     TrackMixpanelEventJob.perform_async('Viewed New Bots Dashboard Page', current_user.id)
   end
 
@@ -22,30 +24,19 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @events = case @group_by
-                when 'day'
-                  @events.group_by_day(:created_at, time_zone: current_user.timezone).count
-                when 'week'
-                  @events.group_by_week(:created_at, time_zone: current_user.timezone).count
-                when 'month'
-                  @events.group_by_month(:created_at, time_zone: current_user.timezone).count
-                end
+    @events = GetBotInstancesCountByUnit.new(@group_by, @events, user_time_zone: current_user.timezone).call
+
     TrackMixpanelEventJob.perform_async('Viewed Disabled Bots Dashboard Page', current_user.id)
   end
 
   def users
     @users = BotUser.where(bot_instance_id: @instances.select(:id)).joins(:bot_instance).
                      where("bot_instances.created_at" => @start.utc..@end.utc)
+
     @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
 
-    @users = case @group_by
-                when 'day'
-                  @users.group_by_day("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
-                when 'week'
-                  @users.group_by_week("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
-                when 'month'
-                  @users.group_by_month("bot_instances.created_at", range: @start..@end, time_zone: current_user.timezone).count
-                end
+    @users = GetBotInstancesCountByUnit.new(@group_by, @users, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+
     TrackMixpanelEventJob.perform_async('Viewed New Users Dashboard Page', current_user.id)
   end
 
@@ -63,14 +54,7 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = case @group_by
-                when 'day'
-                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
-                when 'week'
-                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
-                when 'month'
-                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
-                end
+    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed All Messages Dashboard Page', current_user.id)
   end
@@ -88,14 +72,8 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = case @group_by
-                when 'day'
-                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
-                when 'week'
-                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
-                when 'month'
-                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
-                end
+    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+
     TrackMixpanelEventJob.perform_async('Viewed Messages To Bot Dashboard Page', current_user.id)
   end
 
@@ -113,14 +91,8 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = case @group_by
-                when 'day'
-                  @messages.group_by_day(:created_at, time_zone: current_user.timezone).count
-                when 'week'
-                  @messages.group_by_week(:created_at, time_zone: current_user.timezone).count
-                when 'month'
-                  @messages.group_by_month(:created_at, time_zone: current_user.timezone).count
-                end
+    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+
     TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
 
