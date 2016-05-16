@@ -22,15 +22,15 @@ RSpec.describe BotUser do
   end
 
   describe '.with_bot_instances' do
-    let(:instances)  { BotInstance.all }
     let(:start_time) { Time.current.yesterday }
     let(:end_time)   { Time.current.tomorrow }
 
     it 'works' do
       bi = create :bot_instance
       create :bot_user, bot_instance: bi
+      create :bot_user
 
-      users = BotUser.with_bot_instances(instances, start_time, end_time)
+      users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), start_time, end_time)
 
       expect(users.map(&:id)).to eq [1]
     end
