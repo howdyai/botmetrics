@@ -116,4 +116,119 @@ RSpec.describe BotInstance do
       expect(result.map(&:id)).to eq [2, 1]
     end
   end
+
+  describe '.with_disabled_bots' do
+    def create_disabled_bots_event(bot_instance_id, creation_time = Time.current)
+      Event.create(
+        provider: 'slack',
+        event_type: 'bot_disabled',
+        bot_instance_id: bot_instance_id,
+        created_at: creation_time
+      )
+    end
+
+    it 'returns instances within correct ranges and order by last_event_at at' do
+      bi1 = create :bot_instance
+      bi2 = create :bot_instance
+
+      create_disabled_bots_event bi1.id
+      create_disabled_bots_event bi2.id, Time.current.yesterday
+
+      associated_bot_instances_ids = BotInstance.ids
+
+      result = described_class.with_disabled_bots(associated_bot_instances_ids)
+
+      expect(result.map(&:id)).to eq [1, 2]
+    end
+  end
+
+  describe '.with_all_messages' do
+    def create_all_message_event(bot_instance_id, bot_user_id, creation_time = Time.current)
+      Event.create(
+        event_type: 'message',
+        is_from_bot: false,
+        provider: 'slack',
+        bot_instance_id: bot_instance_id,
+        bot_user_id: bot_user_id,
+        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
+        created_at: creation_time
+      )
+    end
+
+    it 'returns instances within correct ranges and order by last_event_at at' do
+      bi1 = create :bot_instance
+      bi2 = create :bot_instance
+      bu1 = create :bot_user, bot_instance: bi1
+      bu2 = create :bot_user, bot_instance: bi2
+
+      create_all_message_event(bi1.id, bu1.id)
+      create_all_message_event(bi2.id, bu2.id, Time.current.yesterday)
+
+      associated_bot_instances_ids = BotInstance.ids
+
+      result = described_class.with_all_messages(associated_bot_instances_ids)
+
+      expect(result.map(&:id)).to eq [1, 2]
+    end
+  end
+
+  describe '.with_messages_to_bot' do
+    def create_messages_to_bot_event(bot_instance_id, bot_user_id, creation_time = Time.current)
+      Event.create(
+        event_type: 'message',
+        is_for_bot: true,
+        provider: 'slack',
+        bot_instance_id: bot_instance_id,
+        bot_user_id: bot_user_id,
+        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
+        created_at: creation_time
+      )
+    end
+
+    it 'returns instances within correct ranges and order by last_event_at at' do
+      bi1 = create :bot_instance
+      bi2 = create :bot_instance
+      bu1 = create :bot_user, bot_instance: bi1
+      bu2 = create :bot_user, bot_instance: bi2
+
+      create_messages_to_bot_event(bi1.id, bu1.id)
+      create_messages_to_bot_event(bi2.id, bu2.id, Time.current.yesterday)
+
+      associated_bot_instances_ids = BotInstance.ids
+
+      result = described_class.with_messages_to_bot(associated_bot_instances_ids)
+
+      expect(result.map(&:id)).to eq [1, 2]
+    end
+  end
+
+  describe '.with_messages_from_bot' do
+    def create_messages_from_bot_event(bot_instance_id, bot_user_id, creation_time = Time.current)
+      Event.create(
+        event_type: 'message',
+        is_from_bot: true,
+        provider: 'slack',
+        bot_instance_id: bot_instance_id,
+        bot_user_id: bot_user_id,
+        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
+        created_at: creation_time
+      )
+    end
+
+    it 'returns instances within correct ranges and order by last_event_at at' do
+      bi1 = create :bot_instance
+      bi2 = create :bot_instance
+      bu1 = create :bot_user, bot_instance: bi1
+      bu2 = create :bot_user, bot_instance: bi2
+
+      create_messages_from_bot_event(bi1.id, bu1.id)
+      create_messages_from_bot_event(bi2.id, bu2.id, Time.current.yesterday)
+
+      associated_bot_instances_ids = BotInstance.ids
+
+      result = described_class.with_messages_from_bot(associated_bot_instances_ids)
+
+      expect(result.map(&:id)).to eq [1, 2]
+    end
+  end
 end
