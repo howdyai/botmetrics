@@ -8,23 +8,29 @@ class DashboardsController < ApplicationController
   def new_bots
     @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
 
-    @new_bots = GetResourcesCountByUnit.new(@group_by, @instances, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+    @new_bots = GetResourcesCountByUnit.new(
+                  @group_by,
+                  @instances,
+                  start_time: @start,
+                  end_time: @end,
+                  user_time_zone: current_user.timezone
+                ).call
 
     TrackMixpanelEventJob.perform_async('Viewed New Bots Dashboard Page', current_user.id)
   end
 
   def disabled_bots
-    @events = Event.where(event_type: 'bot_disabled', bot_instance_id: @instances.select(:id), created_at: @start.utc..@end.utc)
+    @events = Event.where(event_type: 'bot_disabled',
+                          bot_instance_id: @instances.select(:id),
+                          created_at: @start.utc..@end.utc)
 
-    @tableized = @instances.
-                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, e.c_at AS last_event_at").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-                    joins("INNER JOIN (SELECT bot_instance_id, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'bot_disabled' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-                    where("bot_instances.id IN (?)", @events.select(:bot_instance_id)).
-                    order("last_event_at DESC").
-                    page(params[:page])
+    @tableized = @instances.with_disabled_bots(@events.select(:bot_instance_id)).page(params[:page])
 
-    @events = GetResourcesCountByUnit.new(@group_by, @events, user_time_zone: current_user.timezone).call
+    @events = GetResourcesCountByUnit.new(
+                @group_by,
+                @events,
+                user_time_zone: current_user.timezone
+              ).call
 
     TrackMixpanelEventJob.perform_async('Viewed Disabled Bots Dashboard Page', current_user.id)
   end
@@ -35,7 +41,13 @@ class DashboardsController < ApplicationController
 
     @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
 
-    @users = GetResourcesCountByUnit.new(@group_by, @users, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+    @users = GetResourcesCountByUnit.new(
+               @group_by,
+               @users,
+               start_time: @start,
+               end_time: @end,
+               user_time_zone: current_user.timezone
+             ).call
 
     TrackMixpanelEventJob.perform_async('Viewed New Users Dashboard Page', current_user.id)
   end
@@ -46,15 +58,13 @@ class DashboardsController < ApplicationController
                             is_from_bot: false,
                             created_at: @start.utc..@end.utc)
 
-    @tableized = @instances.
-                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 'f' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-                    where("bot_instances.id IN (?)", @messages.select(:bot_instance_id)).
-                    order("last_event_at DESC").
-                    page(params[:page])
+    @tableized = @instances.with_all_messages(@messages.select(:bot_instance_id)).page(params[:page])
 
-    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @messages = GetResourcesCountByUnit.new(
+                  @group_by,
+                  @messages,
+                  user_time_zone: current_user.timezone
+                ).call
 
     TrackMixpanelEventJob.perform_async('Viewed All Messages Dashboard Page', current_user.id)
   end
@@ -64,15 +74,14 @@ class DashboardsController < ApplicationController
                             event_type: 'message',
                             is_for_bot: true,
                             created_at: @start.utc..@end.utc)
-    @tableized = @instances.
-                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-                    where("bot_instances.id IN (?)", @messages.select(:bot_instance_id)).
-                    order("last_event_at DESC").
-                    page(params[:page])
 
-    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @tableized = @instances.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
+
+    @messages = GetResourcesCountByUnit.new(
+                  @group_by,
+                  @messages,
+                  user_time_zone: current_user.timezone
+                ).call
 
     TrackMixpanelEventJob.perform_async('Viewed Messages To Bot Dashboard Page', current_user.id)
   end
@@ -83,15 +92,13 @@ class DashboardsController < ApplicationController
                             is_from_bot: true,
                             created_at: @start.utc..@end.utc)
 
-    @tableized = @instances.
-                    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-                    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-                    where("bot_instances.id IN (?)", @messages.select(:bot_instance_id)).
-                    order("last_event_at DESC").
-                    page(params[:page])
+    @tableized = @instances.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
 
-    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @messages = GetResourcesCountByUnit.new(
+                  @group_by,
+                  @messages,
+                  user_time_zone: current_user.timezone
+                ).call
 
     TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
