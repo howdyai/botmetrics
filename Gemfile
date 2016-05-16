@@ -56,12 +56,12 @@ group :development, :test do
   gem 'rspec-its',                '~> 1.2.0'
   gem 'byebug',                   '~> 2.0.0'
   gem 'timecop',                  '~> 0.7.4'
+  gem 'factory_girl_rails',       '~> 4.5.0'
   gem 'pry-rails'
 end
 
 group :test do
   gem 'database_cleaner',         '~> 1.3.0'
-  gem 'factory_girl_rails',       '~> 4.5.0'
   gem 'shoulda-matchers',         '~> 2.7.0'
   gem 'webmock',                  '~> 1.22.3'
   gem 'stripe-ruby-mock',         '~> 2.2.1', require: 'stripe_mock'
