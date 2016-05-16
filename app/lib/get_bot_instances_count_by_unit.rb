@@ -13,12 +13,20 @@ class GetBotInstancesCountByUnit
     instances.send(
       :"group_by_#{unit}",
       "#{instances.table_name}.created_at",
-      range: start_time..end_time,
-      time_zone: user_time_zone
+      params
     ).count
   end
 
   private
 
     attr_reader :unit, :instances, :start_time, :end_time, :user_time_zone
+
+    def params
+      default_params.merge!(range: start_time..end_time) if start_time && end_time
+      default_params
+    end
+
+    def default_params
+      @_default_params ||= { time_zone: user_time_zone }
+    end
 end
