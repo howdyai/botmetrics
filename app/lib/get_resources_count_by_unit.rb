@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
-class GetBotInstancesCountByUnit
-  def initialize(unit, instances, start_time: nil, end_time: nil, user_time_zone: nil)
+class GetResourcesCountByUnit
+  def initialize(unit, resources, start_time: nil, end_time: nil, user_time_zone: nil)
     @unit = unit
-    @instances = instances
+    @resources = resources
     @start_time = start_time
     @end_time = end_time
     @user_time_zone = user_time_zone
   end
 
   def call
-    instances.send(
+    resources.send(
       :"group_by_#{unit}",
-      "#{instances.table_name}.created_at",
+      "#{resources.table_name}.created_at",
       params
     ).count
   end
 
   private
 
-    attr_reader :unit, :instances, :start_time, :end_time, :user_time_zone
+    attr_reader :unit, :resources, :start_time, :end_time, :user_time_zone
 
     def params
       default_params.merge!(range: start_time..end_time) if start_time && end_time

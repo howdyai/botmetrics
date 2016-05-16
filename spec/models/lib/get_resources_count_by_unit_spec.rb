@@ -1,4 +1,4 @@
-RSpec.describe GetBotInstancesCountByUnit do
+RSpec.describe GetResourcesCountByUnit do
   describe '#call' do
     context 'day' do
       let(:unit) { 'day' }
@@ -12,7 +12,7 @@ RSpec.describe GetBotInstancesCountByUnit do
           create :bot_instance, created_at: Time.current + 7.days
 
           result = begin
-            GetBotInstancesCountByUnit.new(
+            GetResourcesCountByUnit.new(
               unit, BotInstance.all,
               start_time: Time.current, end_time: Time.current + 6.days,
               user_time_zone: 'UTC'

@@ -8,7 +8,7 @@ class DashboardsController < ApplicationController
   def new_bots
     @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
 
-    @new_bots = GetBotInstancesCountByUnit.new(@group_by, @instances, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+    @new_bots = GetResourcesCountByUnit.new(@group_by, @instances, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed New Bots Dashboard Page', current_user.id)
   end
@@ -24,7 +24,7 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @events = GetBotInstancesCountByUnit.new(@group_by, @events, user_time_zone: current_user.timezone).call
+    @events = GetResourcesCountByUnit.new(@group_by, @events, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed Disabled Bots Dashboard Page', current_user.id)
   end
@@ -35,7 +35,7 @@ class DashboardsController < ApplicationController
 
     @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
 
-    @users = GetBotInstancesCountByUnit.new(@group_by, @users, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
+    @users = GetResourcesCountByUnit.new(@group_by, @users, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed New Users Dashboard Page', current_user.id)
   end
@@ -54,7 +54,7 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed All Messages Dashboard Page', current_user.id)
   end
@@ -72,7 +72,7 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed Messages To Bot Dashboard Page', current_user.id)
   end
@@ -91,7 +91,7 @@ class DashboardsController < ApplicationController
                     order("last_event_at DESC").
                     page(params[:page])
 
-    @messages = GetBotInstancesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
+    @messages = GetResourcesCountByUnit.new(@group_by, @messages, user_time_zone: current_user.timezone).call
 
     TrackMixpanelEventJob.perform_async('Viewed Messages From Bot Dashboard Page', current_user.id)
   end
