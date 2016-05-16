@@ -10,8 +10,8 @@ class Event < ActiveRecord::Base
   validates_with EventAttributesValidator
 
   def self.with_disabled_bots(instances, start_time, end_time)
-    where(event_type: 'bot_disabled',
-          bot_instance_id: instances.select(:id),
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'bot_disabled',
           created_at: start_time..end_time)
   end
 
