@@ -20,9 +20,7 @@ class DashboardsController < ApplicationController
   end
 
   def disabled_bots
-    @events = Event.where(event_type: 'bot_disabled',
-                          bot_instance_id: @instances.select(:id),
-                          created_at: @start.utc..@end.utc)
+    @events = Event.with_disabled_bots(@instances, @start.utc, @end.utc)
 
     @tableized = @instances.with_disabled_bots(@events.select(:bot_instance_id)).page(params[:page])
 
@@ -36,8 +34,7 @@ class DashboardsController < ApplicationController
   end
 
   def users
-    @users = BotUser.where(bot_instance_id: @instances.select(:id)).joins(:bot_instance).
-                     where("bot_instances.created_at" => @start.utc..@end.utc)
+    @users = BotUser.with_bot_instances(@instances, @start.utc, @end.utc)
 
     @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
 
@@ -53,10 +50,7 @@ class DashboardsController < ApplicationController
   end
 
   def all_messages
-    @messages = Event.where(bot_instance_id: @instances.select(:id),
-                            event_type: 'message',
-                            is_from_bot: false,
-                            created_at: @start.utc..@end.utc)
+    @messages = Event.with_all_messages(@instances, @start.utc, @end.utc)
 
     @tableized = @instances.with_all_messages(@messages.select(:bot_instance_id)).page(params[:page])
 
@@ -70,10 +64,7 @@ class DashboardsController < ApplicationController
   end
 
   def messages_to_bot
-    @messages = Event.where(bot_instance_id: @instances.select(:id),
-                            event_type: 'message',
-                            is_for_bot: true,
-                            created_at: @start.utc..@end.utc)
+    @messages = Event.with_messages_to_bot(@instances, @start.utc, @end.utc)
 
     @tableized = @instances.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
 
@@ -87,10 +78,7 @@ class DashboardsController < ApplicationController
   end
 
   def messages_from_bot
-    @messages = Event.where(bot_instance_id: @instances.select(:id),
-                            event_type: 'message',
-                            is_from_bot: true,
-                            created_at: @start.utc..@end.utc)
+    @messages = Event.with_messages_from_bot(@instances, @start.utc, @end.utc)
 
     @tableized = @instances.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
 

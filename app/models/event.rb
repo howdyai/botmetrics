@@ -8,4 +8,31 @@ class Event < ActiveRecord::Base
   belongs_to :bot_instance
 
   validates_with EventAttributesValidator
+
+  def self.with_disabled_bots(instances, start_time, end_time)
+    where(event_type: 'bot_disabled',
+          bot_instance_id: instances.select(:id),
+          created_at: start_time..end_time)
+  end
+
+  def self.with_all_messages(instances, start_time, end_time)
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'message',
+          is_from_bot: false,
+          created_at: start_time..end_time)
+  end
+
+  def self.with_messages_to_bot(instances, start_time, end_time)
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'message',
+          is_for_bot: true,
+          created_at: start_time..end_time)
+  end
+
+  def self.with_messages_from_bot(instances, start_time, end_time)
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'message',
+          is_from_bot: true,
+          created_at: start_time..end_time)
+  end
 end
