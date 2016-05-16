@@ -7,7 +7,7 @@ class DashboardsController < ApplicationController
 
   def new_bots
     @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
-    @new_bots = GetBotInstancesCountByUnit.new(@group_by, @instances, @start, @end, current_user.timezone).call
+    @new_bots = GetBotInstancesCountByUnit.new(@group_by, @instances, start_time: @start, end_time: @end, user_time_zone: current_user.timezone).call
     TrackMixpanelEventJob.perform_async('Viewed New Bots Dashboard Page', current_user.id)
   end
 

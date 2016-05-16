@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class GetBotInstancesCountByUnit
-  def initialize(unit, instances, start_time, end_time, user_time_zone)
+  def initialize(unit, instances, start_time: nil, end_time: nil, user_time_zone: nil)
     @unit = unit
     @instances = instances
     @start_time = start_time

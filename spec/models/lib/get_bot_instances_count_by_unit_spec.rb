@@ -13,7 +13,9 @@ RSpec.describe GetBotInstancesCountByUnit do
 
           result = begin
             GetBotInstancesCountByUnit.new(
-              unit, BotInstance.all, Time.current, Time.current + 6.days, 'UTC'
+              unit, BotInstance.all,
+              start_time: Time.current, end_time: Time.current + 6.days,
+              user_time_zone: 'UTC'
             ).call
           end
 
