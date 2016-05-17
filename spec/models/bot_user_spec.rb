@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe BotUser do
   describe 'validations' do
     subject { create :bot_user }
@@ -27,12 +25,12 @@ RSpec.describe BotUser do
 
     it 'works' do
       bi = create :bot_instance
-      create :bot_user, bot_instance: bi
+      bu = create :bot_user, bot_instance: bi
       create :bot_user
 
       users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), start_time, end_time)
 
-      expect(users.map(&:id)).to eq [1]
+      expect(users.map(&:id)).to eq [bu.id]
     end
   end
 end

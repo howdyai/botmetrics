@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Event do
   describe 'associations' do
     it { should belong_to :bot_instance }

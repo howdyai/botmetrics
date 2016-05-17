@@ -100,11 +100,13 @@ RSpec.describe BotInstance do
   describe '.with_new_bots' do
     let(:start_time) { Time.current }
     let(:end_time) { Time.current + 6.days }
+    let(:bi) { create :bot_instance }
+    let(:new_bi) { create :bot_instance, created_at: Time.current + 1.days }
 
     before do
       travel_to Time.new(2016, 05, 01)
-      create :bot_instance
-      create :bot_instance, created_at: Time.current + 1.days
+      bi
+      new_bi
       create :bot_instance, created_at: Time.current - 7.days
       create :bot_instance, created_at: Time.current + 7.days
     end
@@ -113,7 +115,7 @@ RSpec.describe BotInstance do
     it 'returns instances within correct ranges and order by created at' do
       result = described_class.with_new_bots(start_time, end_time)
 
-      expect(result.map(&:id)).to eq [2, 1]
+      expect(result.map(&:id)).to eq [new_bi.id, bi.id]
     end
   end
 
@@ -138,7 +140,7 @@ RSpec.describe BotInstance do
 
       result = described_class.with_disabled_bots(associated_bot_instances_ids)
 
-      expect(result.map(&:id)).to eq [1, 2]
+      expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
   end
 
@@ -168,7 +170,7 @@ RSpec.describe BotInstance do
 
       result = described_class.with_all_messages(associated_bot_instances_ids)
 
-      expect(result.map(&:id)).to eq [1, 2]
+      expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
   end
 
@@ -198,7 +200,7 @@ RSpec.describe BotInstance do
 
       result = described_class.with_messages_to_bot(associated_bot_instances_ids)
 
-      expect(result.map(&:id)).to eq [1, 2]
+      expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
   end
 
@@ -228,7 +230,7 @@ RSpec.describe BotInstance do
 
       result = described_class.with_messages_from_bot(associated_bot_instances_ids)
 
-      expect(result.map(&:id)).to eq [1, 2]
+      expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
   end
 end
