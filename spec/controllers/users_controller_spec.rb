@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe UsersController do
   let!(:user) { create :user }
 

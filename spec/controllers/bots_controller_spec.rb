@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe BotsController do
   let!(:user) { create :user }
   let!(:bot)  { create :bot  }

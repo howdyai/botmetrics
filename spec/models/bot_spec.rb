@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Bot do
   describe 'validations' do
     subject { create :bot }

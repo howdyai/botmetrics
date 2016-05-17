@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe RegistrationsController do
   # needed for devise shit
   before :each do

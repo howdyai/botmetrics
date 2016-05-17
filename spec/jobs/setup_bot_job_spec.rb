@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe SetupBotJob do
   let!(:bi)   { create :bot_instance, token: 'token' }
   let!(:user) { create :user }

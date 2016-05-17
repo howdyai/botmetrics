@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe PusherJob do
   describe '#perform' do
     let!(:channel)  { 'channel' }

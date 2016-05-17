@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe TrackMixpanelEventJob do
   describe '#perform' do
     let!(:user)     { create :user, email: 'i@mclov.in', first_name: 'Mc', last_name: 'Lovin', full_name: 'Mc Lovin' }
