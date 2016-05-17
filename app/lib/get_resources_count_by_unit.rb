@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class GetResourcesCountByUnit
   def initialize(unit, resources, start_time: nil, end_time: nil, user_time_zone: nil)
     @unit = unit
