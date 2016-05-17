@@ -29,7 +29,7 @@ class AddConstraintsOnMessages < ActiveRecord::Migration
   end
 
   def down
-    execute "ALTER TABLE bot_instances DROP CONSTRAINT validate_attributes_team_id"
-    execute "ALTER TABLE bot_instances DROP CONSTRAINT validate_attributes_channel_user"
+    execute "ALTER TABLE messages DROP CONSTRAINT validate_attributes_team_id"
+    execute "ALTER TABLE messages DROP CONSTRAINT validate_attributes_channel_user"
   end
 end

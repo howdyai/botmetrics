@@ -14,11 +14,11 @@ class App.NotificationSendingProgress extends App.AppBase
         sent  = parseInt($('.progress-bar').data('sent'))
         total = parseInt($('.progress-bar').data('total'))
 
-        if sent == total
-          $('.progress').removeClass('progress-striped')
-
         $('.progress-bar').css('width', "#{sent/total*100}%" )
         $('.progress-sent').html(sent)
+
+        if sent == total
+          self.redirect_to_notifications()
 
       set_sent_count = (sentCount) ->
         sent = parseInt($('.progress-bar').data('sent'))
@@ -37,3 +37,9 @@ class App.NotificationSendingProgress extends App.AppBase
           set_progress_bar()
         else
           $('.failures ul').append("<li>Failed to send message to #{d.recipient}</li>")
+
+  redirect_to_notifications: ->
+    uri = new Uri(window.location.href)
+    uri.setPath(uri.path().replace(/notifications\/[0-9]*/, 'notifications'))
+
+    Turbolinks.visit(uri)

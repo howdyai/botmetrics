@@ -58,6 +58,9 @@ GEM
     byebug (2.0.0)
       columnize (~> 0.3.6)
       debugger-linecache (~> 1.2.0)
+    clockwork (2.0.0)
+      activesupport
+      tzinfo
     coderay (1.1.1)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
@@ -302,6 +305,7 @@ DEPENDENCIES
   bugsnag (~> 2.8.13)
   byebug (~> 2.0.0)
   chartkick!
+  clockwork
   coffee-rails (~> 4.1.0)
   database_cleaner (~> 1.3.0)
   devise (~> 3.4.1)

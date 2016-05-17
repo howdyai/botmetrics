@@ -10,7 +10,7 @@ gem 'pg',    '~> 0.18.2'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks',    '~> 5.0.0.beta'
 gem 'excon',         '~> 0.49.0'
-gem 'with_advisory_lock',     '~> 3.0.0'
+gem 'with_advisory_lock',       '~> 3.0.0'
 
 gem 'haml',                     '~> 4.0.6'
 gem 'bootstrap-sass',           '~> 3.3.1'
@@ -27,30 +27,32 @@ gem 'groupdate',                '~> 2.5.3'
 gem 'chartkick',                github: 'botmetrics/chartkick', ref: 'fd3918c0113fe75ddff3b0bc4dea446b56364ca6'
 
 # Auth
-gem 'devise',                  '~> 3.4.1'
-gem 'jwt',                     '~> 1.5.4'
+gem 'devise',                   '~> 3.4.1'
+gem 'jwt',                      '~> 1.5.4'
 
 # Pagination
-gem 'will_paginate',           '~> 3.1.0'
-gem 'will_paginate-bootstrap', '~> 1.0.1'
+gem 'will_paginate',            '~> 3.1.0'
+gem 'will_paginate-bootstrap',  '~> 1.0.1'
 
 # Mixpanel
-gem 'mixpanel-ruby',          '~> 2.2.0', require: 'mixpanel-ruby'
+gem 'mixpanel-ruby',            '~> 2.2.0', require: 'mixpanel-ruby'
 # Redis
-gem 'relax-rb',               '~> 0.4.1', require: 'relax'
-gem 'sidekiq',                '~> 4.1.0'
-gem 'sinatra',                '~> 1.4.6'
-gem 'redis-namespace',        '~> 1.5.2'
-gem 'pusher',                 '~> 0.15.1'
+gem 'relax-rb',                 '~> 0.4.1', require: 'relax'
+gem 'sidekiq',                  '~> 4.1.0'
+gem 'sinatra',                  '~> 1.4.6'
+gem 'redis-namespace',          '~> 1.5.2'
+gem 'pusher',                   '~> 0.15.1'
 
 gem 'passenger',                '~> 5.0.27'
 
+# Cron
+gem 'clockwork'
+
 group :development do
-  # Foreman to launch processes
-  gem 'foreman',      '~> 0.70.0'
-  gem 'quiet_assets', '~> 1.1.0'
-  gem 'git',          '~> 1.3.0'
-  gem 'parity',       '~> 0.9.3'
+  gem 'foreman',                  '~> 0.70.0'
+  gem 'quiet_assets',             '~> 1.1.0'
+  gem 'git',                      '~> 1.3.0'
+  gem 'parity',                   '~> 0.9.3'
 end
 
 group :development, :test do
@@ -79,4 +81,3 @@ end
 group :assets do
   gem 'uglifier',                 '~> 2.7.1'
 end
-

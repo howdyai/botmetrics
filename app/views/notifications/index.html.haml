@@ -13,19 +13,31 @@
         %thead
           %tr
             %th Content
-            %th Sent Count
-            %th Success Count
-            %th Failure Count
-            %th Total Count
-            %th Created
+            %th Status
+            %th Scheduled/Sent At
+            %th Actions
         %tbody
           - @notifications.each do |notification|
             %tr
-              %td= truncate(notification.content, length: 25)
-              %td= notification.messages.sent.count
-              %td= notification.messages.success.count
-              %td= notification.messages.failure.count
-              %td= notification.bot_user_ids.count
-              %td= link_to "#{time_ago_in_words(notification.created_at)} ago", [@bot, notification]
+              %td= truncate(notification.content, length: 20)
+              %td
+                #{notification.bot_user_ids.count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
+              %td
+                - if notification.send_immediately?
+                  = notification.created_at.strftime('%b %d, %Y %l:%M %p')
+                - else
+                  = notification.scheduled_at
+              %td
+                - if notification.sent?
+                  .text-muted
+                    %em Already Sent
+                - else
+                  = link_to edit_bot_notification_path(@bot, notification) do
+                    %i.fa.fa-wrench
+                    Edit
+                  &nbsp;|&nbsp;
+                  = link_to bot_notification_path(@bot, notification), method: :delete do
+                    %i.fa.fa-trash
+                    Delete
 
       = will_paginate @notifications, renderer: BootstrapPagination::Rails

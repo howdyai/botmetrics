@@ -128,4 +128,7 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  # Allow for --only-failures option
+  config.example_status_persistence_file_path = 'tmp/rspec-failures.txt'
 end

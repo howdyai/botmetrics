@@ -4,9 +4,10 @@ class Message < ActiveRecord::Base
 
   validates_presence_of :bot_instance
 
-  scope :sent,    -> { where(sent: true) }
-  scope :success, -> { sent.where(success: true) }
-  scope :failure, -> { sent.where(success: false) }
+  scope :sent,      -> { where(sent: true) }
+  scope :success,   -> { sent.where(success: true) }
+  scope :failure,   -> { sent.where(success: false) }
+  scope :scheduled, -> { where(sent: false).where.not(scheduled_at: nil) }
 
   before_create :duplicate_provider_from_bot_instance
 
@@ -20,6 +21,10 @@ class Message < ActiveRecord::Base
 
   def user
     message_attributes['user']
+  end
+
+  def can_send_now?(current_time)
+    scheduled_at == current_time
   end
 
   private

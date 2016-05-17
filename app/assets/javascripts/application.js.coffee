@@ -17,4 +17,5 @@
 #= require pages/static/index
 #= require pages/bot_instances/setting_up
 #= require pages/bots/bots_detail
+#= require pages/notifications/notification_scheduler
 #= require pages/notifications/notification_sending_progress

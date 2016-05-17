@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :notifications, only: [:index, :new, :create, :show]
+    resources :notifications
 
     resources :messages, only: [:create]
   end
