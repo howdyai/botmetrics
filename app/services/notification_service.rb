@@ -4,8 +4,8 @@ class NotificationService
   end
 
   def send_now
-    bot_users = BotUser.where(id: notification.bot_user_ids).limit(10)
-    bot_users.each do |bot_user|
+    bot_users = BotUser.where(id: notification.bot_user_ids)
+    bot_users.find_each do |bot_user|
       message = Messages::Slack.new(model_params(bot_user, notification))
 
       if message_object = message.save_for(bot_user.bot_instance, notification: notification)
