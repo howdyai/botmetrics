@@ -79,13 +79,13 @@ RSpec.describe Event do
   end
 
   context 'scope' do
-    let(:disabled_bit)         { create :bot_instance }
+    let(:disabled_bi)          { create :bot_instance }
     let(:all_message_bi)       { create :bot_instance }
     let(:messages_to_bot_bi)   { create :bot_instance }
     let(:messages_from_bot_bi) { create :bot_instance }
 
     before do
-      disabled_bit.events.create(event_type: 'bot_disabled')
+      disabled_bi.events.create(event_type: 'bot_disabled')
       all_message_bi.events.create(event_type: 'message', is_from_bot: false)
       messages_to_bot_bi.events.create(event_type: 'message', is_for_bot: true)
       messages_from_bot_bi.events.create(event_type: 'message', is_from_bot: true)
@@ -95,7 +95,7 @@ RSpec.describe Event do
       it 'works' do
         events = Event.with_disabled_bots(BotInstance.all, Time.current.yesterday, Time.zone.tomorrow)
 
-        expect(events.map(&:id)).to eq disabled_bit.events.ids
+        expect(events.map(&:id)).to eq disabled_bi.events.ids
       end
     end
 
