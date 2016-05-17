@@ -4,6 +4,6 @@ FactoryGirl.define do
     membership_type            'member'
     provider                   'slack'
 
-    association :bot_instance, factory: :bot_instance
+    bot_instance
   end
 end
