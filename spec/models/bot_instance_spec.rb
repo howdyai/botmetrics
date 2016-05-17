@@ -101,12 +101,16 @@ RSpec.describe BotInstance do
     let(:start_time) { Time.current }
     let(:end_time) { Time.current + 6.days }
     let(:bi) { create :bot_instance }
+    let(:bu) { create :bot_user, bot_instance: bi }
     let(:new_bi) { create :bot_instance, created_at: Time.current + 1.days }
 
     before do
       travel_to Time.new(2016, 05, 01)
-      bi
+
+      create(:new_bot_event, bot_user_id: bu.id, bot_instance_id: bi.id)
       new_bi
+
+      # not in range
       create :bot_instance, created_at: Time.current - 7.days
       create :bot_instance, created_at: Time.current + 7.days
     end
@@ -117,120 +121,150 @@ RSpec.describe BotInstance do
 
       expect(result.map(&:id)).to eq [new_bi.id, bi.id]
     end
+
+    it 'correctly computed from the query' do
+      result = described_class.with_new_bots(start_time, end_time)
+
+      expect(result.last.attributes).to include(
+        "users_count" => 1,
+        "events_count" => 1,
+        "last_event_at" => Time.current
+      )
+    end
   end
 
   describe '.with_disabled_bots' do
-    def create_disabled_bots_event(bot_instance_id, creation_time = Time.current)
-      Event.create(
-        provider: 'slack',
-        event_type: 'bot_disabled',
-        bot_instance_id: bot_instance_id,
-        created_at: creation_time
-      )
-    end
+    let(:associated_bot_instances_ids) { BotInstance.ids }
+    let(:bi1) { create :bot_instance }
+    let(:bi2) { create :bot_instance }
+    let(:bu1) { create :bot_user, bot_instance: bi1 }
+    let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      bi1 = create :bot_instance
-      bi2 = create :bot_instance
-
-      create_disabled_bots_event bi1.id
-      create_disabled_bots_event bi2.id, Time.current.yesterday
-
-      associated_bot_instances_ids = BotInstance.ids
+      create :disabled_bots_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+      create :disabled_bots_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
 
       result = described_class.with_disabled_bots(associated_bot_instances_ids)
 
       expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
+
+    it 'correctly computed from the query' do
+      travel_to Time.current do
+        yesterday = Time.current.yesterday
+
+        create :disabled_bots_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+        create :disabled_bots_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+
+        result = described_class.with_disabled_bots(associated_bot_instances_ids)
+
+        expect(result.last.attributes).to include(
+          "users_count" => 1,
+          "last_event_at" => yesterday
+        )
+      end
+    end
   end
 
   describe '.with_all_messages' do
-    def create_all_message_event(bot_instance_id, bot_user_id, creation_time = Time.current)
-      Event.create(
-        event_type: 'message',
-        is_from_bot: false,
-        provider: 'slack',
-        bot_instance_id: bot_instance_id,
-        bot_user_id: bot_user_id,
-        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
-        created_at: creation_time
-      )
-    end
+    let(:associated_bot_instances_ids) { BotInstance.ids }
+    let(:bi1) { create :bot_instance }
+    let(:bi2) { create :bot_instance }
+    let(:bu1) { create :bot_user, bot_instance: bi1 }
+    let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      bi1 = create :bot_instance
-      bi2 = create :bot_instance
-      bu1 = create :bot_user, bot_instance: bi1
-      bu2 = create :bot_user, bot_instance: bi2
-
-      create_all_message_event(bi1.id, bu1.id)
-      create_all_message_event(bi2.id, bu2.id, Time.current.yesterday)
-
-      associated_bot_instances_ids = BotInstance.ids
+      create :all_messages_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+      create :all_messages_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
 
       result = described_class.with_all_messages(associated_bot_instances_ids)
 
       expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
+
+    it 'correctly computed from the query' do
+      travel_to Time.current do
+        yesterday = Time.current.yesterday
+
+        create :all_messages_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+        create :all_messages_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+
+        result = described_class.with_all_messages(associated_bot_instances_ids)
+
+        expect(result.last.attributes).to include(
+          "users_count" => 1,
+          "events_count" => 1,
+          "last_event_at" => yesterday
+        )
+      end
+    end
   end
 
   describe '.with_messages_to_bot' do
-    def create_messages_to_bot_event(bot_instance_id, bot_user_id, creation_time = Time.current)
-      Event.create(
-        event_type: 'message',
-        is_for_bot: true,
-        provider: 'slack',
-        bot_instance_id: bot_instance_id,
-        bot_user_id: bot_user_id,
-        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
-        created_at: creation_time
-      )
-    end
+    let(:associated_bot_instances_ids) { BotInstance.ids }
+    let(:bi1) { create :bot_instance }
+    let(:bi2) { create :bot_instance }
+    let(:bu1) { create :bot_user, bot_instance: bi1 }
+    let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      bi1 = create :bot_instance
-      bi2 = create :bot_instance
-      bu1 = create :bot_user, bot_instance: bi1
-      bu2 = create :bot_user, bot_instance: bi2
-
-      create_messages_to_bot_event(bi1.id, bu1.id)
-      create_messages_to_bot_event(bi2.id, bu2.id, Time.current.yesterday)
-
-      associated_bot_instances_ids = BotInstance.ids
+      create :messages_to_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+      create :messages_to_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
 
       result = described_class.with_messages_to_bot(associated_bot_instances_ids)
 
       expect(result.map(&:id)).to eq [bi1.id, bi2.id]
     end
+
+    it 'correctly computed from the query' do
+      travel_to Time.current do
+        yesterday = Time.current.yesterday
+
+        create :messages_to_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+        create :messages_to_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+
+        result = described_class.with_messages_to_bot(associated_bot_instances_ids)
+
+        expect(result.last.attributes).to include(
+          "users_count" => 1,
+          "events_count" => 1,
+          "last_event_at" => yesterday
+        )
+      end
+    end
   end
 
   describe '.with_messages_from_bot' do
-    def create_messages_from_bot_event(bot_instance_id, bot_user_id, creation_time = Time.current)
-      Event.create(
-        event_type: 'message',
-        is_from_bot: true,
-        provider: 'slack',
-        bot_instance_id: bot_instance_id,
-        bot_user_id: bot_user_id,
-        event_attributes: { channel: SecureRandom.hex(8), timestamp: Time.now.to_i },
-        created_at: creation_time
-      )
-    end
+    let(:associated_bot_instances_ids) { BotInstance.ids }
+    let(:bi1) { create :bot_instance }
+    let(:bi2) { create :bot_instance }
+    let(:bu1) { create :bot_user, bot_instance: bi1 }
+    let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      bi1 = create :bot_instance
-      bi2 = create :bot_instance
-      bu1 = create :bot_user, bot_instance: bi1
-      bu2 = create :bot_user, bot_instance: bi2
-
-      create_messages_from_bot_event(bi1.id, bu1.id)
-      create_messages_from_bot_event(bi2.id, bu2.id, Time.current.yesterday)
-
-      associated_bot_instances_ids = BotInstance.ids
+      create :messages_from_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+      create :messages_from_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
 
       result = described_class.with_messages_from_bot(associated_bot_instances_ids)
 
       expect(result.map(&:id)).to eq [bi1.id, bi2.id]
+    end
+
+    it 'correctly computed from the query' do
+      travel_to Time.current do
+        yesterday = Time.current.yesterday
+
+        create :messages_from_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
+        create :messages_from_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+
+        result = described_class.with_messages_from_bot(associated_bot_instances_ids)
+
+        expect(result.last.attributes).to include(
+          "users_count" => 1,
+          "events_count" => 1,
+          "last_event_at" => yesterday
+        )
+      end
     end
   end
 end
