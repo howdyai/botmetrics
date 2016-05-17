@@ -38,15 +38,20 @@ RSpec.describe BotUser do
       { provider: 'slack', event_attributes: { channel: 'C', timestamp: Time.now.to_i + rand(100), reaction: 'OK'} }
     end
 
+    def create_event(event_type, bot_instance, user, is_for_bot)
+      Event.create!({ event_type: event_type, bot_instance: bot_instance, user: user, is_for_bot: is_for_bot }.merge(params))
+    end
+
     it 'finds users with message events for enabled bot instances' do
-      Event.create!({event_type: 'message', bot_instance: enabled, user: bot_users[0]}.merge(params))
-      Event.create!({event_type: 'message', bot_instance: enabled, user: bot_users[0]}.merge(params))
+      create_event('message', enabled,  bot_users[0], true)
+      create_event('message', enabled,  bot_users[0], true)
 
-      Event.create!({event_type: 'message', bot_instance: disabled,user: bot_users[1]}.merge(params))
-      Event.create!({event_type: 'added_to_channel', bot_instance: enabled, user: bot_users[2]}.merge(params))
-      Event.create!({event_type: 'message_reaction', bot_instance: disabled, user: bot_users[3]}.merge(params))
+      create_event('message', enabled,  bot_users[1], false)
+      create_event('message', disabled, bot_users[2], true)
+      create_event('added_to_channel', enabled, bot_users[3], false)
+      create_event('message_reaction', enabled, bot_users[3], true)
 
-      expect(BotUser.interacted_with(bot)).to eq [1]
+      expect(BotUser.interacted_with(bot)).to eq [bot_users[0].id]
     end
   end
 
