@@ -274,7 +274,7 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 
 CREATE TABLE notifications (
     id integer NOT NULL,
-    content text,
+    content text NOT NULL,
     bot_user_ids text[] DEFAULT '{}'::text[],
     bot_id integer,
     created_at timestamp without time zone,
