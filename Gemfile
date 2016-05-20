@@ -47,8 +47,10 @@ gem 'passenger',                '~> 5.0.27'
 
 group :development do
   # Foreman to launch processes
-  gem 'foreman',     '~> 0.70.0'
+  gem 'foreman',      '~> 0.70.0'
   gem 'quiet_assets', '~> 1.1.0'
+  gem 'git',          '~> 1.3.0'
+  gem 'parity',       '~> 0.9.3'
 end
 
 group :development, :test do
