@@ -29,11 +29,12 @@ RSpec.describe BotInstancesController do
   end
 
   describe 'POST create' do
-    let!(:bot_instance_params) { { token: 'token-deadbeef' } }
+    let(:bot_instance_params) { { token: 'token-deadbeef' } }
 
     before do
       allow(SetupBotJob).to receive(:perform_async)
       allow(TrackMixpanelEventJob).to receive(:perform_async)
+      allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
     end
 
     shared_examples 'creates and sets up a bot' do
@@ -48,15 +49,24 @@ RSpec.describe BotInstancesController do
         expect(instance.provider).to eql bot.provider
       end
 
-      it 'should call SetupBotJob' do
+      it 'calls SetupBotJob' do
         do_request
-        instance= bot.instances.last
+
+        instance = bot.instances.last
         expect(SetupBotJob).to have_received(:perform_async).with(instance.id, user.id)
       end
 
-      it 'should track the event on Mixpanel' do
+      it 'tracks the event on Mixpanel' do
         do_request
+
         expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Started Bot Instance Creation', user.id)
+      end
+
+      it 'alerts user of the creation of a bot instance' do
+        do_request
+
+        instance = bot.instances.last
+        expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(instance.id, user.id)
       end
     end
 
@@ -87,28 +97,22 @@ RSpec.describe BotInstancesController do
 
       it "should respond with JSON object containing the id of the instance" do
         do_request
-        instance = bot.instances.last
-        body = JSON.parse(response.body)
 
         expect(response).to have_http_status :created
-        expect(body['id']).to eql instance.id
+
+        body = JSON.parse(response.body)
+        expect(body['id']).to eql bot.instances.last.id
       end
 
       context 'when created_at is sent' do
-        before do
-          Timecop.freeze(Date.today - 3)
-          @now = Time.now
-          bot_instance_params.merge!(created_timestamp: @now.to_i)
-        end
-
-        after  { Timecop.return }
-
-        it_behaves_like 'creates and sets up a bot'
+        let(:bot_instance_params) { { token: 'token-deadbeef', created_at: created_at } }
+        let(:created_at) { 5.days.ago.to_i }
 
         it 'sets the created_at timestamp to the one specified by the user' do
           do_request
+
           instance = bot.instances.last
-          expect(instance.created_at.to_i).to eql @now.to_i
+          expect(instance.created_at.to_i).to eql created_at
         end
       end
     end

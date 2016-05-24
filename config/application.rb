@@ -30,6 +30,8 @@ module BotMetrics
     # config.i18n.default_locale = :de
     config.active_record.schema_format = :sql
 
+    config.active_job.queue_adapter = :sidekiq
+
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
     config.settings = ActiveSupport::OrderedOptions.new

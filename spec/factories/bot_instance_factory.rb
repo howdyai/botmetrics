@@ -7,7 +7,9 @@ FactoryGirl.define do
     trait :with_attributes do
       instance_attributes do
         {
-          'team_id' => 'T123'
+          'team_id'   => 'T123',
+          'team_name' => 'T123',
+          'team_url'  => 'https://T123.slack.com'
         }
       end
     end

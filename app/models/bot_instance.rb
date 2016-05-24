@@ -19,6 +19,8 @@ class BotInstance < ActiveRecord::Base
   scope :disabled,  -> { where("state = ?", 'disabled') }
   scope :pending,   -> { where("state <> ?", 'pending') }
 
+  delegate :owners, to: :bot
+
   def self.find_by_bot_and_team!(bot, team_id)
     bot_instance = BotInstance.where(bot_id: bot.id).where("instance_attributes->>'team_id' = ?", team_id).first
     bot_instance.presence || (raise ActiveRecord::RecordNotFound)
@@ -64,6 +66,24 @@ class BotInstance < ActiveRecord::Base
     order("last_event_at DESC")
   end
 
+  def self.membership_type_from_hash(user_hash)
+    membership_type = nil
+
+    if user_hash['deleted']
+      membership_type = 'deleted'
+    elsif user_hash['is_owner']
+      membership_type = 'owner'
+    elsif user_hash['is_admin']
+      membership_type = 'admin'
+    elsif user_hash['is_restricted']
+      membership_type = 'guest'
+    else
+      membership_type = 'member'
+    end
+
+    membership_type
+  end
+
   def import_users!
     slack_client = Slack.new(self.token)
     json_list = slack_client.call('users.list', :get)
@@ -90,25 +110,15 @@ class BotInstance < ActiveRecord::Base
     end
   end
 
-  def self.membership_type_from_hash(user_hash)
-    membership_type = nil
-
-    if user_hash['deleted']
-      membership_type = 'deleted'
-    elsif user_hash['is_owner']
-      membership_type = 'owner'
-    elsif user_hash['is_admin']
-      membership_type = 'admin'
-    elsif user_hash['is_restricted']
-      membership_type = 'guest'
-    else
-      membership_type = 'member'
-    end
-
-    membership_type
-  end
-
   def team_id
     instance_attributes['team_id']
+  end
+
+  def team_name
+    instance_attributes['team_name']
+  end
+
+  def team_url
+    instance_attributes['team_url']
   end
 end

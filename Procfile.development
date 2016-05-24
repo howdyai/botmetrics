@@ -1,5 +1,5 @@
 web: bundle exec passenger start -p $PORT --max-pool-size 3 --min-instances 1
-worker: bundle exec sidekiq -q default,2 -c 2 -v
+worker: bundle exec sidekiq -q default,2 -q mailers -c 2 -v
 relax_server: PORT=10998 relax
 relax_server_1: PORT=10999 relax
 relax_worker: bundle exec rake relax:listen_for_events
