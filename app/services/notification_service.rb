@@ -4,15 +4,19 @@ class NotificationService
   end
 
   def send_now
-    delete_messages!
-    create_messages!
+    ActiveRecord::Base.transaction do
+      delete_messages!
+      create_messages!
+    end
 
     send_messages
   end
 
   def enqueue_messages
-    delete_messages!
-    create_messages!
+    ActiveRecord::Base.transaction do
+      delete_messages!
+      create_messages!
+    end
   end
 
   private
