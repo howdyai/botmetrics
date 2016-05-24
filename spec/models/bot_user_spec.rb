@@ -39,7 +39,7 @@ RSpec.describe BotUser do
     end
 
     def create_event(event_type, bot_instance, user, is_for_bot)
-      Event.create!({ event_type: event_type, bot_instance: bot_instance, user: user, is_for_bot: is_for_bot }.merge(params))
+      create(:event, { event_type: event_type, bot_instance: bot_instance, user: user, is_for_bot: is_for_bot }.merge(params))
     end
 
     it 'finds users with message events for enabled bot instances' do
