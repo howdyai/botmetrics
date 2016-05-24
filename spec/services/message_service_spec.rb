@@ -66,7 +66,7 @@ RSpec.describe MessageService do
 
         service.send_now
 
-        expect(user_message.sent).to be_truthy
+        expect(user_message.sent_at).to be_present
         expect(user_message.success).to be_truthy
         expect(user_message.response).to match(success)
       end
@@ -76,7 +76,7 @@ RSpec.describe MessageService do
 
         service.send_now
 
-        expect(user_message.sent).to be_truthy
+        expect(user_message.sent_at).to be_present
         expect(user_message.success).to be_falsy
         expect(user_message.response).to eq({ 'ok' => false, 'error' => 'user_not_found' })
       end
@@ -87,7 +87,7 @@ RSpec.describe MessageService do
 
         service.send_now
 
-        expect(user_message.sent).to be_truthy
+        expect(user_message.sent_at).to be_present
         expect(user_message.success).to be_falsy
         expect(user_message.response).to eq(failure)
       end
@@ -101,7 +101,7 @@ RSpec.describe MessageService do
 
         service.send_now
 
-        expect(chan_message.sent).to be_truthy
+        expect(chan_message.sent_at).to be_present
         expect(chan_message.success).to be_truthy
         expect(chan_message.response).to eq(success)
       end
@@ -111,7 +111,7 @@ RSpec.describe MessageService do
 
         service.send_now
 
-        expect(chan_message.sent).to be_truthy
+        expect(chan_message.sent_at).to be_present
         expect(chan_message.success).to be_falsy
         expect(chan_message.response).to eq(failure)
       end

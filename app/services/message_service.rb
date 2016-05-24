@@ -5,7 +5,7 @@ class MessageService
   end
 
   def send_now
-    message.update(sent: true)
+    message.update(sent_at: Time.current)
 
     return false if !@bot_instance.state == 'enabled'
     return false if channel.blank?

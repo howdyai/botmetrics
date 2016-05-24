@@ -1,16 +1,16 @@
 RSpec.describe SendScheduledMessageJob do
   describe '#perform' do
     let!(:scheduled_messages) do
-      create_list(:message, 2, :to_user, sent: false, scheduled_at: scheduled_at)
+      create_list(:message, 2, :to_user, sent_at: nil, scheduled_at: scheduled_at)
     end
 
     let(:scheduled_at) { Time.parse('2016-05-15 08:00 +0200') }
 
     before do
-      create(:message, :to_user, sent: true,  scheduled_at: nil)
-      create(:message, :to_user, sent: false, scheduled_at: nil)
-      create(:message, :to_user, sent: true,  scheduled_at: scheduled_at)
-      create(:message, :to_user, sent: false, scheduled_at: Time.parse('2016-05-15 08:00 +0800'))
+      create(:message, :to_user, sent_at: Time.current,  scheduled_at: nil)
+      create(:message, :to_user, sent_at: nil, scheduled_at: nil)
+      create(:message, :to_user, sent_at: Time.current,  scheduled_at: scheduled_at)
+      create(:message, :to_user, sent_at: nil, scheduled_at: Time.parse('2016-05-15 08:00 +0800'))
     end
 
     context 'wrong timing' do

@@ -243,8 +243,8 @@ CREATE TABLE messages (
     success boolean DEFAULT false,
     response jsonb DEFAULT '{}'::jsonb,
     notification_id integer,
-    sent boolean DEFAULT false,
     scheduled_at timestamp without time zone,
+    sent_at timestamp without time zone,
     CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
     CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
 );
@@ -768,4 +768,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160516132302');
 INSERT INTO schema_migrations (version) VALUES ('20160517081106');
 
 INSERT INTO schema_migrations (version) VALUES ('20160523173810');
+
+INSERT INTO schema_migrations (version) VALUES ('20160524012151');
 

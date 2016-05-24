@@ -4,10 +4,10 @@ class Message < ActiveRecord::Base
 
   validates_presence_of :bot_instance
 
-  scope :sent,      -> { where(sent: true) }
+  scope :sent,      -> { where.not(sent_at: nil) }
   scope :success,   -> { sent.where(success: true) }
   scope :failure,   -> { sent.where(success: false) }
-  scope :scheduled, -> { where(sent: false).where.not(scheduled_at: nil) }
+  scope :scheduled, -> { where(sent_at: nil).where.not(scheduled_at: nil) }
 
   before_create :duplicate_provider_from_bot_instance
 
