@@ -49,7 +49,7 @@ class NotificationService
         message_model  = message_object.save_for(bot_user.bot_instance, notification_params(bot_user))
 
         unless message_model
-          Rails.logger.warn "[FAILED NOTIFICATION] Failed to send for Message #{message_model.inspect}"
+          Rails.logger.warn "[FAILED NOTIFICATION::MessageSave] Failed to send for Message #{message_model.inspect}"
         end
       end
     end
@@ -67,6 +67,10 @@ class NotificationService
     def scheduled_at(bot_user)
       return nil if notification.scheduled_at.blank?
 
-      notification.scheduled_at.in_time_zone(bot_user.user_attributes['timezone'])
+      if time_zone = bot_user.user_attributes['timezone']
+        notification.scheduled_at.in_time_zone(time_zone)
+      else
+        Rails.logger.warn "[FAILED NOTIFICATION::TimeZone] Failed to schedule Notification #{notification.id} for BotUser #{bot_user.inspect}"
+      end
     end
 end
