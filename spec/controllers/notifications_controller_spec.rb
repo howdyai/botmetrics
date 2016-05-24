@@ -152,7 +152,7 @@ RSpec.describe NotificationsController do
     before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
 
     def do_request
-      get :show, bot_id: bot.uid, id: notification.id
+      get :show, bot_id: bot.uid, id: notification.uid
     end
 
     it 'works' do
@@ -172,7 +172,7 @@ RSpec.describe NotificationsController do
     let!(:notification) { create(:notification, bot: bot, scheduled_at: scheduled_at) }
 
     def do_request
-      get :edit, bot_id: bot.uid, id: notification.id
+      get :edit, bot_id: bot.uid, id: notification.uid
     end
 
     context 'sent immediately' do
@@ -210,7 +210,7 @@ RSpec.describe NotificationsController do
     let!(:notification) { create(:notification, bot: bot, scheduled_at: scheduled_at) }
 
     def do_request
-      patch :update, { bot_id: bot.uid, id: notification.id }.merge(params)
+      patch :update, { bot_id: bot.uid, id: notification.uid }.merge(params)
     end
 
     context 'sent immediately' do
@@ -308,7 +308,7 @@ RSpec.describe NotificationsController do
     let!(:notification) { create(:notification, bot: bot, scheduled_at: scheduled_at) }
 
     def do_request
-      delete :destroy, bot_id: bot.uid, id: notification.id
+      delete :destroy, bot_id: bot.uid, id: notification.uid
     end
 
     context 'sent immediately' do

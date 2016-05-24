@@ -280,7 +280,8 @@ CREATE TABLE notifications (
     bot_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    scheduled_at character varying
+    scheduled_at character varying,
+    uid character varying NOT NULL
 );
 
 
@@ -585,6 +586,13 @@ CREATE INDEX index_notifications_on_bot_id ON notifications USING btree (bot_id)
 
 
 --
+-- Name: index_notifications_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_notifications_on_uid ON notifications USING btree (uid);
+
+
+--
 -- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -770,4 +778,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160517081106');
 INSERT INTO schema_migrations (version) VALUES ('20160523173810');
 
 INSERT INTO schema_migrations (version) VALUES ('20160524012151');
+
+INSERT INTO schema_migrations (version) VALUES ('20160524092941');
 

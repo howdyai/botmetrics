@@ -31,7 +31,6 @@ class NotificationsController < ApplicationController
   end
 
   def show
-    @notification = Notification.find(params[:id])
     TrackMixpanelEventJob.perform_async('Viewed Notifications Show Page', current_user.id)
   end
 
@@ -57,7 +56,7 @@ class NotificationsController < ApplicationController
   private
 
     def find_notification
-      @notification = @bot.notifications.find(params[:id])
+      @notification = @bot.notifications.find_by!(uid: params[:id])
     end
 
     def valid_notification?

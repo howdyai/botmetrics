@@ -1,4 +1,6 @@
 class Notification < ActiveRecord::Base
+  include WithUidUniqueness
+
   belongs_to :bot
   has_many :messages, dependent: :destroy
 
