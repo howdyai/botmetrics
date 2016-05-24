@@ -21,6 +21,7 @@ gem 'coffee-rails',             '~> 4.1.0'
 gem 'jquery-ui-rails',          '~> 5.0.3'
 gem 'simple_form',              '~> 3.1.0'
 gem 'modernizr-rails',          '~> 2.7.1'
+gem 'redcarpet',                '~> 3.3.4'
 
 # Dashboard stuff
 gem 'groupdate',                '~> 2.5.3'

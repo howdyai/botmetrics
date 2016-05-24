@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   root 'static#index'
 
   get '/.well-known/acme-challenge/:id' => 'static#letsencrypt'
+  get '/privacy' => 'static#privacy'
 
   Sidekiq::Web.use Rack::Auth::Basic do |username, password|
     username == ENV["SIDEKIQ_USERNAME"] && password == ENV["SIDEKIQ_PASSWORD"]
