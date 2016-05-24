@@ -21,7 +21,7 @@
             Clear Scheduling Options
 
   - count = notification.bot_user_ids.size
-  = f.submit "Send Notification to #{pluralize(count, 'User')}", data: { confirm: "Sure? This message will be going out to #{pluralize(count, 'User')}."}
+  = f.submit "Send Notification to #{pluralize(count, 'User')}", data: { confirm: "Sure? This message will be going out to #{pluralize(count, 'User')}.", disable: 'Processing' }
 
 - content_for :page_scripts do
   :javascript
