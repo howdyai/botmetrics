@@ -367,6 +367,39 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
+-- Name: webhook_histories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE webhook_histories (
+    id integer NOT NULL,
+    code integer,
+    elapsed_time numeric(15,10) DEFAULT 0.0,
+    bot_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: webhook_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE webhook_histories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: webhook_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE webhook_histories_id_seq OWNED BY webhook_histories.id;
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -420,6 +453,13 @@ ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notification
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY webhook_histories ALTER COLUMN id SET DEFAULT nextval('webhook_histories_id_seq'::regclass);
 
 
 --
@@ -484,6 +524,14 @@ ALTER TABLE ONLY notifications
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webhook_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY webhook_histories
+    ADD CONSTRAINT webhook_histories_pkey PRIMARY KEY (id);
 
 
 --
@@ -631,6 +679,14 @@ CREATE UNIQUE INDEX unique_bot_instance_uid ON bot_instances USING btree (uid) W
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
+
+
+--
+-- Name: fk_rails_03b178e1df; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY webhook_histories
+    ADD CONSTRAINT fk_rails_03b178e1df FOREIGN KEY (bot_id) REFERENCES bots(id) ON DELETE CASCADE;
 
 
 --
@@ -792,5 +848,7 @@ INSERT INTO schema_migrations (version) VALUES ('20160524174311');
 INSERT INTO schema_migrations (version) VALUES ('20160525051124');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525051648');
+
+INSERT INTO schema_migrations (version) VALUES ('20160525082031');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525091112');

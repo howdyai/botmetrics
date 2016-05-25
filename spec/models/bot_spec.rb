@@ -20,5 +20,6 @@ RSpec.describe Bot do
     it { is_expected.to have_many(:collaborators).through(:bot_collaborators) }
     it { is_expected.to have_many(:owners).through(:bot_collaborators) }
     it { is_expected.to have_many :notifications }
+    it { is_expected.to have_many :webhook_histories }
   end
 end
