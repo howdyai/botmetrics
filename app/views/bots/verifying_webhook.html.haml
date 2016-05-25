@@ -8,13 +8,15 @@
       .progress-bar.progress-bar-success{ role:'progressbar', 'aria-valuenow' => '50', 'aria-valuemin' => '0', 'aria-valuemax' => '100', style: "width: 50%" }
 
     .setup-done
-      %p.status
-        We've setup webhook for your bot. You can go to your dashboard to start analyzing how your bot is doing.
-      %p.api
-        You can use the API with curl, Ruby or Node.JS:
-      = render partial: 'bots/api'
+      %p.verified-failed Failed to verify webhook, please retry.
 
-      .go-to-dashboard.text-center
-        = link_to 'Go To Your Bot Dashboard', bot_path(@bot), class: 'btn btn-lg btn-success'
-      .create-new-instance.text-center
-        = link_to 'Create another instance', new_bot_instance_path(@bot), class: 'btn btn-lg btn-success'
+      %p.verified-success
+        We've setup webhook for your bot. You can go to your dashboard to start analyzing how your bot is doing.
+
+      .go-to-settings.text-center
+        = link_to 'Go Back To Settings', edit_bot_path(@bot), class: 'btn btn-lg btn-success'
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.VerifyingWebhook(#{@bot.id.to_json}, #{Settings.pusher_api_key.to_json});
+    App.page.run();

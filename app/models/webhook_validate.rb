@@ -6,16 +6,15 @@ class WebhookValidate
 
   def call
     if webhook_is_legit?
-      PusherJob.perform_async(channel_name, message, %<{"ok":true}>)
+      PusherJob.perform_async channel_name, message, { "ok": true }.to_json
     else
-      PusherJob.perform_async(channel_name, message, %<{"ok":false}>)
+      PusherJob.perform_async channel_name, message, { "ok": false }.to_json
     end
   end
 
   private
 
-    attr_reader :bot
-    attr_accessor :code
+    attr_reader :bot, :code
 
     def webhook_is_legit?
       log_webhook_history(ping_webhook!) && successfully_pinged?
