@@ -65,6 +65,6 @@ class BotsController < ApplicationController
   protected
 
   def bot_params
-    params.require(:bot).permit(:name)
+    params.require(:bot).permit(:name, :webhook_url)
   end
 end

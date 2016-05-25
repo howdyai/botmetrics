@@ -30,7 +30,7 @@ RSpec.describe BotsController do
       allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
-    let!(:bot_params) { { name: 'My First Bot' } }
+    let!(:bot_params) { { name: 'My First Bot', webhook_url: 'https://example.com/bot_metrics' } }
 
     def do_request
       post :create, bot: bot_params
@@ -44,6 +44,7 @@ RSpec.describe BotsController do
 
       bot = user.bots.last
       expect(bot.name).to eql 'My First Bot'
+      expect(bot.webhook_url).to eql 'https://example.com/bot_metrics'
       expect(bot.provider).to eql 'slack'
     end
 
@@ -158,7 +159,7 @@ RSpec.describe BotsController do
       allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
-    let!(:bot_params) { { name: 'Nestor Dev' } }
+    let!(:bot_params) { { name: 'Nestor Dev', webhook_url: 'https://example.com' } }
 
     def do_request
       patch :update, id: bot.to_param, bot: bot_params
@@ -168,7 +169,7 @@ RSpec.describe BotsController do
       expect {
         do_request
         bot.reload
-      }.to change(bot, :name).to('Nestor Dev')
+      }.to change(bot, :name).to('Nestor Dev').and change(bot, :webhook_url).to('https://example.com')
     end
 
     it 'should redirect to bot_path' do
