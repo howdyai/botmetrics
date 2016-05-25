@@ -1,3 +1,3 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: ENV['EMAIL_FROM']
+  default from: ENV['FROM_EMAIL']
 end

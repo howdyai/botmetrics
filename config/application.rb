@@ -30,18 +30,23 @@ module BotMetrics
     # config.i18n.default_locale = :de
     config.active_record.schema_format = :sql
 
+    # Use sidekiq for ActiveJob
     config.active_job.queue_adapter = :sidekiq
+
+    # Configure Mail URL options
+    config.action_mailer.default_url_options = { protocol: ENV['DEFAULT_PROTOCOL'], host: ENV['DEFAULT_HOST'] }
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.settings = ActiveSupport::OrderedOptions.new
-    config.settings.mixpanel_token = ENV['MIXPANEL_TOKEN']
-    config.settings.ga_account_id = ENV['GA_ACCOUNT_ID']
-    config.settings.pusher_api_key = ENV['PUSHER_API_KEY']
-    config.settings.pusher_secret = ENV['PUSHER_SECRET']
-    config.settings.pusher_app_id = ENV['PUSHER_APP_ID']
+
+    config.settings                       = ActiveSupport::OrderedOptions.new
+    config.settings.mixpanel_token        = ENV['MIXPANEL_TOKEN']
+    config.settings.ga_account_id         = ENV['GA_ACCOUNT_ID']
+    config.settings.pusher_api_key        = ENV['PUSHER_API_KEY']
+    config.settings.pusher_secret         = ENV['PUSHER_SECRET']
+    config.settings.pusher_app_id         = ENV['PUSHER_APP_ID']
     config.settings.json_web_token_secret = ENV['JSON_WEB_TOKEN_SECRET']
-    config.settings.rails_host = ENV['RAILS_HOST']
+    config.settings.rails_host            = ENV['RAILS_HOST']
   end
 end
 

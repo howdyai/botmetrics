@@ -126,6 +126,10 @@ GEM
       railties (>= 3.2.16)
     json (1.8.3)
     jwt (1.5.4)
+    launchy (2.4.3)
+      addressable (~> 2.3)
+    letter_opener (1.4.1)
+      launchy (~> 2.2)
     lograge (0.3.6)
       actionpack (>= 3)
       activesupport (>= 3)
@@ -319,6 +323,7 @@ DEPENDENCIES
   jquery-rails (~> 4.0.3)
   jquery-ui-rails (~> 5.0.3)
   jwt (~> 1.5.4)
+  letter_opener
   lograge (~> 0.3.6)
   mixpanel-ruby (~> 2.2.0)
   modernizr-rails (~> 2.7.1)

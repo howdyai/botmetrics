@@ -54,6 +54,7 @@ group :development do
   gem 'quiet_assets',             '~> 1.1.0'
   gem 'git',                      '~> 1.3.0'
   gem 'parity',                   '~> 0.9.3'
+  gem 'letter_opener'
 end
 
 group :development, :test do
