@@ -4,12 +4,6 @@ RSpec.describe User do
     it { should have_many(:bots).through(:bot_collaborators) }
   end
 
-  context 'store accessors' do
-    describe 'email_preferences' do
-      it { expect(subject).to respond_to :created_bot_instance }
-    end
-  end
-
   context 'scope' do
     describe '#subscribed_to' do
       context 'email preference is true' do
@@ -43,8 +37,15 @@ RSpec.describe User do
 
         user.save!
 
-        expect(user.email_preferences).to eq({ 'created_bot_instance' => '1' })
+        expect(user.email_preferences).to eq({ 'created_bot_instance' => '1', 'disabled_bot_instance' => '1' })
       end
+    end
+  end
+
+  context 'store accessors' do
+    describe 'email_preferences' do
+      it { expect(subject).to respond_to :created_bot_instance }
+      it { expect(subject).to respond_to :disabled_bot_instance }
     end
   end
 end

@@ -4,8 +4,23 @@ class AlertsMailer < ApplicationMailer
     @user         = User.find(user_id)
 
     mail(
-      to:      @bot_instance.owners.subscribed_to(:created_bot_instance).pluck(:email),
+      to: recipient_emails(@bot_instance.owners, :created_bot_instance),
       subject: "A New Team Signed Up for #{@bot_instance.bot.name}"
     )
   end
+
+  def disabled_bot_instance(bot_instance_id)
+    @bot_instance = BotInstance.find(bot_instance_id)
+
+    mail(
+      to: recipient_emails(@bot_instance.owners, :disabled_bot_instance),
+      subject: "A Team Disabled #{@bot_instance.bot.name}"
+    )
+  end
+
+  private
+
+    def recipient_emails(users, setting)
+      users.subscribed_to(setting).pluck(:email)
+    end
 end

@@ -4,7 +4,15 @@ RSpec.describe UsersController do
   before { sign_in user }
 
   describe '#update' do
-    let(:params) { { user: { created_bot_instance: '0' } } }
+    let(:params) do
+      {
+        user:
+          {
+            created_bot_instance: '0',
+            disabled_bot_instance: '0'
+          }
+      }
+    end
 
     def do_request
       post :update, { id: user.to_param }.merge(params)
@@ -12,10 +20,12 @@ RSpec.describe UsersController do
 
     it 'updates email preferences' do
       expect(user.created_bot_instance).to eq '1'
+      expect(user.disabled_bot_instance).to eq '1'
 
       do_request
 
       expect(user.reload.created_bot_instance).to eq '0'
+      expect(user.reload.disabled_bot_instance).to eq '0'
     end
   end
 

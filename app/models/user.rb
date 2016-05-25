@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 
   before_create :init_email_preferences
 
-  store_accessor :email_preferences, :created_bot_instance
+  store_accessor :email_preferences, :created_bot_instance, :disabled_bot_instance
 
   def to_param
     'me'
@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   private
 
     def init_email_preferences
-      self.email_preferences['created_bot_instance'] ||= '1'
+      self.email_preferences['created_bot_instance']  ||= '1'
+      self.email_preferences['disabled_bot_instance'] ||= '1'
     end
 end

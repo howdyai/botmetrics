@@ -1,0 +1,7 @@
+%h2 Oh no! A Team Left..
+
+%p
+  Team "#{@bot_instance.team_name}" (#{@bot_instance.team_url}) with #{pluralize(@bot_instance.users.count, 'members')} is no longer using #{@bot_instance.bot.name}.
+
+%p
+  You can update your email preferences on #{link_to 'your botmetrics profile page', user_url(:me)}.

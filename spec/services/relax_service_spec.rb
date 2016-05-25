@@ -1,6 +1,7 @@
 RSpec.describe RelaxService do
   describe 'team_joined' do
     let!(:event) { Relax::Event.new(team_uid: 'TDEADBEEF', namespace: 'UNESTOR1', type: 'team_joined') }
+
     before { allow(ImportUsersForBotInstanceJob).to receive(:perform_async) }
 
     context 'bot instance exists' do
@@ -34,6 +35,8 @@ RSpec.describe RelaxService do
   describe 'disable_bot' do
     let!(:event) { Relax::Event.new(team_uid: 'TDEADBEEF', namespace: 'UNESTOR1', type: 'disable_bot') }
 
+    before { allow(Alerts::DisabledBotInstanceJob).to receive(:perform_async) }
+
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
@@ -53,6 +56,12 @@ RSpec.describe RelaxService do
         e = bi.events.last
         expect(e.event_type).to eql 'bot_disabled'
         expect(e.provider).to eql 'slack'
+      end
+
+      it 'should send an alert' do
+        RelaxService.handle(event)
+
+        expect(Alerts::DisabledBotInstanceJob).to have_received(:perform_async).with(bi.id)
       end
     end
   end
