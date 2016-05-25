@@ -37,11 +37,27 @@ class BotsController < ApplicationController
   end
 
   def update
-    if @bot.update_attributes(bot_params)
+    old_webhook_url = @bot.webhook_url
+
+    if @bot.update(bot_params)
+      webhook_url_changed = @bot.webhook_url != old_webhook_url
+
       TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
-      redirect_to bot_path(@bot)
+      WebhookValidateJob.perform_async(@bot.id) if webhook_url_changed
+
+      respond_to do |format|
+        format.html do
+          if webhook_url_changed
+            redirect_to bot_verifying_webhook_path(@bot)
+          else
+            redirect_to bot_path(@bot)
+          end
+        end
+      end
     else
-      render :edit
+      respond_to do |format|
+        format.html { render :edit }
+      end
     end
   end
 
@@ -60,6 +76,9 @@ class BotsController < ApplicationController
     @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
     @dashboarder.init!
     TrackMixpanelEventJob.perform_async('Viewed Bot Dashboard Page', current_user.id)
+  end
+
+  def verifying_webhook
   end
 
   protected

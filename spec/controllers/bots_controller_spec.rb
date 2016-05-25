@@ -166,20 +166,40 @@ RSpec.describe BotsController do
     end
 
     it 'should update the name of the bot' do
+      allow(WebhookValidateJob).to receive(:perform_async)
+
       expect {
         do_request
         bot.reload
       }.to change(bot, :name).to('Nestor Dev').and change(bot, :webhook_url).to('https://example.com')
     end
 
-    it 'should redirect to bot_path' do
+    it 'should redirect to bot_verifying_webhook_path' do
+      allow(WebhookValidateJob).to receive(:perform_async)
+
       do_request
-      expect(response).to redirect_to bot_path(bot)
+
+      expect(response).to redirect_to bot_verifying_webhook_path(bot)
     end
 
     it 'should track the event on Mixpanel' do
+      expect(WebhookValidateJob).to receive(:perform_async)
+
       do_request
+
       expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Updated Bot', user.id)
+    end
+
+    context 'without webhook url changes' do
+      let!(:bot_params) { { name: 'test' } }
+
+      it 'should redirect to bot_path' do
+        expect(WebhookValidateJob).not_to receive(:perform_async)
+
+        do_request
+
+        expect(response).to redirect_to bot_path(bot)
+      end
     end
 
     context 'without a valid name' do

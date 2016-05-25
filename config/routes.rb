@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       end
     end
 
+    get :verifying_webhook
+
     resources :instances, only: [:new, :create], controller: :bot_instances do
       member do
         get :setting_up
