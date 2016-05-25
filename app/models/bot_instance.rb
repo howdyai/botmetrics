@@ -21,6 +21,8 @@ class BotInstance < ActiveRecord::Base
 
   delegate :owners, to: :bot
 
+  store_accessor :instance_attributes, :team_id, :team_name, :team_url
+
   def self.find_by_bot_and_team!(bot, team_id)
     bot_instance = BotInstance.where(bot_id: bot.id).where("instance_attributes->>'team_id' = ?", team_id).first
     bot_instance.presence || (raise ActiveRecord::RecordNotFound)
@@ -108,17 +110,5 @@ class BotInstance < ActiveRecord::Base
         end
       end
     end
-  end
-
-  def team_id
-    instance_attributes['team_id']
-  end
-
-  def team_name
-    instance_attributes['team_name']
-  end
-
-  def team_url
-    instance_attributes['team_url']
   end
 end
