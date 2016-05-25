@@ -31,7 +31,7 @@ class SetupBotJob < Job
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
 
-      FeatureToggle.active?(:alerts, @user) do
+      FeatureToggle.active?(:alerts, @instance.owners) do
         Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
       end
     else
