@@ -2,12 +2,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.2
+-- Dumped by pg_dump version 9.5.2
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -44,7 +48,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: bot_collaborators; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: bot_collaborators; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE bot_collaborators (
@@ -77,7 +81,7 @@ ALTER SEQUENCE bot_collaborators_id_seq OWNED BY bot_collaborators.id;
 
 
 --
--- Name: bot_instances; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: bot_instances; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE bot_instances (
@@ -90,7 +94,7 @@ CREATE TABLE bot_instances (
     provider character varying NOT NULL,
     state character varying DEFAULT 'pending'::character varying NOT NULL,
     instance_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
-    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+    CONSTRAINT valid_provider_on_bot_instances CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -114,7 +118,7 @@ ALTER SEQUENCE bot_instances_id_seq OWNED BY bot_instances.id;
 
 
 --
--- Name: bot_users; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: bot_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE bot_users (
@@ -126,7 +130,7 @@ CREATE TABLE bot_users (
     updated_at timestamp without time zone NOT NULL,
     bot_instance_id integer NOT NULL,
     provider character varying NOT NULL,
-    CONSTRAINT valid_provider_on_bot_users CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+    CONSTRAINT valid_provider_on_bot_users CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -150,7 +154,7 @@ ALTER SEQUENCE bot_users_id_seq OWNED BY bot_users.id;
 
 
 --
--- Name: bots; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: bots; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE bots (
@@ -160,7 +164,8 @@ CREATE TABLE bots (
     provider character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    CONSTRAINT valid_provider_on_bots CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+    webhook_url character varying,
+    CONSTRAINT valid_provider_on_bots CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -184,7 +189,7 @@ ALTER SEQUENCE bots_id_seq OWNED BY bots.id;
 
 
 --
--- Name: events; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE events (
@@ -200,11 +205,11 @@ CREATE TABLE events (
     updated_at timestamp without time zone NOT NULL,
     is_im boolean DEFAULT false NOT NULL,
     is_from_bot boolean DEFAULT false NOT NULL,
-    CONSTRAINT valid_event_type_on_events CHECK (((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL))) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
-    CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
-    CONSTRAINT validate_attributes_channel CHECK (((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL)))),
-    CONSTRAINT validate_attributes_reaction CHECK (((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)))),
-    CONSTRAINT validate_attributes_timestamp CHECK (((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message'::text)) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))))
+    CONSTRAINT valid_event_type_on_events CHECK ((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text) OR ((event_type)::text = 'added_to_channel'::text) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL)) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_provider_on_events CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text))),
+    CONSTRAINT validate_attributes_channel CHECK (((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0) AND ((provider)::text = 'slack'::text) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_reaction CHECK (((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0) AND ((provider)::text = 'slack'::text) AND ((event_type)::text = 'message_reaction'::text)) OR (((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_timestamp CHECK (((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0) AND ((provider)::text = 'slack'::text) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text) AND (event_attributes IS NOT NULL))))
 );
 
 
@@ -228,7 +233,7 @@ ALTER SEQUENCE events_id_seq OWNED BY events.id;
 
 
 --
--- Name: messages; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE messages (
@@ -245,8 +250,8 @@ CREATE TABLE messages (
     notification_id integer,
     scheduled_at timestamp without time zone,
     sent_at timestamp without time zone,
-    CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
-    CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
+    CONSTRAINT validate_attributes_channel_user CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL) AND (length((message_attributes ->> 'channel'::text)) > 0) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL) AND (length((message_attributes ->> 'user'::text)) > 0) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
+    CONSTRAINT validate_attributes_team_id CHECK ((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
 );
 
 
@@ -270,7 +275,7 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 
 
 --
--- Name: notifications; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE notifications (
@@ -305,7 +310,7 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE schema_migrations (
@@ -314,7 +319,7 @@ CREATE TABLE schema_migrations (
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE users (
@@ -418,7 +423,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 
 --
--- Name: bot_collaborators_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: bot_collaborators_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY bot_collaborators
@@ -426,7 +431,7 @@ ALTER TABLE ONLY bot_collaborators
 
 
 --
--- Name: bot_instances_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: bot_instances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY bot_instances
@@ -434,7 +439,7 @@ ALTER TABLE ONLY bot_instances
 
 
 --
--- Name: bot_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: bot_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY bot_users
@@ -442,7 +447,7 @@ ALTER TABLE ONLY bot_users
 
 
 --
--- Name: bots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: bots_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY bots
@@ -450,7 +455,7 @@ ALTER TABLE ONLY bots
 
 
 --
--- Name: events_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY events
@@ -458,7 +463,7 @@ ALTER TABLE ONLY events
 
 
 --
--- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY messages
@@ -466,7 +471,7 @@ ALTER TABLE ONLY messages
 
 
 --
--- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY notifications
@@ -474,7 +479,7 @@ ALTER TABLE ONLY notifications
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -482,147 +487,147 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: bot_instances_team_id_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: bot_instances_team_id_uid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid, ((instance_attributes -> 'team_id'::text))) WHERE ((provider)::text = 'slack'::text);
 
 
 --
--- Name: events_channel_timestamp_message_slack; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: events_channel_timestamp_message_slack; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX events_channel_timestamp_message_slack ON events USING btree (((event_attributes -> 'timestamp'::text)), ((event_attributes -> 'channel'::text))) WHERE (((provider)::text = 'slack'::text) AND ((event_type)::text = 'message'::text));
 
 
 --
--- Name: index_bot_collaborators_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_collaborators_on_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_bot_collaborators_on_bot_id ON bot_collaborators USING btree (bot_id);
 
 
 --
--- Name: index_bot_collaborators_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_collaborators_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_bot_collaborators_on_user_id ON bot_collaborators USING btree (user_id);
 
 
 --
--- Name: index_bot_collaborators_on_user_id_and_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_collaborators_on_user_id_and_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_bot_collaborators_on_user_id_and_bot_id ON bot_collaborators USING btree (user_id, bot_id);
 
 
 --
--- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_instances_on_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_bot_instances_on_bot_id ON bot_instances USING btree (bot_id);
 
 
 --
--- Name: index_bot_instances_on_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_instances_on_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_bot_instances_on_token ON bot_instances USING btree (token);
 
 
 --
--- Name: index_bot_users_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_users_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_bot_users_on_bot_instance_id ON bot_users USING btree (bot_instance_id);
 
 
 --
--- Name: index_bot_users_on_uid_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bot_users_on_uid_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_bot_users_on_uid_and_bot_instance_id ON bot_users USING btree (uid, bot_instance_id);
 
 
 --
--- Name: index_bots_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_bots_on_uid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_bots_on_uid ON bots USING btree (uid);
 
 
 --
--- Name: index_events_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_events_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_events_on_bot_instance_id ON events USING btree (bot_instance_id);
 
 
 --
--- Name: index_events_on_bot_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_events_on_bot_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_events_on_bot_user_id ON events USING btree (bot_user_id);
 
 
 --
--- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_messages_on_bot_instance_id ON messages USING btree (bot_instance_id);
 
 
 --
--- Name: index_messages_on_notification_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_messages_on_notification_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_messages_on_notification_id ON messages USING btree (notification_id);
 
 
 --
--- Name: index_notifications_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_notifications_on_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_notifications_on_bot_id ON notifications USING btree (bot_id);
 
 
 --
--- Name: index_notifications_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_notifications_on_uid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_notifications_on_uid ON notifications USING btree (uid);
 
 
 --
--- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_api_key ON users USING btree (api_key) WHERE (api_key IS NOT NULL);
 
 
 --
--- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 
 
 --
--- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
 
 
 --
--- Name: unique_bot_instance_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: unique_bot_instance_uid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX unique_bot_instance_uid ON bot_instances USING btree (uid) WHERE (uid IS NOT NULL);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
@@ -696,7 +701,7 @@ ALTER TABLE ONLY bot_collaborators
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO schema_migrations (version) VALUES ('20160421235326');
 
@@ -786,5 +791,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160524174311');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525051124');
 
-INSERT INTO schema_migrations (version) VALUES ('20160525091112');
+INSERT INTO schema_migrations (version) VALUES ('20160525051648');
 
+INSERT INTO schema_migrations (version) VALUES ('20160525091112');
