@@ -1,11 +1,26 @@
 RSpec.describe UsersController do
   let!(:user) { create :user }
 
-  describe 'PATCH regenerate_api_key' do
-    before do
-      sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
+  before { sign_in user }
+
+  describe '#update' do
+    let(:params) { { user: { created_bot_instance: '1' } } }
+
+    def do_request
+      post :update, { id: user.to_param }.merge(params)
     end
+
+    it 'updates email preferences' do
+      expect(user.created_bot_instance).to be_falsy
+
+      do_request
+
+      expect(user.reload.created_bot_instance).to be_truthy
+    end
+  end
+
+  describe 'PATCH regenerate_api_key' do
+    before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
 
     def do_request
       patch :regenerate_api_key, id: user.to_param
