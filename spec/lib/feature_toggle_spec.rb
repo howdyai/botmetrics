@@ -1,9 +1,9 @@
 RSpec.describe FeatureToggle do
   describe '#active?' do
-    let(:user) { nil }
+    let(:users) { nil }
 
     def runner
-      FeatureToggle.active?(:feature, user) do
+      FeatureToggle.active?(:feature, users) do
         'works'
       end
     end
@@ -23,7 +23,7 @@ RSpec.describe FeatureToggle do
 
       context 'current_user is not blank' do
         context 'ENABLE && admin' do
-          let(:user) { double(:user, email: 'admins@asknestor.me') }
+          let(:users) { [ double(:user, email: 'admins@asknestor.me'), double(:user, email: 'winston@example.com') ] }
 
           before { ENV['FEATURE_FEATURE'] = 'ENABLE' }
           after  { ENV['FEATURE_FEATURE'] = nil }
@@ -32,7 +32,7 @@ RSpec.describe FeatureToggle do
         end
 
         context 'ENABLE only' do
-          let(:user) { double(:user, email: 'abc@example.com') }
+          let(:users) { double(:user, email: 'abc@example.com') }
 
           before { ENV['FEATURE_FEATURE'] = 'ENABLE' }
           after  { ENV['FEATURE_FEATURE'] = nil }
@@ -41,7 +41,7 @@ RSpec.describe FeatureToggle do
         end
 
         context 'admin only' do
-          let(:user) { double(:user, email: 'admins@asknestor.me') }
+          let(:users) { double(:user, email: 'admins@asknestor.me') }
 
           context 'nil' do
             before { ENV['FEATURE_FEATURE'] = nil  }
