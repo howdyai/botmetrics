@@ -17,27 +17,21 @@ class WebhookValidate
     attr_reader :bot, :code
 
     def webhook_is_legit?
-      log_webhook_history(ping_webhook!) && successfully_pinged?
+      ping_webhook! && update_webhook_status
     end
 
     def ping_webhook!
-      timely do
-        @code = Excon.get(bot.webhook_url).status
-      end
+      @code = Excon.get(bot.webhook_url).status
     end
 
-    def log_webhook_history(elapsed_time)
-      bot.webhook_histories.create(code: code, elapsed_time: elapsed_time)
+    def update_webhook_status
+      bot.update(webhook_status: successfully_pinged?)
+
+      successfully_pinged?
     end
 
     def successfully_pinged?
-      [200, 201, 202].include?(code)
-    end
-
-    def timely
-      start = Time.current
-      yield 
-      Time.current - start
+      @_successfully_pinged ||= [200, 201, 202].include?(code)
     end
 
     def channel_name
