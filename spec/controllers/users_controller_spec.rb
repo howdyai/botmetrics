@@ -4,18 +4,18 @@ RSpec.describe UsersController do
   before { sign_in user }
 
   describe '#update' do
-    let(:params) { { user: { created_bot_instance: '1' } } }
+    let(:params) { { user: { created_bot_instance: '0' } } }
 
     def do_request
       post :update, { id: user.to_param }.merge(params)
     end
 
     it 'updates email preferences' do
-      expect(user.created_bot_instance).to be_falsy
+      expect(user.created_bot_instance).to eq '1'
 
       do_request
 
-      expect(user.reload.created_bot_instance).to be_truthy
+      expect(user.reload.created_bot_instance).to eq '0'
     end
   end
 
