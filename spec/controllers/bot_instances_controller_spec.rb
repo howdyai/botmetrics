@@ -34,7 +34,6 @@ RSpec.describe BotInstancesController do
     before do
       allow(SetupBotJob).to receive(:perform_async)
       allow(TrackMixpanelEventJob).to receive(:perform_async)
-      allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
     end
 
     shared_examples 'creates and sets up a bot' do
@@ -60,13 +59,6 @@ RSpec.describe BotInstancesController do
         do_request
 
         expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Started Bot Instance Creation', user.id)
-      end
-
-      it 'alerts user of the creation of a bot instance' do
-        do_request
-
-        instance = bot.instances.last
-        expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(instance.id, user.id)
       end
     end
 

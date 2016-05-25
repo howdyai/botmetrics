@@ -5,7 +5,7 @@ class AlertsMailer < ApplicationMailer
 
     mail(
       to:      @bot_instance.owners.map(&:email),
-      subject: 'A New Bot Instance Created!'
+      subject: "A New Team Signed Up for #{@bot_instance.bot.name}"
     )
   end
 end

@@ -18,9 +18,7 @@ class BotInstancesController < ApplicationController
 
     if @instance.save
       TrackMixpanelEventJob.perform_async('Started Bot Instance Creation', current_user.id)
-
       SetupBotJob.perform_async(@instance.id, current_user.id)
-      Alerts::CreatedBotInstanceJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|
         format.html { redirect_to setting_up_bot_instance_path(@bot, @instance) }

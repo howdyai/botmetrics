@@ -9,6 +9,7 @@ class SetupBotJob < Job
   end
 
   private
+
   def setup_slack_bot!
     slack = Slack.new(@instance.token)
     auth_info = slack.call('auth.test', :get)
@@ -23,9 +24,12 @@ class SetupBotJob < Job
           team_url: auth_info['url']
         }
       )
+
       @instance.import_users!
+
       Relax::Bot.start!(@instance.instance_attributes['team_id'], @instance.token, namespace: @instance.uid)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
+      Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
     else
       if auth_info['error'] == 'account_inactive'

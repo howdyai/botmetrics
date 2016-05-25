@@ -75,6 +75,7 @@ RSpec.describe SetupBotJob do
           )
 
           allow(PusherJob).to receive(:perform_async)
+          allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
         end
 
         it 'should enable the bot and setup team_id, team_name and team_url' do
@@ -94,8 +95,14 @@ RSpec.describe SetupBotJob do
 
         it 'should track the event on Mixpanel' do
           SetupBotJob.new.perform(bi.id, user.id)
+          expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(bi.id, user.id)
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi.id, user.id)
           expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'enabled')
         end
+
 
         context 'none of the users exist' do
           it 'should add three users' do
