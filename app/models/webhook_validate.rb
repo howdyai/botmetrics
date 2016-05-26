@@ -21,7 +21,7 @@ class WebhookValidate
     end
 
     def ping_webhook!
-      @code = Excon.get(bot.webhook_url).status
+      @code = Webhook.ping(bot.id).status
     end
 
     def update_webhook_status

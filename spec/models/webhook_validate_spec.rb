@@ -4,7 +4,7 @@ RSpec.describe WebhookValidate do
       let(:bot) { create(:bot) }
 
       before do
-        allow(Excon).to receive(:get) { double(status: 200) }
+        allow(Webhook).to receive(:ping) { double(status: 200) }
       end
 
       it 'updates webhook status to true and invoke Pusher with correct args' do
@@ -21,7 +21,7 @@ RSpec.describe WebhookValidate do
       let(:bot) { create(:bot) }
 
       before do
-        allow(Excon).to receive(:get) { double(status: 500) }
+        allow(Webhook).to receive(:ping) { double(status: 500) }
       end
 
       it 'updates webhook status to false and invoke Pusher with correct args' do
