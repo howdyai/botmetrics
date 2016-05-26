@@ -368,10 +368,10 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
--- Name: webhook_histories; Type: TABLE; Schema: public; Owner: -
+-- Name: webhook_events; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE webhook_histories (
+CREATE TABLE webhook_events (
     id integer NOT NULL,
     code integer,
     elapsed_time numeric(15,10) DEFAULT 0.0,
@@ -382,10 +382,10 @@ CREATE TABLE webhook_histories (
 
 
 --
--- Name: webhook_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: webhook_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE webhook_histories_id_seq
+CREATE SEQUENCE webhook_events_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -394,10 +394,10 @@ CREATE SEQUENCE webhook_histories_id_seq
 
 
 --
--- Name: webhook_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: webhook_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE webhook_histories_id_seq OWNED BY webhook_histories.id;
+ALTER SEQUENCE webhook_events_id_seq OWNED BY webhook_events.id;
 
 
 --
@@ -460,7 +460,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY webhook_histories ALTER COLUMN id SET DEFAULT nextval('webhook_histories_id_seq'::regclass);
+ALTER TABLE ONLY webhook_events ALTER COLUMN id SET DEFAULT nextval('webhook_events_id_seq'::regclass);
 
 
 --
@@ -528,11 +528,11 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: webhook_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: webhook_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY webhook_histories
-    ADD CONSTRAINT webhook_histories_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY webhook_events
+    ADD CONSTRAINT webhook_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -686,7 +686,7 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 -- Name: fk_rails_03b178e1df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY webhook_histories
+ALTER TABLE ONLY webhook_events
     ADD CONSTRAINT fk_rails_03b178e1df FOREIGN KEY (bot_id) REFERENCES bots(id) ON DELETE CASCADE;
 
 
@@ -855,3 +855,5 @@ INSERT INTO schema_migrations (version) VALUES ('20160525082031');
 INSERT INTO schema_migrations (version) VALUES ('20160525091112');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525102056');
+
+INSERT INTO schema_migrations (version) VALUES ('20160526025128');

@@ -12,5 +12,5 @@ class Bot < ActiveRecord::Base
   has_many :owners, -> { where("bot_collaborators.collaborator_type" => 'owner') }, through: :bot_collaborators, source: :user
 
   has_many :notifications
-  has_many :webhook_histories
+  has_many :webhook_events
 end
