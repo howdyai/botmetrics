@@ -25,6 +25,7 @@ RSpec.describe Webhook do
 
     it 'set correct header' do
       allow(Excon).to receive(:post) { double(status: 200) }
+      allow(Stopwatch).to receive(:record) { |&block| block.call; 1 }
 
       do_request
 
