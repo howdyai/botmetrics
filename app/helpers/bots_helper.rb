@@ -93,4 +93,12 @@ module BotsHelper
       nil
     end
   end
+
+  def webhook_label(bot)
+    if bot.webhook_status
+      %(Webhook URL <i class="fa fa-check webhook-success"></i>).html_safe
+    else
+      %(Webhook URL <i class="fa fa-exclamation-triangle webhook-failed"></i>).html_safe
+    end
+  end
 end
