@@ -95,6 +95,8 @@ module BotsHelper
   end
 
   def webhook_label(bot)
+    return "Webhook URL" if bot.webhook_url.blank?
+
     if bot.webhook_status
       %(Webhook URL <i class="fa fa-check webhook-success"></i>).html_safe
     else
