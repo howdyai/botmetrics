@@ -35,7 +35,7 @@ RSpec.describe BotUser do
     let(:bot_users) { create_list(:bot_user, 4) }
 
     def params
-      { provider: 'slack', event_attributes: { channel: 'C', timestamp: Time.now.to_i + rand(100), reaction: 'OK'} }
+      { provider: 'slack', event_attributes: { channel: SecureRandom.hex(4), timestamp: Time.now.to_i + rand(100), reaction: 'OK'} }
     end
 
     def create_event(event_type, bot_instance, user, is_for_bot)
