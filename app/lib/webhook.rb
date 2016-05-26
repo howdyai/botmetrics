@@ -11,7 +11,7 @@ class Webhook
     bot = find_bot_by(bot_id)
     response = nil
 
-    options[:body] = payload('hook' => { bot_uid: bot.uid }, 'event' => event.inspect)
+    options[:body] = payload('hook' => { bot_uid: bot.uid }, 'event' => event.to_json)
 
     elapsed_time = Stopwatch.record do
       response = Excon.post(bot.webhook_url, default_options.merge(options))
