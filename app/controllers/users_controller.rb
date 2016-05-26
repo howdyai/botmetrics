@@ -34,6 +34,6 @@ class UsersController < ApplicationController
   private
 
     def model_params
-      params.require(:user).permit(:created_bot_instance, :disabled_bot_instance)
+      params.require(:user).permit(:created_bot_instance, :disabled_bot_instance, :daily_reports)
     end
 end

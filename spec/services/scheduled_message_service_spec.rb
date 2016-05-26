@@ -1,4 +1,4 @@
-RSpec.describe SendScheduledMessageJob do
+RSpec.describe ScheduledMessageService do
   describe '#perform' do
     let!(:scheduled_messages) do
       create_list(:message, 2, :to_user, sent_at: nil, scheduled_at: scheduled_at)
@@ -19,7 +19,7 @@ RSpec.describe SendScheduledMessageJob do
       it 'does not send anything' do
         allow(SendMessageJob).to receive(:perform_async)
 
-        SendScheduledMessageJob.new.perform
+        ScheduledMessageService.new.send_now
 
         expect(SendMessageJob).to have_received(:perform_async).exactly(0).times
         scheduled_messages.each do |message|
@@ -34,7 +34,7 @@ RSpec.describe SendScheduledMessageJob do
       it 'sends for scheduled message only' do
         allow(SendMessageJob).to receive(:perform_async)
 
-        SendScheduledMessageJob.new.perform
+        ScheduledMessageService.new.send_now
 
         expect(SendMessageJob).to have_received(:perform_async).twice
         scheduled_messages.each do |message|

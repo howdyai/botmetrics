@@ -1,5 +1,5 @@
 RSpec.describe AlertsMailer do
-  let(:bot)    { double(:bot, name: 'Bot') }
+  let(:bot) { double(:bot, name: 'Bot') }
   let(:bot_instance) do
     double(
       :bot_instance,

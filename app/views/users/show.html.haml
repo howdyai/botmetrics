@@ -18,6 +18,10 @@
     %h3 Email Preferences
     = simple_form_for @user, url: user_path(@user), method: :patch do |f|
 
+      = f.input :daily_reports, as: :boolean, wrapper: :vertical_boolean,
+          label: 'Receive daily reports?',
+          value: @user.daily_reports
+
       = f.input :created_bot_instance, as: :boolean, wrapper: :vertical_boolean,
           label: 'Receive alerts when a new bot instance is created?',
           value: @user.created_bot_instance

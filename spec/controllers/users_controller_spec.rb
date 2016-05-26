@@ -8,8 +8,9 @@ RSpec.describe UsersController do
       {
         user:
           {
-            created_bot_instance: '0',
-            disabled_bot_instance: '0'
+            created_bot_instance:  '0',
+            disabled_bot_instance: '0',
+            daily_reports:         '0'
           }
       }
     end
@@ -19,13 +20,11 @@ RSpec.describe UsersController do
     end
 
     it 'updates email preferences' do
-      expect(user.created_bot_instance).to eq '1'
-      expect(user.disabled_bot_instance).to eq '1'
+      params[:user].each { |pref, _| expect(user.send(pref)).to eq('1'), pref.to_s }
 
       do_request
 
-      expect(user.reload.created_bot_instance).to eq '0'
-      expect(user.reload.disabled_bot_instance).to eq '0'
+      params[:user].each { |pref, _| expect(user.reload.send(pref)).to eq('0'), pref.to_s }
     end
   end
 
