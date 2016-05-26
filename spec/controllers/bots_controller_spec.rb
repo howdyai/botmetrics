@@ -191,7 +191,7 @@ RSpec.describe BotsController do
     end
 
     context 'without webhook url changes' do
-      let!(:bot_params) { { name: 'test' } }
+      let!(:bot_params) { { name: 'test', webhook_url: "" } }
 
       it 'should redirect to bot_path' do
         expect(WebhookValidateJob).not_to receive(:perform_async)
