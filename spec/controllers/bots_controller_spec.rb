@@ -223,4 +223,20 @@ RSpec.describe BotsController do
       end
     end
   end
+
+  describe 'GET webhook_events' do
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
+
+    def do_request
+      get :webhook_events, id: bot.to_param
+    end
+
+    it 'success' do
+      do_request
+      expect(response).to be_success
+    end
+  end
 end

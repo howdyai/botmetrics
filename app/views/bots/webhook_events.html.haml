@@ -1,0 +1,26 @@
+.secondary-menu.row
+  .col-md-6.col-sm-3.col-xs-6
+    = link_to edit_bot_path(@bot), class: 'breadcrumb' do
+      %h2 Settings
+    %span.breadcrumb-separator
+      \/
+    %h2 Webhook Events
+
+.container-fluid
+  .row
+    %h3 Events for #{@bot.webhook_url}
+  .row
+    .col-xs-12.graph-container
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Response Code
+            %th Completed in
+            %th Last Sent At
+        %tbody
+          - @tableized.each do |webhook_event|
+            %tr{class: webhook_event.id}
+              %td= webhook_event.code
+              %td= "#{webhook_event.elapsed_time} seconds"
+              %td= "#{time_ago_in_words(webhook_event.created_at)} ago"
+      = will_paginate @tableized, renderer: BootstrapPagination::Rails

@@ -81,6 +81,10 @@ class BotsController < ApplicationController
   def verifying_webhook
   end
 
+  def webhook_events
+    @tableized = WebhookEvent.where(bot_id: @bot.id).page(params[:page])
+  end
+
   protected
 
   def bot_params

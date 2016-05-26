@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     end
 
     get :verifying_webhook
+    get :webhook_events, on: :member
 
     resources :instances, only: [:new, :create], controller: :bot_instances do
       member do
