@@ -76,7 +76,7 @@ class BotsController < ApplicationController
   end
 
   def webhook_events
-    @tableized = WebhookEvent.where(bot_id: @bot.id).page(params[:page])
+    @tableized = @bot.webhook_events.page(params[:page])
   end
 
   protected
