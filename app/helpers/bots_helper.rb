@@ -95,12 +95,12 @@ module BotsHelper
   end
 
   def webhook_label(bot)
-    return "Webhook URL" if bot.webhook_url.blank?
+    return 'Webhook URL' if bot.webhook_url.blank?
 
     if bot.webhook_status
-      %(Webhook URL <i class="fa fa-check webhook-success"></i>).html_safe
+      'Webhook URL <i class="fa fa-check webhook-success"></i>'.html_safe
     else
-      %(Webhook URL <i class="fa fa-exclamation-triangle webhook-failed"></i>).html_safe
+      'Webhook URL <i class="fa fa-exclamation-triangle webhook-failed"></i>'.html_safe
     end
   end
 end

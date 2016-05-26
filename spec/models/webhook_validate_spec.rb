@@ -13,7 +13,7 @@ RSpec.describe WebhookValidate do
         WebhookValidate.new(bot.id).call
         expect(bot.reload.webhook_status).to be true
         expect(PusherJob).to have_received(:perform_async).
-          with("webhook-validate-bot", "webhook-validate-bot-#{bot.id}", %<{"ok":true}>)
+          with('webhook-validate-bot', "webhook-validate-bot-#{bot.id}", %<{"ok":true}>)
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe WebhookValidate do
         WebhookValidate.new(bot.id).call
         expect(bot.reload.webhook_status).to be false
         expect(PusherJob).to have_received(:perform_async).
-          with("webhook-validate-bot", "webhook-validate-bot-#{bot.id}", %<{"ok":false}>)
+          with('webhook-validate-bot', "webhook-validate-bot-#{bot.id}", %<{"ok":false}>)
       end
     end
   end

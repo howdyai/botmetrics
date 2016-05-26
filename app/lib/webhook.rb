@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Webhook
   def self.ping(bot_id, options = {})
     bot = find_bot_by(bot_id)
@@ -37,16 +39,20 @@ class Webhook
         },
       }
     end
+    private_class_method :default_options
 
     def self.payload(params)
-       URI.encode_www_form('payload' => params.to_json)
+      URI.encode_www_form('payload' => params.to_json)
     end
+    private_class_method :payload
 
     def self.find_bot_by(bot_id)
       Bot.find bot_id
     end
+    private_class_method :find_bot_by
 
     def self.log_webhook_execution(bot, elapsed_time, code)
       bot.webhook_events.create(elapsed_time: elapsed_time, code: code)
     end
+    private_class_method :log_webhook_execution
 end
