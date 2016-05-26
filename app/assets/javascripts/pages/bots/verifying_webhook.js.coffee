@@ -13,7 +13,6 @@ class App.VerifyingWebhook extends App.AppBase
       pusher = new Pusher(self.pusherAPIKey)
       channel = pusher.subscribe "webhook-validate-bot"
       channel.bind "webhook-validate-bot-#{self.botId}", (data) ->
-        debugger
         $('.progress-bar').css('width', "100%")
         response = JSON.parse(data.message)
 
@@ -23,4 +22,3 @@ class App.VerifyingWebhook extends App.AppBase
         else
           $('.setup-done').show()
           $('.verified-success').hide()
-          
