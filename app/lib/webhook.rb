@@ -7,6 +7,21 @@ class Webhook
     Excon.post bot.webhook_url, default_options.merge(options)
   end
 
+  def self.deliver(bot_id, event, options = {})
+    bot = find_bot_by(bot_id)
+    response = nil
+
+    options[:body] = payload('hook' => { bot_uid: bot.uid }, 'event' => event.inspect)
+
+    elapsed_time = Stopwatch.record do
+      response = Excon.post(bot.webhook_url, default_options.merge(options))
+    end
+
+    log_webhook_execution(bot, elapsed_time, response.status)
+
+    response
+  end
+
   private
 
     def self.default_options
@@ -29,5 +44,9 @@ class Webhook
 
     def self.find_bot_by(bot_id)
       Bot.find bot_id
+    end
+
+    def self.log_webhook_execution(bot, elapsed_time, code)
+      bot.webhook_events.create(elapsed_time: elapsed_time, code: code)
     end
 end
