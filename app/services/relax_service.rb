@@ -62,6 +62,7 @@ class RelaxService
 
       if event.persisted?
         Rails.logger.info "Saved event: #{event.inspect}"
+        SendEventToWebhookJob.perform_async(bi.bot_id, event.id)
       else
         Rails.logger.error "Couldn't save event: #{event.inspect}"
       end

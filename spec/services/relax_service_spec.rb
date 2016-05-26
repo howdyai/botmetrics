@@ -90,6 +90,7 @@ RSpec.describe RelaxService do
 
       context 'when message is not meant for the bot' do
         it 'should create a new event' do
+          allow(SendEventToWebhookJob).to receive(:perform_async)
           expect {
             RelaxService.handle(event)
             bi.reload
