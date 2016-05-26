@@ -1,8 +1,6 @@
 RSpec.describe AlertsMailer do
   describe '#created_bot_instance' do
     let(:bot)    { double(:bot, name: 'Bot') }
-    let(:owners) { [double(:owner, email: 'a@example.com'), double(:owner, email: 'b@example.com')] }
-
     let(:bot_instance) do
       double(
         :bot_instance,
@@ -20,15 +18,42 @@ RSpec.describe AlertsMailer do
       allow(User).to receive(:find) { user }
     end
 
-    it 'send email to bot owners' do
-      mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
+    context 'with all owners subscribed' do
+      let(:owners) do
+        create_list(:user, 2)
+        User.all # returns as ActiveRecord query so the stub works
+      end
 
-      expect(mail.to).to      eq bot_instance.owners.map(&:email)
-      expect(mail.subject).to match bot.name
+      it 'send email to bot owners' do
+        mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
 
-      expect(mail.body.encoded).to match user.full_name
-      expect(mail.body.encoded).to match bot_instance.team_name
-      expect(mail.body.encoded).to match bot_instance.team_url
+        expect(mail.to).to      eq bot_instance.owners.map(&:email)
+        expect(mail.to.size).to eq 2
+        expect(mail.subject).to match bot.name
+
+        expect(mail.body.encoded).to match user.full_name
+        expect(mail.body.encoded).to match bot_instance.team_name
+        expect(mail.body.encoded).to match bot_instance.team_url
+      end
+    end
+
+    context 'with some owners subscribed' do
+      let(:owners) do
+        create(:user, created_bot_instance: '0')
+        create(:user, created_bot_instance: '1')
+        User.all # returns as ActiveRecord query so the stub works
+      end
+
+      it 'send email to bot owners' do
+        mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
+
+        expect(mail.to.size).to eq 1
+        expect(mail.subject).to match bot.name
+
+        expect(mail.body.encoded).to match user.full_name
+        expect(mail.body.encoded).to match bot_instance.team_name
+        expect(mail.body.encoded).to match bot_instance.team_url
+      end
     end
   end
 end

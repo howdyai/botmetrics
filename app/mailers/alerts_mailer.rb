@@ -4,7 +4,7 @@ class AlertsMailer < ApplicationMailer
     @user         = User.find(user_id)
 
     mail(
-      to:      @bot_instance.owners.map(&:email),
+      to:      @bot_instance.owners.subscribed_to(:created_bot_instance).pluck(:email),
       subject: "A New Team Signed Up for #{@bot_instance.bot.name}"
     )
   end

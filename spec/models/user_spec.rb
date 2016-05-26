@@ -10,6 +10,30 @@ RSpec.describe User do
     end
   end
 
+  context 'scope' do
+    describe '#subscribed_to' do
+      context 'email preference is true' do
+        let(:user) { create(:user) }
+
+        it 'returns user' do
+          user.update(created_bot_instance: '1')
+
+          expect(User.subscribed_to(:created_bot_instance)).to eq [user]
+        end
+      end
+
+      context 'email preference is false' do
+        let!(:user) { create(:user) }
+
+        it 'returns empty' do
+          user.update(created_bot_instance: '0')
+
+          expect(User.subscribed_to(:created_bot_instance)).to be_blank
+        end
+      end
+    end
+  end
+
   context 'before actions' do
     describe '#init_email_preferences' do
       it 'inits on create' do
