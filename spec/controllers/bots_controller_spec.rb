@@ -166,7 +166,7 @@ RSpec.describe BotsController do
     end
 
     it 'should update the name of the bot' do
-      allow(WebhookValidateJob).to receive(:perform_async)
+      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
 
       expect {
         do_request
@@ -175,7 +175,7 @@ RSpec.describe BotsController do
     end
 
     it 'should redirect to bot_verifying_webhook_path' do
-      allow(WebhookValidateJob).to receive(:perform_async)
+      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
 
       do_request
 
@@ -183,7 +183,7 @@ RSpec.describe BotsController do
     end
 
     it 'should track the event on Mixpanel' do
-      expect(WebhookValidateJob).to receive(:perform_async)
+      expect(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
 
       do_request
 
@@ -194,7 +194,7 @@ RSpec.describe BotsController do
       let!(:bot_params) { { name: 'test', webhook_url: '' } }
 
       it 'should redirect to bot_path' do
-        expect(WebhookValidateJob).not_to receive(:perform_async)
+        expect(ValidateWebhookAndUpdatesJob).not_to receive(:perform_async)
 
         do_request
 

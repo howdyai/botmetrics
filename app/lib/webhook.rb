@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Webhook
-
   def initialize(bot_id, event = nil, options: {})
     @bot = find_bot_by(bot_id)
     @event = event if event
@@ -26,6 +25,10 @@ class Webhook
     log_webhook_execution(bot, elapsed_time, response.status, event.event_attributes)
 
     response
+  end
+
+  def validate
+    [200, 201, 202].include? ping.status
   end
 
   private

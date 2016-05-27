@@ -43,7 +43,7 @@ class BotsController < ApplicationController
       webhook_url_changed = @bot.webhook_url.present? && @bot.webhook_url != old_webhook_url
 
       TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
-      WebhookValidateJob.perform_async(@bot.id) if webhook_url_changed
+      ValidateWebhookAndUpdatesJob.perform_async(@bot.id) if webhook_url_changed
 
       if webhook_url_changed
         redirect_to bot_verifying_webhook_path(@bot)
