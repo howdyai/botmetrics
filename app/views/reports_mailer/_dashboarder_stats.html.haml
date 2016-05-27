@@ -1,0 +1,36 @@
+%h3= bot_name
+%table
+  %thead
+    %tr
+      %th{ style: 'padding-right: 20px' } New Bots
+      %th{ style: 'padding-right: 20px' } Bots Disabled
+      %th{ style: 'padding-right: 20px' } New Users
+      %th{ style: 'padding-right: 20px' } Messages
+      %th{ style: 'padding-right: 20px' } Messages To Bot
+      %th{ style: 'padding-right: 20px' } Messages From Bot
+  %tbody
+    %tr
+      %td
+        = number_with_delimiter(dashboarder.new_bots_count)
+        - if dashboarder.new_bots_growth
+          (#{number_to_percentage(dashboarder.new_bots_growth, precision: 0)})
+      %td
+        = number_with_delimiter(dashboarder.disabled_bots_count)
+        - if dashboarder.disabled_bots_growth
+          (#{number_to_percentage(dashboarder.disabled_bots_growth, precision: 0)})
+      %td
+        = number_with_delimiter(dashboarder.new_users_count)
+        - if dashboarder.new_users_growth
+          (#{number_to_percentage(dashboarder.new_users_growth, precision: 0)})
+      %td
+        = number_with_delimiter(dashboarder.messages_count)
+        - if dashboarder.messages_growth
+          (#{number_to_percentage(dashboarder.messages_growth, precision: 0)})
+      %td
+        = number_with_delimiter(dashboarder.messages_for_bot_count)
+        - if dashboarder.messages_for_bot_growth
+          (#{number_to_percentage(dashboarder.messages_for_bot_growth, precision: 0)})
+      %td
+        = number_with_delimiter(dashboarder.messages_from_bot_count)
+        - if dashboarder.messages_from_bot_growth
+          (#{number_to_percentage(dashboarder.messages_from_bot_growth, precision: 0)})

@@ -10,7 +10,7 @@ RSpec.describe ReportsMailer do
 
   before do
     allow(User).to receive(:find) { user }
-    allow(::Dashboarder).to receive(:new) do
+    allow(Dashboarder).to receive(:new) do
       double(
         :dashboard,
         new_bots_growth: {},
@@ -34,7 +34,25 @@ RSpec.describe ReportsMailer do
 
       expect(mail.body.encoded).to match bot.name
 
-      expect(::Dashboarder).to have_received(:new).with([bot_instance], 'today', 'Singapore', false)
+      expect(Dashboarder).to have_received(:new).with([bot_instance], 'today', 'Singapore', false)
+    end
+
+    context 'weeky summary' do
+      it 'has weekly summary if monday' do
+        travel_to Time.parse('23 May, 2016 09:00 +0800') do
+          mail = ReportsMailer.daily_summary(user.id)
+
+          expect(mail.body.encoded).to match 'Weekly Summary'
+        end
+      end
+
+      it 'does not have weekly summary on non-mondays' do
+        travel_to Time.parse('24 May, 2016 09:00 +0800') do
+          mail = ReportsMailer.daily_summary(user.id)
+
+          expect(mail.body.encoded).to_not match 'Weekly Summary'
+        end
+      end
     end
   end
 end
