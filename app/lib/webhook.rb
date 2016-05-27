@@ -4,7 +4,7 @@ class Webhook
   def self.ping(bot_id, options = {})
     bot = find_bot_by(bot_id)
 
-    options[:body] = payload('hook' => { bot_uid: bot.uid })
+    options[:body] = payload('hook' => dummy_payload)
 
     Excon.post bot.webhook_url, default_options.merge(options)
   end
@@ -59,4 +59,20 @@ class Webhook
       )
     end
     private_class_method :log_webhook_execution
+
+    def self.dummy_payload
+      {
+        type: 'ping',
+        user_uid: 'user_uid',
+        channel_uid: SecureRandom.hex(4),
+        team_uid: 'team_uid',
+        im: true,
+        text: 'hello world',
+        relax_bot_uid: 'URELAXBOT',
+        timestamp: Time.at(rand * Time.now.to_i).to_i,
+        provider: 'slack/kik/facebook/telegram',
+        event_timestamp: Time.at(rand * Time.now.to_i).to_i,
+      }
+    end
+    private_class_method :dummy_payload
 end
