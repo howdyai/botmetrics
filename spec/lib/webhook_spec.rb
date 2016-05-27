@@ -1,9 +1,9 @@
 RSpec.describe Webhook do
-  describe '.ping' do
+  describe '#ping' do
     let(:bot) { create(:bot) }
 
     def do_request
-      Webhook.ping bot.id
+      Webhook.new(bot.id).ping
     end
 
     it 'set correct header' do
@@ -15,15 +15,15 @@ RSpec.describe Webhook do
     end
   end
 
-  describe '.deliver' do
+  describe '#deliver' do
     let(:bot) { create(:bot) }
     let(:event) { create(:event) }
 
     def do_request
-      Webhook.deliver bot.id, event
+      Webhook.new(bot.id, event).deliver
     end
 
-    it 'set correct header' do
+    it 'set correct header and update webhook event' do
       allow(Excon).to receive(:post) { double(status: 200) }
       allow(Stopwatch).to receive(:record) { |&block| block.call; 1 }
 

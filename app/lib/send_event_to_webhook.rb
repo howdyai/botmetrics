@@ -5,7 +5,7 @@ class SendEventToWebhook
   end
 
   def call
-    Webhook.deliver(bot_id, event)
+    Webhook.new(bot_id, event).deliver
   end
 
   private

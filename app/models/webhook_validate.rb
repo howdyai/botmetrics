@@ -21,7 +21,7 @@ class WebhookValidate
     end
 
     def ping_webhook!
-      @code = Webhook.ping(bot.id).status
+      @code = Webhook.new(bot.id).ping.status
     end
 
     def update_webhook_status

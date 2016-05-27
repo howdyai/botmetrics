@@ -1,16 +1,20 @@
 # frozen_string_literal: true
 
 class Webhook
-  def self.ping(bot_id, options = {})
-    bot = find_bot_by(bot_id)
 
+  def initialize(bot_id, event = nil, options: {})
+    @bot = find_bot_by(bot_id)
+    @event = event if event
+    @options = options
+  end
+
+  def ping
     options[:body] = payload('hook' => dummy_payload)
 
     Excon.post bot.webhook_url, default_options.merge(options)
   end
 
-  def self.deliver(bot_id, event, options = {})
-    bot = find_bot_by(bot_id)
+  def deliver
     response = nil
 
     options[:body] = payload('hook' => { bot_uid: bot.uid }, 'event' => event.to_json)
@@ -26,7 +30,9 @@ class Webhook
 
   private
 
-    def self.default_options
+    attr_reader :bot, :event, :options
+
+    def default_options
       {
         omit_default_port: true,
         idempotent: true,
@@ -39,28 +45,24 @@ class Webhook
         },
       }
     end
-    private_class_method :default_options
 
-    def self.payload(params)
+    def payload(params)
       URI.encode_www_form('payload' => params.to_json)
     end
-    private_class_method :payload
 
-    def self.find_bot_by(bot_id)
+    def find_bot_by(bot_id)
       Bot.find bot_id
     end
-    private_class_method :find_bot_by
 
-    def self.log_webhook_execution(bot, elapsed_time, code, event_attrs)
+    def log_webhook_execution(bot, elapsed_time, code, event_attrs)
       bot.webhook_events.create(
         elapsed_time: elapsed_time,
         code: code,
         payload: { channel_uid: event_attrs['channel'], timestamp: event_attrs['timestamp'] }
       )
     end
-    private_class_method :log_webhook_execution
 
-    def self.dummy_payload
+    def dummy_payload
       {
         type: 'ping',
         user_uid: 'user_uid',
@@ -74,5 +76,4 @@ class Webhook
         event_timestamp: Time.at(rand * Time.now.to_i).to_i,
       }
     end
-    private_class_method :dummy_payload
 end
