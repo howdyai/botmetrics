@@ -88,9 +88,12 @@ RSpec.describe RelaxService do
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
+      before do
+        allow(SendEventToWebhookJob).to receive(:perform_async)
+      end
+
       context 'when message is not meant for the bot' do
         it 'should create a new event' do
-          allow(SendEventToWebhookJob).to receive(:perform_async)
           expect {
             RelaxService.handle(event)
             bi.reload
@@ -107,6 +110,25 @@ RSpec.describe RelaxService do
           expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
+        end
+
+        context "bot doesn't have a webhook_url set up" do
+          before { bi.bot.update_attribute(:webhook_url, nil) }
+
+          it 'should not call SendEventToWebhookJob' do
+            RelaxService.handle(event)
+            expect(SendEventToWebhookJob).to_not have_received(:perform_async)
+          end
+        end
+
+        context "bot has a webhook_url set up" do
+          before { bi.bot.update_attribute(:webhook_url, 'https://test.host/webhooks') }
+
+          it 'should call SendEventToWebhookJob' do
+            RelaxService.handle(event)
+            e = bi.events.last
+            expect(SendEventToWebhookJob).to have_received(:perform_async).with(bi.bot_id, e.id)
+          end
         end
       end
     end
