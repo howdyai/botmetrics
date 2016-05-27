@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.2
--- Dumped by pg_dump version 9.5.2
+-- Dumped from database version 9.5.3
+-- Dumped by pg_dump version 9.5.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -377,7 +377,8 @@ CREATE TABLE webhook_events (
     elapsed_time numeric(15,10) DEFAULT 0.0,
     bot_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    payload jsonb DEFAULT '{}'::jsonb
 );
 
 
@@ -857,3 +858,5 @@ INSERT INTO schema_migrations (version) VALUES ('20160525091112');
 INSERT INTO schema_migrations (version) VALUES ('20160525102056');
 
 INSERT INTO schema_migrations (version) VALUES ('20160526025128');
+
+INSERT INTO schema_migrations (version) VALUES ('20160527025054');
