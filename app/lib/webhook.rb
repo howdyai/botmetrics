@@ -75,7 +75,7 @@ class Webhook
         text: 'hello world',
         relax_bot_uid: 'URELAXBOT',
         timestamp: Time.at(rand * Time.now.to_i).to_i,
-        provider: 'slack/kik/facebook/telegram',
+        provider: bot.provider,
         event_timestamp: Time.at(rand * Time.now.to_i).to_i,
       }
     end
