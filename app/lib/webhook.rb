@@ -19,7 +19,7 @@ class Webhook
       response = Excon.post(bot.webhook_url, default_options.merge(options))
     end
 
-    log_webhook_execution(bot, elapsed_time, response.status)
+    log_webhook_execution(bot, elapsed_time, response.status, event.event_attributes)
 
     response
   end
@@ -51,8 +51,12 @@ class Webhook
     end
     private_class_method :find_bot_by
 
-    def self.log_webhook_execution(bot, elapsed_time, code)
-      bot.webhook_events.create(elapsed_time: elapsed_time, code: code)
+    def self.log_webhook_execution(bot, elapsed_time, code, event_attrs)
+      bot.webhook_events.create(
+        elapsed_time: elapsed_time,
+        code: code,
+        payload: { channel_uid: event_attrs['channel'], timestamp: event_attrs['timestamp'] }
+      )
     end
     private_class_method :log_webhook_execution
 end
