@@ -11,7 +11,7 @@ RSpec.describe Bot do
     it { is_expected.to allow_value('telegram').for(:provider) }
     it { is_expected.to_not allow_value('test').for(:provider) }
 
-    it { is_expected.to_not allow_value('http://').for(:webhook_url) }
+    it { is_expected.to_not allow_value('1https://').for(:webhook_url) }
   end
 
   describe 'associations' do
