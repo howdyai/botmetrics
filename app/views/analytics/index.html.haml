@@ -1,0 +1,30 @@
+.secondary-menu.row
+  .col-md-3.col-sm-3.col-xs-6
+    = link_to bot_path(@bot), class: 'breadcrumb' do
+      %h2 All Metrics
+    %span.breadcrumb-separator
+      \/
+    %h2 Analytics
+
+.container-fluid
+  .row
+    .col-xs-12
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Full Name
+            %th Nickname
+            %th Email
+            %th Team
+            %th Created
+        %tbody
+          - @tableized.each do |u|
+            - _bi = u.bot_instance
+            - _team_name = _bi.instance_attributes['team_name']
+            %tr{class: u.id}
+              %td= u.user_attributes['full_name']
+              %td= u.user_attributes['nickname']
+              %td= u.user_attributes['email']
+              %td= _team_name
+              %td= "#{time_ago_in_words(_bi.created_at)} ago"
+      = will_paginate @tableized, renderer: BootstrapPagination::Rails

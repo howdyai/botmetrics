@@ -42,9 +42,9 @@
                 %i.fa.fa-comment
                 Notifications
             %li
-              = link_to '#', class: menu_class('analyze') do
+              = link_to bot_analytics_path(@bot), class: menu_class('analyze') do
                 %i.fa.fa-pie-chart
-                Analyze
+                Analytics
           %ul.menu.footer
             %li
               = link_to edit_bot_path(@bot), class: menu_class('bot-settings') do
