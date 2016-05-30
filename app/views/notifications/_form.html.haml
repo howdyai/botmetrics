@@ -1,5 +1,5 @@
 = simple_form_for [bot, notification] do |f|
-  = f.input :content, input_html: { rows: 10 }
+  = f.input :content, input_html: { rows: 10 }, label: 'Message', placeholder: 'e.g. We are proud to announce a new feature...'
 
   - notification.bot_user_ids.each do |bot_user_id|
     = f.input :bot_user_ids, as: :hidden, input_html: { name: 'notification[bot_user_ids][]', value: bot_user_id }

@@ -9,4 +9,20 @@
 .container-fluid.notifications-container
   .row
     .col-sm-8.col-sm-offset-2
+      - if @bot.notifications.count == 0
+        .no-notifications
+          %p
+            With notifications you can send product announcements / maintenance window announcments and so on
+            to your users. Notifications will only be sent to users
+            %strong
+              who have interacted with your bot at least once.
+          %p
+            - _time = 2.days.from_now
+            You can also schedule your notification to be sent at a specific time. For e.g. if you schedule your message to be sent at
+            = _time.strftime("%B %d, %Y 9:00AM")
+            , the notification will be sent
+            %strong
+              at 9AM in each user's timezone
+            on
+            = _time.strftime("%B %e")
       = render 'form', bot: @bot, notification: @notification
