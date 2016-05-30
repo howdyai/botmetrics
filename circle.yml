@@ -1,11 +1,6 @@
 machine:
   ruby:
     version: 2.3.1
-  pre:
-    - git clone https://github.com/rbenv/ruby-build.git && cd ruby-build && sudo sh install.sh
-    - rbenv install 2.3.1
-    - rbenv global 2.3.1
-    - cd $CIRCLE_PROJECT_REPONAME && gem update --system
   environment:
     REDIS_URL: redis://localhost:6379
     JSON_WEB_TOKEN_SECRET: json_web_token_secret
