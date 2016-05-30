@@ -50,7 +50,8 @@ gem 'passenger',                '~> 5.0.27'
 gem 'clockwork'
 
 group :development do
-  gem 'foreman',                  '~> 0.70.0'
+  gem 'dotenv',                   '~> 2.1.1'
+  gem 'foreman',                  '~> 0.82.0'
   gem 'quiet_assets',             '~> 1.1.0'
   gem 'git',                      '~> 1.3.0'
   gem 'parity',                   '~> 0.9.3'
