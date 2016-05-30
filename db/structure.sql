@@ -120,7 +120,7 @@ ALTER SEQUENCE bot_instances_id_seq OWNED BY bot_instances.id;
 CREATE TABLE bot_users (
     id integer NOT NULL,
     uid character varying NOT NULL,
-    user_attributes json DEFAULT '{}'::json NOT NULL,
+    user_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
     membership_type character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -338,7 +338,7 @@ CREATE TABLE users (
     updated_at timestamp without time zone,
     timezone character varying NOT NULL,
     timezone_utc_offset integer NOT NULL,
-    mixpanel_properties json DEFAULT '{}'::json NOT NULL,
+    mixpanel_properties jsonb DEFAULT '{}'::jsonb NOT NULL,
     api_key character varying,
     email_preferences jsonb DEFAULT '{}'::jsonb
 );
@@ -856,3 +856,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160525102056');
 INSERT INTO schema_migrations (version) VALUES ('20160526025128');
 
 INSERT INTO schema_migrations (version) VALUES ('20160527025054');
+
+INSERT INTO schema_migrations (version) VALUES ('20160530052718');
+
