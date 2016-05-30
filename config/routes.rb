@@ -28,7 +28,9 @@ Rails.application.routes.draw do
 
     resources :messages, only: [:create]
 
-    resources :analytics, only: [:index]
+    resources :analytics, only: [:index] do
+      get "query" => "analytics#query", on: :collection
+    end
   end
 
   resources :users, only: [:show, :update] do

@@ -8,6 +8,18 @@
 
 .container-fluid
   .row
+    .col-xs-12.filters
+      %h3 Filters
+      %pre
+        = simple_form_for :query, url: query_bot_analytics_path(@bot), method: :get do |f|
+          = f.input :field, collection: @fields, label_method: :name, value_method: :id, include_blank: false
+          = f.input :method, collection: @methods, label_method: :name, value_method: :id, include_blank: false
+          = f.input :value
+          = f.submit
+
+        = link_to 'Clear', bot_analytics_path, class: 'btn btn-warning'
+
+  .row
     .col-xs-12
       %table.table.table-striped.tableized
         %thead
@@ -28,3 +40,8 @@
               %td= _team_name
               %td= "#{time_ago_in_words(_bi.created_at)} ago"
       = will_paginate @tableized, renderer: BootstrapPagination::Rails
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.AnalyticsIndex();
+    App.page.run();
