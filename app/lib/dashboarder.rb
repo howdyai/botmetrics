@@ -3,7 +3,7 @@ class Dashboarder
               :new_bots, :disabled_bots, :new_users,
               :messages, :messages_for_bot, :messages_from_bot
 
-  def initialize(instances, group_by, timezone, current = nil)
+  def initialize(instances, group_by, timezone, current = true)
     @instances = instances
     @group_by  = group_by
     @timezone  = timezone
@@ -122,34 +122,40 @@ class Dashboarder
   end
 
   def group_by_day(collection, group_col = :created_at)
-    collection.group_by_day(group_col, last: 7, time_zone: self.timezone, current: current).count
+    collection.group_by_day(group_col, last: 7, time_zone: self.timezone).count
   end
 
   def group_by_week(collection, group_col = :created_at)
-    collection.group_by_week(group_col, last: 4, time_zone: self.timezone, current: current).count
+    collection.group_by_week(group_col, last: 4, time_zone: self.timezone).count
   end
 
   def group_by_month(collection, group_col = :created_at)
-    collection.group_by_month(group_col, last: 12, time_zone: self.timezone, current: current).count
+    collection.group_by_month(group_col, last: 12, time_zone: self.timezone).count
   end
 
   def count_for(var)
-    self.group_by == 'all-time' ? var : var.values.last
+    if group_by == 'all-time'
+      var
+    else
+      var.values[last_pos]
+    end
   end
 
   def growth_for(var)
     if self.group_by == 'all-time'
       nil
     else
-      len = var.values.length
-
-      v1 = var.values[len-1].to_i
-      v2 = var.values[len-2].to_i
+      v1 = var.values[last_pos].to_i
+      v2 = var.values[last_pos - 1].to_i
       if v2 == 0
         nil
       else
         (v1 - v2).to_f / v2
       end
     end
+  end
+
+  def last_pos
+    current ? -1 : -2
   end
 end

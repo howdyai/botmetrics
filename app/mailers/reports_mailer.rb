@@ -2,7 +2,6 @@ class ReportsMailer < ApplicationMailer
   def daily_summary(user_id)
     @user = User.find(user_id)
 
-
     if monday_in_time_zone?(@user.timezone)
       @weekly_dashboarders = {}
       @user.bots.each do |bot|
@@ -15,7 +14,7 @@ class ReportsMailer < ApplicationMailer
 
     @daily_dashboarders = {}
     @user.bots.each do |bot|
-      dashboarder = Dashboarder.new(bot.instances, 'today', @user.timezone, false)
+      dashboarder = Dashboarder.new(active_bot_instances(bot), 'today', @user.timezone, false)
       dashboarder.init!
 
       @daily_dashboarders[bot.name] = dashboarder
@@ -31,5 +30,9 @@ class ReportsMailer < ApplicationMailer
 
     def monday_in_time_zone?(time_zone)
       Time.current.in_time_zone(time_zone).monday?
+    end
+
+    def active_bot_instances(bot)
+      bot.instances.where("state <> ?", 'pending')
     end
 end

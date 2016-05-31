@@ -1,12 +1,7 @@
 RSpec.describe ReportsMailer do
-  let(:bot)  { double(:bot, name: 'Bot', instances: [bot_instance]) }
-  let(:bot_instance) do
-    double(
-      :bot_instance,
-      id: 1,
-      team_name: 'T123', team_url: 'T123.slack.com'
-    )
-  end
+  let(:bot)  { double(:bot, name: 'Bot', instances: BotInstance.all) }
+  let!(:enabled) { create(:bot_instance, :with_attributes, uid: 'B123', state: 'enabled') }
+  let!(:pending) { create(:bot_instance, :with_attributes, uid: 'B456', state: 'pending') }
 
   before do
     allow(User).to receive(:find) { user }
@@ -34,7 +29,7 @@ RSpec.describe ReportsMailer do
 
       expect(mail.body.encoded).to match bot.name
 
-      expect(Dashboarder).to have_received(:new).with([bot_instance], 'today', 'Singapore', false)
+      expect(Dashboarder).to have_received(:new).with(contain_exactly(enabled), 'today', 'Singapore', false)
     end
 
     context 'weeky summary' do
