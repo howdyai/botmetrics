@@ -41,8 +41,7 @@ class DashboardsController < ApplicationController
     @users = GetResourcesCountByUnit.new(
                @group_by,
                @users,
-               start_time: @start,
-               end_time: @end,
+               group_table: 'bot_instances',
                user_time_zone: current_user.timezone
              ).call
 
