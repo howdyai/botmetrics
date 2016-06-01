@@ -10,7 +10,8 @@
 #= require chart.js-2.0.0-beta2/Chart
 #= require chartkick
 #= require jsUri/Uri
-#
+#= require cocoon
+
 #= require utils
 #= require pages/base
 #= require pages/app/base

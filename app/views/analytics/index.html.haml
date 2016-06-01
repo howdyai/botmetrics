@@ -7,17 +7,20 @@
     %h2 Analytics
 
 .container-fluid
-  .row
-    .col-xs-12.filters
-      %h3 Filters
-      %pre
-        = simple_form_for :query, url: query_bot_analytics_path(@bot), method: :get do |f|
-          = f.input :field, collection: @fields, label_method: :name, value_method: :id, include_blank: false
-          = f.input :method, collection: @methods, label_method: :name, value_method: :id, include_blank: false
-          = f.input :value
-          = f.submit
+  .row.query-set
+    .col-xs-12
+      .well
+        %h3 Filters
+        = simple_form_for @query_set, url: bot_analytics_path(@bot), method: :get do |f|
+          = f.simple_fields_for :queries do |query|
+            = render 'query', f: query
 
-        = link_to 'Clear', bot_analytics_path, class: 'btn btn-warning'
+          .add_query.text-center
+            = link_to_add_association 'Add AND Clause', f, :queries, partial: 'query', class: 'btn btn-warning'
+
+          = f.submit 'Search'
+
+          = link_to 'Reset', bot_analytics_path, class: 'btn btn-clear'
 
   .row
     .col-xs-12

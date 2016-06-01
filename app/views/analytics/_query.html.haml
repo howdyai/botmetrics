@@ -1,0 +1,9 @@
+.row.query
+  .col-sm-4
+    = f.input :field,  label: false, collection: Query::FIELDS.invert,  include_blank: false
+  .col-sm-4
+    = f.input :method, label: false, collection: Query::METHODS.invert, include_blank: false
+  .col-sm-4
+    = f.input :value,  label: false, wrapper_html: { class: 'with_delete' }
+    = link_to_remove_association f, wrapper_class: 'query' do
+      %i.fa.fa-times

@@ -20,6 +20,7 @@ gem 'jquery-rails',             '~> 4.0.3'
 gem 'coffee-rails',             '~> 4.1.0'
 gem 'jquery-ui-rails',          '~> 5.0.3'
 gem 'simple_form',              '~> 3.1.0'
+gem 'cocoon',                   '~> 1.2.9'
 gem 'modernizr-rails',          '~> 2.7.1'
 gem 'redcarpet',                '~> 3.3.4'
 
@@ -37,6 +38,7 @@ gem 'will_paginate-bootstrap',  '~> 1.0.1'
 
 # Mixpanel
 gem 'mixpanel-ruby',            '~> 2.2.0', require: 'mixpanel-ruby'
+
 # Redis
 gem 'relax-rb',                 '~> 0.5.0', require: 'relax'
 gem 'sidekiq',                  '~> 4.1.0'
@@ -69,7 +71,7 @@ end
 
 group :test do
   gem 'database_cleaner',         '~> 1.3.0'
-  gem 'shoulda-matchers',         '~> 2.7.0'
+  gem 'shoulda-matchers',         '~> 3.1.1', require: false
   gem 'webmock',                  '~> 1.22.3'
   gem 'stripe-ruby-mock',         '~> 2.2.1', require: 'stripe_mock'
 end

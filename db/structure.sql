@@ -307,6 +307,73 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 
 --
+-- Name: queries; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE queries (
+    id integer NOT NULL,
+    type character varying,
+    field character varying,
+    method character varying,
+    value character varying,
+    query_set_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: queries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE queries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: queries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE queries_id_seq OWNED BY queries.id;
+
+
+--
+-- Name: query_sets; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE query_sets (
+    id integer NOT NULL,
+    name character varying,
+    provider character varying,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: query_sets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE query_sets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: query_sets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE query_sets_id_seq OWNED BY query_sets.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
@@ -450,6 +517,20 @@ ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notification
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY queries ALTER COLUMN id SET DEFAULT nextval('queries_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY query_sets ALTER COLUMN id SET DEFAULT nextval('query_sets_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -514,6 +595,22 @@ ALTER TABLE ONLY messages
 
 ALTER TABLE ONLY notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: queries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: query_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY query_sets
+    ADD CONSTRAINT query_sets_pkey PRIMARY KEY (id);
 
 
 --
@@ -642,6 +739,13 @@ CREATE INDEX index_notifications_on_bot_id ON notifications USING btree (bot_id)
 --
 
 CREATE UNIQUE INDEX index_notifications_on_uid ON notifications USING btree (uid);
+
+
+--
+-- Name: index_queries_on_query_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_queries_on_query_set_id ON queries USING btree (query_set_id);
 
 
 --
@@ -860,4 +964,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160527025054');
 INSERT INTO schema_migrations (version) VALUES ('20160527030332');
 
 INSERT INTO schema_migrations (version) VALUES ('20160530052718');
+
+INSERT INTO schema_migrations (version) VALUES ('20160601030853');
+
+INSERT INTO schema_migrations (version) VALUES ('20160601031106');
 
