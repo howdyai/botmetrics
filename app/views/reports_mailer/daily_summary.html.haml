@@ -1,7 +1,7 @@
 - if @weekly_dashboarders
   %h2
     Your Weekly Summary - Week starting from
-    = (Time.current - 7.days).strftime('%b %d, %Y')
+    = (Time.current.in_time_zone(@user.timezone) - 7.days).strftime('%b %d, %Y')
     (Last Week)
 
   - @weekly_dashboarders.each do |bot_name, dashboarder|
@@ -13,7 +13,7 @@
 
 %h2
   Your Daily Summary -
-  = (Time.current - 1.day).strftime('%b %d, %Y')
+  = (Time.current.in_time_zone(@user.timezone) - 1.day).strftime('%b %d, %Y')
   (Yesterday)
 
 - @daily_dashboarders.each do |bot_name, dashboarder|
