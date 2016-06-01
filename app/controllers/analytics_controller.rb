@@ -16,7 +16,7 @@ class AnalyticsController < ApplicationController
 
     def model_params
       if params[:query_set].present?
-        params.require(:query_set).permit(queries_attributes: [:id, :_destroy, :field, :method, :value] )
+        params.require(:query_set).permit(queries_attributes: [:id, :_destroy, :field, :method, :value, :min_value, :max_value] )
       else
         Hash.new
       end

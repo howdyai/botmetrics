@@ -319,6 +319,8 @@ CREATE TABLE queries (
     query_set_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
+    min_value character varying,
+    max_value character varying
 );
 
 
@@ -968,4 +970,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160530052718');
 INSERT INTO schema_migrations (version) VALUES ('20160601030853');
 
 INSERT INTO schema_migrations (version) VALUES ('20160601031106');
+
+INSERT INTO schema_migrations (version) VALUES ('20160601140725');
 
