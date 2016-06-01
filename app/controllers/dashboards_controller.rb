@@ -93,7 +93,7 @@ class DashboardsController < ApplicationController
   protected
 
   def find_instances
-    if (@instances = @bot.instances.pending).count == 0
+    if (@instances = @bot.instances.legit).count == 0
       return redirect_to(new_bot_instance_path(@bot))
     end
   end

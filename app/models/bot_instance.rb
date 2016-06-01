@@ -17,7 +17,6 @@ class BotInstance < ActiveRecord::Base
   scope :legit,     -> { where("state <> ?", 'pending') }
   scope :enabled,   -> { where("state = ?", 'enabled') }
   scope :disabled,  -> { where("state = ?", 'disabled') }
-  scope :pending,   -> { where("state <> ?", 'pending') }
 
   delegate :owners, to: :bot
 

@@ -58,7 +58,7 @@ class BotsController < ApplicationController
   def show
     @group_by = params[:group_by].presence || 'today'
 
-    if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
+    if (@instances = @bot.instances.legit).count == 0
       redirect_to(new_bot_instance_path(@bot)) && return
     end
 
