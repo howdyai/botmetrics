@@ -32,16 +32,16 @@
             %th Email
             %th Team
             %th Created
+            %th Last Event At
         %tbody
-          - @tableized.each do |u|
-            - _bi = u.bot_instance
-            - _team_name = _bi.instance_attributes['team_name']
-            %tr{class: u.id}
-              %td= u.user_attributes['full_name']
-              %td= u.user_attributes['nickname']
-              %td= u.user_attributes['email']
-              %td= _team_name
-              %td= "#{time_ago_in_words(_bi.created_at)} ago"
+          - @tableized.each do |bot_user|
+            %tr{class: bot_user.id}
+              %td= bot_user.full_name
+              %td= bot_user.nickname
+              %td= bot_user.email
+              %td= bot_user.bot_instance.team_name
+              %td= "#{time_ago_in_words(bot_user.created_at)} ago"
+              %td= bot_user.last_event_at.present? ? "#{time_ago_in_words(bot_user.last_event_at)} ago" : '-'
       = will_paginate @tableized, renderer: BootstrapPagination::Rails
 
 - content_for :page_scripts do
