@@ -8,12 +8,12 @@ RSpec.describe ReportsMailer do
     allow(Dashboarder).to receive(:new) do
       double(
         :dashboard,
-        new_bots_growth: {},
-        disabled_bots_growth: {},
-        new_users_growth: {},
-        messages_growth: {},
-        messages_for_bot_growth: {},
-        messages_from_bot_growth: {},
+        new_bots_growth: 0.5,
+        disabled_bots_growth: 0.5,
+        new_users_growth: 0.5,
+        messages_growth: 0.5,
+        messages_for_bot_growth: 0.5,
+        messages_from_bot_growth: 0.5,
       ).as_null_object
     end
   end
