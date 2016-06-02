@@ -1,4 +1,26 @@
 RSpec.describe RelaxService do
+  before { allow(SendEventToWebhookJob).to receive(:perform_async) }
+
+  shared_examples "calls the webhook if it is setup and doesn't if it is not" do
+    context "bot doesn't has a webhook_url set up" do
+      before { bi.bot.update_attribute(:webhook_url, nil) }
+
+      it 'should NOT call SendEventToWebhookJob' do
+        RelaxService.handle(event)
+        expect(SendEventToWebhookJob).to_not have_received(:perform_async)
+      end
+    end
+
+    context 'bot has a webhook_url set up' do
+      before { bi.bot.update_attribute(:webhook_url, 'https://test.host/webhooks') }
+
+      it 'should call SendEventToWebhookJob' do
+        RelaxService.handle(event)
+        expect(SendEventToWebhookJob).to have_received(:perform_async).with(bi.bot_id, event.to_json)
+      end
+    end
+  end
+
   describe 'team_joined' do
     let!(:event) { Relax::Event.new(team_uid: 'TDEADBEEF', namespace: 'UNESTOR1', type: 'team_joined') }
 
@@ -22,6 +44,8 @@ RSpec.describe RelaxService do
         expect(e.event_type).to eql 'user_added'
         expect(e.provider).to eql 'slack'
       end
+
+      it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
     end
 
     context 'bot instance does not exist' do
@@ -63,6 +87,8 @@ RSpec.describe RelaxService do
 
         expect(Alerts::DisabledBotInstanceJob).to have_received(:perform_async).with(bi.id)
       end
+
+      it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
     end
   end
 
@@ -88,9 +114,6 @@ RSpec.describe RelaxService do
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
-      before do
-        allow(SendEventToWebhookJob).to receive(:perform_async)
-      end
 
       context 'when message is not meant for the bot' do
         it 'should create a new event' do
@@ -112,24 +135,7 @@ RSpec.describe RelaxService do
           expect(e.is_for_bot).to be_falsey
         end
 
-        context "bot doesn't have a webhook_url set up" do
-          before { bi.bot.update_attribute(:webhook_url, nil) }
-
-          it 'should not call SendEventToWebhookJob' do
-            RelaxService.handle(event)
-            expect(SendEventToWebhookJob).to_not have_received(:perform_async)
-          end
-        end
-
-        context "bot has a webhook_url set up" do
-          before { bi.bot.update_attribute(:webhook_url, 'https://test.host/webhooks') }
-
-          it 'should call SendEventToWebhookJob' do
-            RelaxService.handle(event)
-            e = bi.events.last
-            expect(SendEventToWebhookJob).to have_received(:perform_async).with(bi.bot_id, e.id)
-          end
-        end
+        it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
       end
     end
   end
@@ -174,6 +180,8 @@ RSpec.describe RelaxService do
           expect(e.is_for_bot).to be_falsey
         end
 
+        it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+
         context 'when message is from the bot' do
           before do
             event.user_uid = 'UNESTOR1'
@@ -196,6 +204,8 @@ RSpec.describe RelaxService do
             expect(e.is_im).to be_falsey
             expect(e.is_for_bot).to be_falsey
           end
+
+          it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         end
       end
 
@@ -220,6 +230,8 @@ RSpec.describe RelaxService do
           expect(e.is_for_bot).to be_truthy
         end
 
+        it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+
         context 'when message is from the bot' do
           before do
             event.user_uid = 'UNESTOR1'
@@ -243,6 +255,8 @@ RSpec.describe RelaxService do
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
           end
+
+          it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         end
       end
 
@@ -267,6 +281,8 @@ RSpec.describe RelaxService do
           expect(e.is_for_bot).to be_truthy
         end
 
+        it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+
         context 'when message is from the bot' do
           before do
             event.user_uid = 'UNESTOR1'
@@ -290,6 +306,8 @@ RSpec.describe RelaxService do
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
           end
+
+          it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         end
       end
     end
