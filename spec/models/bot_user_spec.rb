@@ -68,7 +68,22 @@ RSpec.describe BotUser do
     end
   end
 
-  describe '#interacted_with' do
+  describe '.with_bot_instances' do
+    let(:start_time) { Time.current.yesterday }
+    let(:end_time)   { Time.current.tomorrow }
+
+    it 'works' do
+      bi = create :bot_instance
+      bu = create :bot_user, bot_instance: bi
+      create :bot_user
+
+      users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), start_time, end_time)
+
+      expect(users.map(&:id)).to eq [bu.id]
+    end
+  end
+
+  describe '.interacted_with' do
     let!(:bot) { create(:bot) }
     let!(:enabled) do
       create(
@@ -100,21 +115,6 @@ RSpec.describe BotUser do
       create_event('message_reaction', enabled, bot_users[3], true)
 
       expect(BotUser.interacted_with(bot)).to eq [bot_users[0].id]
-    end
-  end
-
-  describe '.with_bot_instances' do
-    let(:start_time) { Time.current.yesterday }
-    let(:end_time)   { Time.current.tomorrow }
-
-    it 'works' do
-      bi = create :bot_instance
-      bu = create :bot_user, bot_instance: bi
-      create :bot_user
-
-      users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), start_time, end_time)
-
-      expect(users.map(&:id)).to eq [bu.id]
     end
   end
 end
