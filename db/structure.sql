@@ -317,8 +317,8 @@ CREATE TABLE queries (
     method character varying,
     value character varying,
     query_set_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -349,8 +349,8 @@ CREATE TABLE query_sets (
     id integer NOT NULL,
     name character varying,
     provider character varying,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 

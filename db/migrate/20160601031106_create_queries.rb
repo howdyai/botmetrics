@@ -7,7 +7,7 @@ class CreateQueries < ActiveRecord::Migration
       t.string :value
       t.references :query_set, index: true
 
-      t.timestamps
+      t.timestamps null: false
     end
   end
 end
