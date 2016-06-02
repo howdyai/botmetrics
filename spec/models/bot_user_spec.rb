@@ -20,6 +20,42 @@ RSpec.describe BotUser do
     it { is_expected.to_not allow_value('test').for(:provider) }
   end
 
+  context 'scopes' do
+    let!(:user)       { create(:user) }
+    let!(:bot)        { create(:bot) }
+    let!(:instance)   { create(:bot_instance, :with_attributes, uid: '123', bot: bot, state: 'enabled') }
+
+    let!(:bot_user_1) { create(:bot_user, bot_instance: instance, user_attributes: { nickname: 'john', email: 'john@example.com' }) }
+    let!(:bot_user_2) { create(:bot_user, bot_instance: instance, user_attributes: { nickname: 'sean', email: 'sean@example.com' }) }
+
+    let!(:event_1) { create(:messages_to_bot_event, bot_instance: instance, bot_user_id: bot_user_1.id, created_at: 5.days.ago) }
+    let!(:event_A) { create(:messages_to_bot_event, bot_instance: instance, bot_user_id: bot_user_2.id, created_at: 2.days.ago) }
+    let!(:event_B) { create(:messages_to_bot_event, bot_instance: instance, bot_user_id: bot_user_2.id, created_at: 2.days.ago) }
+
+    describe '#user_attributes_eq' do
+      it { expect(BotUser.user_attributes_eq(:nickname, 'john')).to eq [bot_user_1] }
+    end
+
+    describe '#user_attributes_contains' do
+      it { expect(BotUser.user_attributes_cont(:nickname, 'an')).to eq [bot_user_2] }
+    end
+
+    describe '#interaction_count_eq' do
+      it { expect(BotUser.interaction_count_eq([instance], 1)).to eq [bot_user_1] }
+      it { expect(BotUser.interaction_count_eq([instance], 2)).to eq [bot_user_2] }
+    end
+
+    describe '#interaction_count_betw' do
+      it { expect(BotUser.interaction_count_betw([instance], 0, 1)).to eq [bot_user_1] }
+      it { expect(BotUser.interaction_count_betw([instance], 0, 5)).to eq [bot_user_1, bot_user_2] }
+    end
+
+    describe '#interacted_at_betw' do
+      it { expect(BotUser.interacted_at_betw([instance], 6.days.ago, 4.days.ago)).to eq [bot_user_1] }
+      it { expect(BotUser.interacted_at_betw([instance], 3.days.ago, 1.day.ago)).to eq [bot_user_2] }
+    end
+  end
+
   describe '#interacted_with' do
     let!(:bot) { create(:bot) }
     let!(:enabled) do

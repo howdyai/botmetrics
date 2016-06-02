@@ -1,5 +1,6 @@
 RSpec.describe FilterBotUsersService do
   describe '#scope' do
+    let!(:user)       { create(:user) }
     let!(:bot)        { create(:bot) }
     let!(:instance_1) { create(:bot_instance, :with_attributes, uid: '123', bot: bot, state: 'enabled') }
 
@@ -15,7 +16,7 @@ RSpec.describe FilterBotUsersService do
     let!(:bot_user_6) { create(:bot_user, bot_instance: instance_2, user_attributes: { nickname: 'mikey', email: 'mikey@example.com' }) }
     ##### These do not appear - END
 
-    let(:service)   { FilterBotUsersService.new(bot, query_set) }
+    let(:service)   { FilterBotUsersService.new(bot, query_set, user.timezone) }
     let(:query_set) { QuerySet.new(queries: queries)}
 
     context 'empty query' do

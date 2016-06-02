@@ -13,6 +13,7 @@ class FilterBotUsersService
 
       collection = chain_to(collection, query)
     end
+
     collection
   end
 
@@ -40,49 +41,32 @@ class FilterBotUsersService
     def chain_with_string_query(collection, query)
       case
         when query.method == 'equals_to'
-          collection.where(
-            [
-              "bot_users.user_attributes->>:field = :value",
-              field: query.field,
-              value: query.value
-            ]
-          )
+          collection.user_attributes_eq(query.field, query.value)
         when query.method == 'contains'
-          collection.where(
-            [
-              "bot_users.user_attributes->>:field ilike :value",
-              field: query.field,
-              value: "%#{query.value}%"
-            ]
-          )
+          collection.user_attributes_cont(query.field, query.value)
+        else
+          collection
       end
     end
 
+    # currently only for interaction_count
     def chain_with_number_query(collection, query)
       case
-        when query.field == 'interaction_count'
-          collection =
-            collection.
-              joins(:events).
-              where(events: { event_type: 'message', bot_instance: bot.instances.legit, is_for_bot: true }).
-              group('bot_users.id')
-
-          if query.method == 'equals_to'
-            collection.having('count(*) = ?', query.value)
-          else
-            collection.having('count(*) BETWEEN ? AND ?', query.min_value, query.max_value)
-          end
+        when query.method == 'equals_to'
+          collection.interaction_count_eq(bot.instances.legit, query.value)
+        when query.method == 'between'
+          collection.interaction_count_betw(bot.instances.legit, query.min_value, query.max_value)
+        else
+          collection
       end
     end
 
+    # currently only for interacted_at
     def chain_with_datetime_query(collection, query)
-      case
-        when query.field == 'interacted_at'
-          collection.
-            joins(:events).
-            where(events: { event_type: 'message', bot_instance: bot.instances.legit, is_for_bot: true }).
-            where('events.created_at BETWEEN ? AND ?', query.min_value.in_time_zone(time_zone), query.max_value.in_time_zone(time_zone)).
-            uniq
-      end
+      collection.interacted_at_betw(
+        bot.instances.legit,
+        query.min_value.in_time_zone(time_zone),
+        query.max_value.in_time_zone(time_zone)
+      )
     end
 end
