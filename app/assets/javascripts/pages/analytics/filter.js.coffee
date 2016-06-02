@@ -19,7 +19,6 @@ class App.Filter extends App.AppBase
         $(selector, parent).find('select').attr('disabled', 'disabled')
 
       enable_datepicker = (parent, selector) ->
-        debugger
         $(selector, parent).daterangepicker(
           {
             singleDatePicker: true,
@@ -73,4 +72,3 @@ class App.Filter extends App.AppBase
 
       $("[name$='[field]']:visible").change()
       $("[name$='[method]']:visible").change()
-

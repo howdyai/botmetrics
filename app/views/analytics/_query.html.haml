@@ -12,9 +12,13 @@
     .equal-value.hide
       = f.input :value,  label: false
     .range-value.hide
-      = f.input :min_value, label: false
-      %span.query-and AND
-      = f.input :max_value, label: false
+      .row
+        .col-sm-5
+          = f.input :min_value, label: false
+        .col-sm-2
+          %span.query-and AND
+        .col-sm-5
+          = f.input :max_value, label: false
 
     = link_to_remove_association f, wrapper_class: 'query' do
       %i.fa.fa-times
