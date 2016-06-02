@@ -46,6 +46,8 @@ RSpec.describe Webhook do
       bot.webhook_events.last.tap do |webhook_event|
         expect(webhook_event.code).to eq 200
         expect(webhook_event.elapsed_time.to_f).to be > 0
+        expect(webhook_event.payload['channel_uid']).to eql relax_event[:channel_uid]
+        expect(webhook_event.payload['timestamp']).to eql relax_event[:timestamp]
       end
     end
   end
