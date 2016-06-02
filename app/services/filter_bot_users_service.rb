@@ -17,7 +17,7 @@ class FilterBotUsersService
 
   private
 
-    attr_accessor :bot, :query_set
+    attr_reader :bot, :query_set
 
     def legit_bot_instances
       bot.instances.legit
