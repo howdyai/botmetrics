@@ -142,17 +142,9 @@ class Dashboarder
   end
 
   def growth_for(var)
-    if self.group_by == 'all-time'
-      nil
-    else
-      v1 = var.values[last_pos].to_i
-      v2 = var.values[last_pos - 1].to_i
-      if v2 == 0
-        nil
-      else
-        (v1 - v2).to_f / v2
-      end
-    end
+    return nil if self.group_by == 'all-time'
+
+    GrowthCalculator.new(var.values, last_pos).call
   end
 
   def last_pos
