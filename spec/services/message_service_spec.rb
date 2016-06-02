@@ -37,7 +37,7 @@ RSpec.describe MessageService do
         with(
           'chat.postMessage',
           'POST',
-          { as_user: 'true', channel: channel, text: text }
+          { as_user: 'true', channel: channel, text: text, mrkdwn: true }
         ).and_return(
           response
         )

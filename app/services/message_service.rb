@@ -43,7 +43,8 @@ class MessageService
         as_user: 'true',
         channel: channel,
         text: message.text,
-        attachments: message.attachments
+        attachments: message.attachments,
+        mrkdwn: true
       }.delete_if { |_, v| v.blank? }
     end
 
