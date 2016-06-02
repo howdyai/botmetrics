@@ -3,7 +3,8 @@ class Query < ActiveRecord::Base
     'nickname'          => 'Nickname',
     'email'             => 'Email',
     'full_name'         => 'Full Name',
-    'interaction_count' => 'Interaction Count'
+    'interaction_count' => 'Interaction Count',
+    'interacted_at'     => 'Interacted At'
   }
 
   STRING_METHODS = {
@@ -13,6 +14,10 @@ class Query < ActiveRecord::Base
 
   NUMBER_METHODS = {
     'equals_to' => 'Equals To',
+    'between'   => 'Between'
+  }
+
+  DATETIME_METHODS = {
     'between'   => 'Between'
   }
 
@@ -32,5 +37,9 @@ class Query < ActiveRecord::Base
 
   def is_number_query?
     field.in?(['interaction_count'])
+  end
+
+  def is_datetime_query?
+    field.in?(['interacted_at'])
   end
 end

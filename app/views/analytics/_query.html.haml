@@ -1,18 +1,20 @@
 .row.query
-  .col-sm-4
+  .col-sm-3
     = f.input :field,  label: false, collection: Query::FIELDS.invert,  include_blank: false
-  .col-sm-4
-    .string-query.hide
-      = f.input :method, label: false, collection: Query::STRING_METHODS.invert, include_blank: false
-    .number-query.hide
-      = f.input :method, label: false, collection: Query::NUMBER_METHODS.invert, include_blank: false
-  .col-sm-4
-    .target-value.hide
+  .col-sm-3
+    .string-method.hide
+      = f.input :method, label: false, collection: Query::STRING_METHODS.invert,   include_blank: false
+    .number-method.hide
+      = f.input :method, label: false, collection: Query::NUMBER_METHODS.invert,   include_blank: false
+    .datetime-method.hide
+      = f.input :method, label: false, collection: Query::DATETIME_METHODS.invert, include_blank: false
+  .col-sm-6
+    .equal-value.hide
       = f.input :value,  label: false
-    .min-max-values.hide
-      = f.input :min_value,  label: false
+    .range-value.hide
+      = f.input :min_value, label: false
       %span.query-and AND
-      = f.input :max_value,  label: false
+      = f.input :max_value, label: false
 
     = link_to_remove_association f, wrapper_class: 'query' do
       %i.fa.fa-times

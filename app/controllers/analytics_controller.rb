@@ -8,7 +8,8 @@ class AnalyticsController < ApplicationController
     @query_set = QuerySet.new(model_params)
     @query_set.queries.build unless @query_set.queries.present?
 
-    @tableized = FilterBotUsersService.new(@bot, @query_set).scope.page(params[:page])
+    @tableized = FilterBotUsersService.new(@bot, @query_set, current_user.timezone).scope.page(params[:page])
+
     track_queries_to_mixpanel
   end
 
