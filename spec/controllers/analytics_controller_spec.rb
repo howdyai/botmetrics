@@ -24,8 +24,8 @@ RSpec.describe AnalyticsController do
     end
 
     context 'with params' do
-      let(:params) { { query_set: { queries_attributes: { '0' => { field: 'nickname', method: 'equals_to', value: 'john' } } } } }
-      let(:queries_attributes) { [["bot_users.user_attributes->>:field = :value", { field: "nickname", value: "john" }]] }
+      let(:queries_attributes) { { queries_attributes: { '0' => { field: 'nickname', method: 'equals_to', value: 'john' } } } }
+      let(:params) { { query_set: queries_attributes } }
 
       it 'filters' do
         allow(TrackMixpanelEventJob).to receive(:perform_async).

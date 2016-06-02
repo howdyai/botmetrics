@@ -23,7 +23,7 @@ class AnalyticsController < ApplicationController
     end
 
     def track_queries_to_mixpanel
-      if query_attributes = @query_set.queries.map(&:sql_params).compact.presence
+      if query_attributes = model_params.presence
         TrackMixpanelEventJob.perform_async(
           'Viewed Analytics Index Page and Performed Queries',
           current_user.id,
