@@ -6,7 +6,7 @@ class FilterBotUsersService
   end
 
   def scope
-    collection = BotUser.where(bot_instance_id: legit_bot_instances.ids)
+    collection = BotUser.where(bot_instance: bot.instances.legit)
 
     query_set.queries.each do |query|
       next if query.value.blank? && (query.min_value.blank? || query.max_value.blank?)
@@ -20,10 +20,6 @@ class FilterBotUsersService
   private
 
     attr_reader :bot, :query_set, :time_zone
-
-    def legit_bot_instances
-      bot.instances.legit
-    end
 
     def chain_to(collection, query)
       case
@@ -55,7 +51,11 @@ class FilterBotUsersService
         when query.method == 'equals_to'
           collection.interaction_count_eq(bot.instances.legit, query.value)
         when query.method == 'between'
-          collection.interaction_count_betw(bot.instances.legit, query.min_value, query.max_value)
+          collection.interaction_count_betw(
+            bot.instances.legit,
+            query.min_value,
+            query.max_value
+          )
         else
           collection
       end
