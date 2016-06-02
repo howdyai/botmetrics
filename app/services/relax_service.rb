@@ -46,7 +46,7 @@ class RelaxService
       user = find_bot_user_from(bi, event)
       return if user.blank?
 
-      event = bi.events.create(
+      bi.events.create!(
         user: user,
         event_attributes: {
           channel: event.channel_uid,
@@ -59,15 +59,10 @@ class RelaxService
         provider: bi.provider,
         event_type: 'message_reaction'
       )
+    end
 
-      if event.persisted?
-        Rails.logger.info "Saved event: #{event.inspect}"
-        if bi.bot.webhook_url.present?
-          SendEventToWebhookJob.perform_async(bi.bot_id, event.id)
-        end
-      else
-        Rails.logger.error "Couldn't save event: #{event.inspect}"
-      end
+    if bi.bot.webhook_url.present?
+      SendEventToWebhookJob.perform_async(bi.bot_id, event.to_json)
     end
   end
 

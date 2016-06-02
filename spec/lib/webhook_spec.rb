@@ -17,10 +17,23 @@ RSpec.describe Webhook do
 
   describe '#deliver' do
     let(:bot) { create(:bot) }
-    let(:event) { create(:event) }
+    let(:relax_event) do
+      {
+        type: 'message_new',
+        user_uid: 'user_uid',
+        channel_uid: SecureRandom.hex(4),
+        team_uid: 'team_uid',
+        im: true,
+        text: 'hello world',
+        relax_bot_uid: 'URELAXBOT',
+        timestamp: Time.at(rand * Time.now.to_i).to_i,
+        provider: bot.provider,
+        event_timestamp: Time.at(rand * Time.now.to_i).to_i,
+      }
+    end
 
     def do_request
-      Webhook.new(bot.id, event).deliver
+      Webhook.new(bot.id, relax_event.to_json).deliver
     end
 
     it 'set correct header and update webhook event' do
