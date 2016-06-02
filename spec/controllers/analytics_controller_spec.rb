@@ -14,6 +14,9 @@ RSpec.describe AnalyticsController do
       let(:params) { {} }
 
       it 'success' do
+        allow(TrackMixpanelEventJob).to receive(:perform_async).
+          with('Viewed Analytics Index Page', user.id)
+
         do_request
 
         expect(response).to be_success
@@ -22,8 +25,16 @@ RSpec.describe AnalyticsController do
 
     context 'with params' do
       let(:params) { { query_set: { queries_attributes: { '0' => { field: 'nickname', method: 'equals_to', value: 'john' } } } } }
+      let(:queries_attributes) { [["bot_users.user_attributes->>:field = :value", { field: "nickname", value: "john" }]] }
 
       it 'filters' do
+        allow(TrackMixpanelEventJob).to receive(:perform_async).
+          with(
+            'Viewed Analytics Index Page and Performed Queries',
+            user.id,
+            query_attributes: queries_attributes
+          )
+
         do_request
 
         expect(response).to be_success
