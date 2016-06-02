@@ -4,7 +4,7 @@ class Query < ActiveRecord::Base
     'email'             => 'Email',
     'full_name'         => 'Full Name',
     'interaction_count' => 'Number of Interactions with Bot',
-    'interacted_at'     => 'Interacted With Bot At'
+    'interacted_at'     => 'Interacted With Bot'
   }
 
   STRING_METHODS = {
