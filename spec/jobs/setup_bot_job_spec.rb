@@ -7,6 +7,7 @@ RSpec.describe SetupBotJob do
   describe '#perform' do
     context 'slack' do
       before do
+        allow_any_instance_of(Object).to receive(:sleep)
         bi.update_attribute(:provider, 'slack')
         allow(TrackMixpanelEventJob).to receive(:perform_async)
       end
