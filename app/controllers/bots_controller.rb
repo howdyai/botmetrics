@@ -56,11 +56,7 @@ class BotsController < ApplicationController
   end
 
   def show
-    @group_by = case params[:group_by]
-                when '' then 'today'
-                when nil then 'today'
-                else params[:group_by]
-                end
+    @group_by = params[:group_by].presence || 'today'
 
     if (@instances = @bot.instances.where("state <> ?", 'pending')).count == 0
       redirect_to(new_bot_instance_path(@bot)) && return
