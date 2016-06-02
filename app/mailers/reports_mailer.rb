@@ -5,7 +5,7 @@ class ReportsMailer < ApplicationMailer
     if monday_in_time_zone?(@user.timezone)
       @weekly_dashboarders = {}
       @user.bots.each do |bot|
-        dashboarder = Dashboarder.new(bot.instances, 'this-week', @user.timezone, false)
+        dashboarder = Dashboarder.new(bot.instances.legit, 'this-week', @user.timezone, false)
         dashboarder.init!
 
         @weekly_dashboarders[bot.name] = dashboarder
@@ -14,7 +14,7 @@ class ReportsMailer < ApplicationMailer
 
     @daily_dashboarders = {}
     @user.bots.each do |bot|
-      dashboarder = Dashboarder.new(active_bot_instances(bot), 'today', @user.timezone, false)
+      dashboarder = Dashboarder.new(bot.instances.legit, 'today', @user.timezone, false)
       dashboarder.init!
 
       @daily_dashboarders[bot.name] = dashboarder
@@ -22,7 +22,7 @@ class ReportsMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "Your botmetrics Daily Summary for #{Date.yesterday.strftime('%d %b, %Y')}"
+      subject: "Your botmetrics Daily Summary for #{yesterday_in_words(@user)}"
     )
   end
 
@@ -32,7 +32,7 @@ class ReportsMailer < ApplicationMailer
       Time.current.in_time_zone(time_zone).monday?
     end
 
-    def active_bot_instances(bot)
-      bot.instances.where("state <> ?", 'pending')
+    def yesterday_in_words(user)
+      (Time.current.in_time_zone(user.timezone) - 1.day).strftime('%b %d, %Y')
     end
 end
