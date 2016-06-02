@@ -54,6 +54,12 @@ RSpec.describe BotUser do
       it { expect(BotUser.interacted_at_betw([instance], 6.days.ago, 4.days.ago)).to eq [bot_user_1] }
       it { expect(BotUser.interacted_at_betw([instance], 3.days.ago, 1.day.ago)).to eq [bot_user_2] }
     end
+
+    describe '#order_by_last_event_at' do
+      it { expect(BotUser.order_by_last_event_at(BotUser.all)).to eq [bot_user_2, bot_user_1] }
+    end
+  end
+
   context 'store accessors' do
     describe 'user_attributes' do
       it { expect(subject).to respond_to :nickname }

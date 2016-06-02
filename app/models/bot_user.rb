@@ -43,6 +43,17 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
+  scope :order_by_last_event_at, ->(collection) do
+    select("bot_users.*, COALESCE(events.created_at, null) AS last_event_at").
+      joins(
+        "LEFT JOIN (
+            SELECT bot_user_id, MAX(events.created_at) AS created_at FROM events
+            WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id
+          ) events ON events.bot_user_id = bot_users.id").
+      where(id: collection).
+      order("last_event_at DESC NULLS LAST")
+  end
+
   store_accessor :user_attributes, :nickname, :email, :full_name
 
   def self.with_bot_instances(instances, start_time, end_time)

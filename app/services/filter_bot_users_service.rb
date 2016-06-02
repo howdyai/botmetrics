@@ -14,7 +14,7 @@ class FilterBotUsersService
       collection = chain_to(collection, query)
     end
 
-    collection
+    sort(collection)
   end
 
   private
@@ -68,5 +68,9 @@ class FilterBotUsersService
         query.min_value.in_time_zone(time_zone),
         query.max_value.in_time_zone(time_zone)
       )
+    end
+
+    def sort(collection)
+      BotUser.order_by_last_event_at(collection)
     end
 end
