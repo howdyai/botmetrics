@@ -318,7 +318,7 @@ CREATE TABLE queries (
     value character varying,
     query_set_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
     min_value character varying,
     max_value character varying
 );
