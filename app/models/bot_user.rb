@@ -43,6 +43,8 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
+  store_accessor :user_attributes, :nickname, :email, :full_name
+
   def self.with_bot_instances(instances, start_time, end_time)
     where(bot_instance_id: instances.select(:id)).joins(:bot_instance).
       where("bot_instances.created_at" => start_time..end_time)

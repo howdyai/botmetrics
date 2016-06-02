@@ -97,6 +97,14 @@ RSpec.describe BotInstance do
     end
   end
 
+  context 'store accessors' do
+    describe 'instance_attributes' do
+      it { expect(subject).to respond_to :team_id }
+      it { expect(subject).to respond_to :team_name }
+      it { expect(subject).to respond_to :team_url }
+    end
+  end
+
   describe '.with_new_bots' do
     let(:start_time) { Time.current }
     let(:end_time) { Time.current + 6.days }

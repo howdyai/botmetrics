@@ -54,6 +54,12 @@ RSpec.describe BotUser do
       it { expect(BotUser.interacted_at_betw([instance], 6.days.ago, 4.days.ago)).to eq [bot_user_1] }
       it { expect(BotUser.interacted_at_betw([instance], 3.days.ago, 1.day.ago)).to eq [bot_user_2] }
     end
+  context 'store accessors' do
+    describe 'user_attributes' do
+      it { expect(subject).to respond_to :nickname }
+      it { expect(subject).to respond_to :email }
+      it { expect(subject).to respond_to :full_name }
+    end
   end
 
   describe '#interacted_with' do
