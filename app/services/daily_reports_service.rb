@@ -15,10 +15,15 @@ class DailyReportsService
   private
 
     def subscribed?(user)
+      Rails.logger.info "[SendDailyReportsJob] Sending Summary Email for Subscribed? #{user.daily_reports == '1'}"
+
       user.daily_reports == '1'
     end
 
     def is_9am_in_user_timezone?(user)
-      Time.current.in_time_zone(user.timezone).hour == 9
+      current_time = Time.current.in_time_zone(user.timezone)
+
+      Rails.logger.info "[SendDailyReportsJob] Sending Summary Email at #{current_time}"
+      current_time.hour == 9
     end
 end
