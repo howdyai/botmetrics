@@ -43,6 +43,10 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
+  scope :user_signed_up_betw, ->(min, max) do
+    where(created_at: min..max)
+  end
+
   scope :order_by_last_event_at, ->(collection) do
     select("bot_users.*, COALESCE(events.created_at, null) AS last_event_at").
       joins(

@@ -1,4 +1,13 @@
 RSpec.describe Query do
+  context 'constants' do
+    context 'FIELDS' do
+      it 'keys include' do
+        expect(Query::FIELDS.keys).to match_array %w(
+          nickname email full_name interaction_count interacted_at user_created_at)
+      end
+    end
+  end
+
   context 'associations' do
     it { is_expected.to belong_to :query_set }
   end

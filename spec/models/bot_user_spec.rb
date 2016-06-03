@@ -55,6 +55,11 @@ RSpec.describe BotUser do
       it { expect(BotUser.interacted_at_betw([instance], 3.days.ago, 1.day.ago)).to eq [bot_user_2] }
     end
 
+    describe '.user_signed_up_betw' do
+      let(:one_week_user) { create(:bot_user, created_at: 7.days.ago) }
+      it { expect(BotUser.user_signed_up_betw(8.days.ago, 5.days.ago)).to eq [one_week_user] }
+    end
+
     describe '#order_by_last_event_at' do
       it { expect(BotUser.order_by_last_event_at(BotUser.all)).to eq [bot_user_2, bot_user_1] }
     end

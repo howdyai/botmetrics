@@ -4,7 +4,8 @@ class Query < ActiveRecord::Base
     'email'             => 'Email',
     'full_name'         => 'Full Name',
     'interaction_count' => 'Number of Interactions with Bot',
-    'interacted_at'     => 'Interacted With Bot'
+    'interacted_at'     => 'Interacted With Bot',
+    'user_created_at'   => 'User Signed Up At',
   }
 
   STRING_METHODS = {
@@ -40,6 +41,6 @@ class Query < ActiveRecord::Base
   end
 
   def is_datetime_query?
-    field.in?(['interacted_at'])
+    field.in?(['interacted_at', 'user_created_at'])
   end
 end

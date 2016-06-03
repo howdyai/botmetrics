@@ -51,6 +51,12 @@ class App.Filter extends App.AppBase
             disable(parent, '.string-method')
             disable(parent, '.number-method')
 
+          when $(@).val() in ['user_created_at']
+            enable(parent, '.datetime-method')
+
+            disable(parent, '.string-method')
+            disable(parent, '.number-method')
+
         $("[name$='[method]']:visible").change()
 
       $(document).on 'change', "[name$='[method]']", ->
@@ -64,7 +70,7 @@ class App.Filter extends App.AppBase
             enable(parent, '.equal-value')
             disable(parent, '.range-value')
 
-        if $(parent).find("[name$='[field]']").val() == 'interacted_at' && $(this).val() == 'between'
+        if $(parent).find("[name$='[field]']").val() in ['interacted_at', 'user_created_at'] && $(this).val() == 'between'
           enable_datepicker(parent, "[name$='_value]']:visible")
 
       $('.query-set').on 'cocoon:after-insert', ->

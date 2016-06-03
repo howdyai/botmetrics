@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FilterBotUsersService
   def initialize(bot, query_set, time_zone)
     @bot       = bot
@@ -61,13 +63,20 @@ class FilterBotUsersService
       end
     end
 
-    # currently only for interacted_at
+    # Currently only for interacted_at and BotUser's created_at
     def chain_with_datetime_query(collection, query)
-      collection.interacted_at_betw(
-        bot.instances.legit,
-        query.min_value.in_time_zone(time_zone),
-        query.max_value.in_time_zone(time_zone)
-      )
+      if query.field == 'user_created_at'
+        collection.user_signed_up_betw(
+          query.min_value.in_time_zone(time_zone),
+          query.max_value.in_time_zone(time_zone)
+        )
+      else
+        collection.interacted_at_betw(
+          bot.instances.legit,
+          query.min_value.in_time_zone(time_zone),
+          query.max_value.in_time_zone(time_zone)
+        )
+      end
     end
 
     def sort(collection)
