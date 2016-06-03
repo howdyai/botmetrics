@@ -1,15 +1,16 @@
 class RelaxService
   def self.handle(event)
+    bi = find_bot_instance_from(event)
+    if bi.blank?
+      Rails.logger.error "couldn't find bot instance for #{event.inspect}"
+      return
+    end
+
     case event.type
     when 'team_joined'
-      bi = find_bot_instance_from(event)
-      return if bi.blank?
       ImportUsersForBotInstanceJob.perform_async(bi.id)
       bi.events.create!(event_type: 'user_added', provider: bi.provider)
     when 'disable_bot'
-      bi = find_bot_instance_from(event)
-      return if bi.blank?
-
       if bi.state == 'enabled'
         bi.update_attribute(:state, 'disabled')
         bi.events.create!(event_type: 'bot_disabled', provider: bi.provider)
@@ -19,10 +20,6 @@ class RelaxService
         end
       end
     when 'message_new'
-      bi = find_bot_instance_from(event)
-      if bi.blank?
-        Rails.logger.error "couldn't find bot instance for #{event.inspect}"
-      end
       user = find_bot_user_from(bi, event)
       if user.blank?
         Rails.logger.error "couldn't find bot instance for #{event.inspect}"
@@ -41,8 +38,6 @@ class RelaxService
         event_type: 'message'
       )
     when 'reaction_added'
-      bi = find_bot_instance_from(event)
-      return if bi.blank?
       user = find_bot_user_from(bi, event)
       return if user.blank?
 
