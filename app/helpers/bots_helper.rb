@@ -94,6 +94,10 @@ module BotsHelper
     end
   end
 
+  def formatted_elapsed_time(time)
+    time > 1 ? "#{"%.2f" % time} secs" : "#{"%.2f" % (time * 1000)} ms"
+  end
+
   def webhook_label(bot)
     return 'Webhook URL' if bot.webhook_url.blank?
 

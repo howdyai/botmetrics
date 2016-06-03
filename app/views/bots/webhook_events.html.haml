@@ -15,12 +15,12 @@
         %thead
           %tr
             %th Response Code
-            %th Completed in
-            %th Last Sent At
+            %th Completed In
+            %th Last Sent
         %tbody
           - @tableized.each do |webhook_event|
             %tr{class: webhook_event.id}
               %td= webhook_event.code
-              %td= "#{webhook_event.elapsed_time} seconds"
+              %td= formatted_elapsed_time(webhook_event.elapsed_time)
               %td= "#{time_ago_in_words(webhook_event.created_at)} ago"
       = will_paginate @tableized, renderer: BootstrapPagination::Rails
