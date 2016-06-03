@@ -41,7 +41,7 @@ class RelaxService
       user = find_bot_user_from(bi, event)
       return if user.blank?
 
-      bi.events.create!(
+      e = bi.events.create(
         user: user,
         event_attributes: {
           channel: event.channel_uid,
@@ -54,6 +54,10 @@ class RelaxService
         provider: bi.provider,
         event_type: 'message_reaction'
       )
+
+      if !e.persisted?
+        Rails.logger.error "[RelaxService] Couldn't persist event #{event.to_hash}"
+      end
     end
 
     if bi.bot.webhook_url.present?
