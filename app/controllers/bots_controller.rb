@@ -72,7 +72,7 @@ class BotsController < ApplicationController
   end
 
   def webhook_events
-    @tableized = @bot.webhook_events.page(params[:page])
+    @tableized = @bot.webhook_events.order("id DESC").page(params[:page])
   end
 
   protected
