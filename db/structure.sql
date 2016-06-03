@@ -313,8 +313,8 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 CREATE TABLE queries (
     id integer NOT NULL,
     type character varying,
-    field character varying,
-    method character varying,
+    field character varying NOT NULL,
+    method character varying NOT NULL,
     value character varying,
     query_set_id integer,
     created_at timestamp without time zone NOT NULL,
@@ -349,8 +349,8 @@ ALTER SEQUENCE queries_id_seq OWNED BY queries.id;
 
 CREATE TABLE query_sets (
     id integer NOT NULL,
-    name character varying,
-    provider character varying,
+    name character varying NOT NULL,
+    provider character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -972,4 +972,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160601030853');
 INSERT INTO schema_migrations (version) VALUES ('20160601031106');
 
 INSERT INTO schema_migrations (version) VALUES ('20160601140725');
+
+INSERT INTO schema_migrations (version) VALUES ('20160603020800');
 
