@@ -45,6 +45,7 @@ module BotMetrics
     config.settings.pusher_api_key        = ENV['PUSHER_API_KEY']
     config.settings.pusher_secret         = ENV['PUSHER_SECRET']
     config.settings.pusher_app_id         = ENV['PUSHER_APP_ID']
+    config.settings.pusher_url            = ENV['PUSHER_URL']
     config.settings.json_web_token_secret = ENV['JSON_WEB_TOKEN_SECRET']
     config.settings.rails_host            = ENV['RAILS_HOST']
   end
