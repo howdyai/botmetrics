@@ -4,9 +4,11 @@ class AnalyticsController < ApplicationController
 
   layout 'app'
 
+  helper_method :query_params
+
   def index
-    @query_set = QuerySet.new(model_params)
-    @query_set.queries.build unless @query_set.queries.present?
+    @query_set = QuerySet.new(query_set_params)
+    @query_set.queries.build(query_params) unless @query_set.queries.present?
 
     @tableized = FilterBotUsersService.new(@bot, @query_set, current_user.timezone).scope.page(params[:page])
 
@@ -15,16 +17,20 @@ class AnalyticsController < ApplicationController
 
   private
 
-    def model_params
+    def query_set_params
       if params[:query_set].present?
-        params.require(:query_set).permit(queries_attributes: [:id, :_destroy, :field, :method, :value, :min_value, :max_value] )
+        params.require(:query_set).permit(queries_attributes: [:id, :_destroy, :provider, :field, :method, :value, :min_value, :max_value] )
       else
         Hash.new
       end
     end
 
+    def query_params
+      { provider: @bot.provider }
+    end
+
     def track_queries_to_mixpanel
-      if query_attributes = model_params.presence
+      if query_attributes = query_set_params.presence
         TrackMixpanelEventJob.perform_async(
           'Viewed Analytics Index Page and Performed Queries',
           current_user.id,

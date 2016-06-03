@@ -312,7 +312,6 @@ ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
 
 CREATE TABLE queries (
     id integer NOT NULL,
-    type character varying,
     field character varying NOT NULL,
     method character varying NOT NULL,
     value character varying,
@@ -320,7 +319,10 @@ CREATE TABLE queries (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     min_value character varying,
-    max_value character varying
+    max_value character varying,
+    provider character varying,
+    CONSTRAINT validate_field CHECK ((((provider)::text = 'slack'::text) AND (((((((field)::text = 'nickname'::text) OR ((field)::text = 'email'::text)) OR ((field)::text = 'full_name'::text)) OR ((field)::text = 'interaction_count'::text)) OR ((field)::text = 'interacted_at'::text)) OR ((field)::text = 'user_created_at'::text)))),
+    CONSTRAINT validate_method CHECK (((((((provider)::text = 'slack'::text) AND ((((field)::text = 'nickname'::text) OR ((field)::text = 'email'::text)) OR ((field)::text = 'full_name'::text))) AND (((method)::text = 'equals_to'::text) OR ((method)::text = 'contains'::text))) OR ((((provider)::text = 'slack'::text) AND ((field)::text = 'interaction_count'::text)) AND (((method)::text = 'equals_to'::text) OR ((method)::text = 'between'::text)))) OR ((((provider)::text = 'slack'::text) AND (((field)::text = 'interacted_at'::text) OR ((field)::text = 'user_created_at'::text))) AND ((method)::text = 'between'::text))))
 );
 
 
@@ -350,7 +352,6 @@ ALTER SEQUENCE queries_id_seq OWNED BY queries.id;
 CREATE TABLE query_sets (
     id integer NOT NULL,
     name character varying NOT NULL,
-    provider character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -975,3 +976,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160601140725');
 
 INSERT INTO schema_migrations (version) VALUES ('20160603020800');
 
+INSERT INTO schema_migrations (version) VALUES ('20160603142732');
+
+INSERT INTO schema_migrations (version) VALUES ('20160603155423');
+
+INSERT INTO schema_migrations (version) VALUES ('20160603155535');

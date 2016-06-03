@@ -80,6 +80,6 @@ class FilterBotUsersService
     end
 
     def sort(collection)
-      BotUser.order_by_last_event_at(collection)
+      BotUser.order_by_last_event_at(collection).includes(:bot_instance)
     end
 end

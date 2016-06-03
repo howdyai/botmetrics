@@ -12,7 +12,8 @@
             = render 'query', f: query
 
           .add_query.text-center
-            = link_to_add_association 'Add AND Clause', f, :queries, partial: 'query', class: 'btn btn-warning'
+            = link_to_add_association 'Add AND Clause', f, :queries, partial: 'query', class: 'btn btn-warning',
+              wrap_object: Proc.new { |query| query.assign_attributes(query_params) }
 
           = f.submit 'Search'
 

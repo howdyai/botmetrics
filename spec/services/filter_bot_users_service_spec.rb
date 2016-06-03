@@ -19,32 +19,36 @@ RSpec.describe FilterBotUsersService do
     let(:service)   { FilterBotUsersService.new(bot, query_set, user.timezone) }
     let(:query_set) { QuerySet.new(queries: queries)}
 
-    context 'empty query' do
-      let(:queries)   { [Query.new(field: :nickname, method: :contains, value: nil)] }
+    context 'slack' do
+      let(:provider) { 'slack' }
 
-      it 'returns all' do
-        expect(service.scope.map(&:id)).to eq [bot_user_1, bot_user_2, bot_user_3].map(&:id)
-      end
-    end
+      context 'empty query' do
+        let(:queries)   { [Query.new(provider: provider, field: :nickname, method: :contains, value: nil)] }
 
-    context 'one query' do
-      let(:queries)   { [Query.new(field: :nickname, method: :contains, value: 'sean')] }
-
-      it 'returns filtered' do
-        expect(service.scope.map(&:id)).to eq [bot_user_2].map(&:id)
-      end
-    end
-
-    context 'many queries' do
-      let(:queries) do
-        [
-          Query.new(field: :nickname, method: :contains, value: 'mike'),
-          Query.new(field: :email,    method: :contains, value: 'example')
-        ]
+        it 'returns all' do
+          expect(service.scope.map(&:id)).to eq [bot_user_1, bot_user_2, bot_user_3].map(&:id)
+        end
       end
 
-      it 'returns filtered' do
-        expect(service.scope.map(&:id)).to eq [bot_user_3].map(&:id)
+      context 'one query' do
+        let(:queries)   { [Query.new(provider: provider, field: :nickname, method: :contains, value: 'sean')] }
+
+        it 'returns filtered' do
+          expect(service.scope.map(&:id)).to eq [bot_user_2].map(&:id)
+        end
+      end
+
+      context 'many queries' do
+        let(:queries) do
+          [
+            Query.new(provider: provider, field: :nickname, method: :contains, value: 'mike'),
+            Query.new(provider: provider, field: :email,    method: :contains, value: 'example')
+          ]
+        end
+
+        it 'returns filtered' do
+          expect(service.scope.map(&:id)).to eq [bot_user_3].map(&:id)
+        end
       end
     end
 
