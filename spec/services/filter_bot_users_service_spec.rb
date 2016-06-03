@@ -49,6 +49,23 @@ RSpec.describe FilterBotUsersService do
     end
 
     context 'datetime queries' do
+      context 'interacted_at' do
+        let(:queries) do
+          [
+            Query.new(field: :interacted_at, method: :between,
+              min_value: 4.days.ago, max_value: 2.days.ago)
+          ]
+        end
+
+        it 'returns filtered' do
+          instance = create(:bot_instance, :with_attributes, uid: '999', bot: bot, state: 'enabled')
+          user = create(:bot_user, bot_instance: instance)
+          create(:messages_to_bot_event, bot_instance_id: instance.id, bot_user_id: user.id, created_at: 3.days.ago)
+
+          expect(service.scope.map(&:id)).to match_array [user.id]
+        end
+      end
+
       context 'user_created_at' do
         let(:queries) do
           [
