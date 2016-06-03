@@ -45,13 +45,7 @@ class App.Filter extends App.AppBase
             disable(parent, '.string-method')
             disable(parent, '.datetime-method')
 
-          when $(@).val() in ['interacted_at']
-            enable(parent, '.datetime-method')
-
-            disable(parent, '.string-method')
-            disable(parent, '.number-method')
-
-          when $(@).val() in ['user_created_at']
+          when $(@).val() in ['interacted_at', 'user_created_at']
             enable(parent, '.datetime-method')
 
             disable(parent, '.string-method')
