@@ -7,7 +7,7 @@ module Clockwork
     SendScheduledMessageJob.perform_async
   end
 
-  every(1.hour, 'DailyReport.Send', at: ['**:00']) do
+  every(1.hour, 'DailyReport.Send', at: ['**:05']) do
     SendDailyReportsJob.perform_async
   end
 end
