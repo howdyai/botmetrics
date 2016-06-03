@@ -42,7 +42,7 @@ class Webhook
       connect_timeout: 360,
       headers: {
         'Content-Type' => 'application/x-www-form-urlencoded',
-        'X-BotMetrics-Event' => 'ping',
+        'X-BotMetrics-Event' => 'deliver',
       },
     }
   end
