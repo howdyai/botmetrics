@@ -1,119 +1,46 @@
 require 'rails_helper'
 
 RSpec.describe MessageService do
-  let(:user_message) { create(:message, :to_user) }
-  let(:chan_message) { create(:message, :to_channel) }
-
   describe '#send_now' do
-    let(:fake_slack) { spy(:slack) }
+    context 'bot instance not enabled' do
+      it 'returns false' do
+        allow(Message).to receive_message_chain(:find, :bot_instance) { double(state: 'disabled') }
 
-    let(:success) do
-      {
-        'ok' => true, 'channel' => '123', 'ts' => '456',
-        'message' => { 'type' => 'message', 'user' => 'U123', 'text' => 'OK!', 'bot_id' => 'B123', 'ts' => '123' }
-      }
-    end
+        result = MessageService.new(42).send_now
 
-    let(:failure) do
-      {
-        'ok' => false, 'error' => 'wrong'
-      }
-    end
-
-    def expect_slack_find_user(user, response)
-      expect(fake_slack).to receive(:call).
-        with(
-          'im.open',
-          'POST',
-          user: user
-        ).
-        and_return(
-          response
-        )
-    end
-
-    def expect_slack_send_message(channel, text, response)
-      expect(fake_slack).to receive(:call).
-        with(
-          'chat.postMessage',
-          'POST',
-          { as_user: 'true', channel: channel, text: text, mrkdwn: true }
-        ).and_return(
-          response
-        )
-    end
-
-    before { allow(Slack).to receive(:new) { fake_slack } }
-
-    context 'failures' do
-      let(:bot_instance) { build(:bot_instance, state: bot_state) }
-
-      context 'bot instance is not enabled' do
-        let(:bot_state) { 'pending' }
-        let(:message) { create(:message, :to_user, bot_instance: bot_instance) }
-        let(:service) { MessageService.new(message) }
-
-        it { expect(service.send_now).to be_falsy }
+        expect(result).to be false
       end
     end
 
-    context 'user message' do
-      let(:service) { MessageService.new(user_message) }
+    context 'enabled instance but without channel' do
+      it 'returns false' do
+        allow(Message).to receive_message_chain(:find, :bot_instance) { double(state: 'enabled', token: 'token') }
+        allow(PostMessageToSlackService).to receive_message_chain(:new, :channel) { nil }
 
-      it 'works' do
-        expect_slack_find_user(user_message.user, { 'ok' => true, 'channel' => { 'id' => '123' } })
-        expect_slack_send_message('123', user_message.text, success)
+        result = MessageService.new(42).send_now
 
-        service.send_now
-
-        expect(user_message.sent_at).to be_present
-        expect(user_message.success).to be_truthy
-        expect(user_message.response).to match(success)
-      end
-
-      it 'fails to find user' do
-        expect_slack_find_user(user_message.user, { 'ok' => false, 'error' => 'user_not_found' })
-
-        service.send_now
-
-        expect(user_message.sent_at).to be_present
-        expect(user_message.success).to be_falsy
-        expect(user_message.response).to eq({ 'ok' => false, 'error' => 'user_not_found' })
-      end
-
-      it 'fails to send' do
-        expect_slack_find_user(user_message.user, { 'ok' => true, 'channel' => { 'id' => '123' } })
-        expect_slack_send_message('123', user_message.text, failure)
-
-        service.send_now
-
-        expect(user_message.sent_at).to be_present
-        expect(user_message.success).to be_falsy
-        expect(user_message.response).to eq(failure)
+        expect(result).to be false
       end
     end
 
-    context 'channel message' do
-      let(:service) { MessageService.new(chan_message) }
+    context 'enabled instance and with channel' do
+      it 'log response, update sent_at timestamp' do
+        bot_instance = build_stubbed(:bot_instance, state: 'enabled', token: 'token')
+        message = build_stubbed(:message, bot_instance: bot_instance, notification: build_stubbed(:notification))
+        expect(Message).to receive(:find) { message }
 
-      it 'works' do
-        expect_slack_send_message(chan_message.channel, chan_message.text, success)
+        response = double(channel: '1234', call: { 'ok' => true })
+        allow(PostMessageToSlackService).to receive_message_chain(:new) { response }
 
-        service.send_now
+        allow(message).to receive(:log_response)
+        allow(message).to receive(:update)
+        allow(message).to receive(:ping_pusher_for_notification)
 
-        expect(chan_message.sent_at).to be_present
-        expect(chan_message.success).to be_truthy
-        expect(chan_message.response).to eq(success)
-      end
+        result = MessageService.new(42).send_now
 
-      it 'fails to send' do
-        expect_slack_send_message(chan_message.channel, chan_message.text, failure)
-
-        service.send_now
-
-        expect(chan_message.sent_at).to be_present
-        expect(chan_message.success).to be_falsy
-        expect(chan_message.response).to eq(failure)
+        expect(message).to have_received(:log_response)
+        expect(message).to have_received(:update)
+        expect(message).to have_received(:ping_pusher_for_notification)
       end
     end
   end
