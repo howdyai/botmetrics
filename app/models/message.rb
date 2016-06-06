@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Message < ActiveRecord::Base
   belongs_to :bot_instance
   belongs_to :notification
@@ -23,8 +25,20 @@ class Message < ActiveRecord::Base
     message_attributes['user']
   end
 
-  def can_send_now?(current_time)
-    scheduled_at == current_time
+  def can_send_now?
+    scheduled_at <= Time.current && sent_at.nil?
+  end
+
+  def ping_pusher_for_notification
+    PusherJob.perform_async(
+      "notification",
+      "notification-#{notification.id}",
+      {
+        ok: success,
+        recipient: (user || channel),
+        sent: notification.messages.sent.count
+      }.to_json
+    )
   end
 
   private

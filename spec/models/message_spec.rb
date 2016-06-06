@@ -21,4 +21,54 @@ RSpec.describe Message do
       expect(message.reload.provider).to eq 'slack'
     end
   end
+
+  describe '#can_send_now?' do
+    context 'on schedule' do
+      context 'not sent yet' do
+        it 'returns true' do
+          message = build_stubbed(:message, scheduled_at: 3.minutes.ago, sent_at: nil)
+
+          expect(message.can_send_now?).to be true
+        end
+      end
+
+      context 'already sent' do
+        it 'returns false' do
+          message = build_stubbed(:message, scheduled_at: 3.minutes.ago, sent_at: 2.minutes.ago)
+
+          expect(message.can_send_now?).to be false
+        end
+      end
+    end
+
+    context 'not on schedule' do
+      it 'returns false' do
+        message = build_stubbed(:message, scheduled_at: Time.zone.tomorrow)
+
+        expect(message.can_send_now?).to be false
+      end
+    end
+  end
+
+  describe '#ping_pusher_for_notification' do
+    let(:notification) { create(:notification) }
+    let(:message) { create(:message, :to_user, notification: notification) }
+
+    it 'invokes PusherJob' do
+      allow(PusherJob).to receive(:perform_async)
+
+      message.ping_pusher_for_notification
+
+      expect(PusherJob).to have_received(:perform_async).
+        with(
+          "notification",
+          "notification-#{notification.id}",
+          {
+            ok: message.success,
+            recipient: message.user,
+            sent: notification.messages.sent.count
+          }.to_json
+        )
+    end
+  end
 end
