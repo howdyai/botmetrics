@@ -183,8 +183,6 @@ RSpec.describe BotsController do
     end
 
     it 'should track the event on Mixpanel' do
-      expect(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
-
       do_request
 
       expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Updated Bot', user.id)
@@ -221,6 +219,25 @@ RSpec.describe BotsController do
         do_request
         expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
       end
+    end
+  end
+
+  describe 'GET verifying_webhook' do
+    before do
+      sign_in user
+      allow(TrackMixpanelEventJob).to receive(:perform_async)
+    end
+
+    def do_request
+      get :verifying_webhook, id: bot.to_param
+    end
+
+    it 'should invoke ValidateWebhookAndUpdatesJob' do
+      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
+
+      do_request
+
+      expect(ValidateWebhookAndUpdatesJob).to have_received(:perform_async)
     end
   end
 

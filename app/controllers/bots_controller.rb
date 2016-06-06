@@ -40,16 +40,13 @@ class BotsController < ApplicationController
     old_webhook_url = @bot.webhook_url
 
     if @bot.update(bot_params)
-      webhook_url_changed = @bot.webhook_url.present? && @bot.webhook_url != old_webhook_url
-
-      TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
-      ValidateWebhookAndUpdatesJob.perform_async(@bot.id) if webhook_url_changed
-
-      if webhook_url_changed
+      if @bot.webhook_url.present? && @bot.webhook_url != old_webhook_url
         redirect_to bot_verifying_webhook_path(@bot)
       else
         redirect_to bot_path(@bot)
       end
+
+      TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
     else
       render :edit
     end
@@ -69,6 +66,8 @@ class BotsController < ApplicationController
   end
 
   def verifying_webhook
+    ValidateWebhookAndUpdatesJob.perform_in(0.5.seconds, @bot.id)
+    TrackMixpanelEventJob.perform_async('Viewed Verifying Webhook Page', current_user.id)
   end
 
   def webhook_events
