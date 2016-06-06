@@ -1,6 +1,6 @@
 class MessageService
-  def initialize(message_id)
-    @message      = Message.find message_id
+  def initialize(message)
+    @message = message
     @bot_instance = message.bot_instance
   end
 
@@ -10,12 +10,14 @@ class MessageService
 
     message.log_response(response)
     message.update(sent_at: Time.current)
-    message.ping_pusher_for_notification if message.notification
+    ping_pusher_for_new_message_notification if notification
   end
 
   private
 
     attr_reader :message, :bot_instance
+
+    delegate :notification, :success, :user, :channel, to: :message
 
     def service
       @_service ||= PostMessageToSlackService.new(message, bot_instance.token)
@@ -23,5 +25,17 @@ class MessageService
 
     def response
       @_response ||= service.call
+    end
+
+    def ping_pusher_for_new_message_notification
+      PusherJob.perform_async(
+        "notification",
+        "notification-#{notification.id}",
+        {
+          ok: success,
+          recipient: (user || channel),
+          sent: notification.messages.sent.count
+        }.to_json
+      )
     end
 end

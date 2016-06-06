@@ -7,9 +7,9 @@ class PostMessageToSlackService
   end
 
   def channel
-    return message.channel if message_user.blank?
+    return message_channel if message_user.blank?
 
-    im_response['ok'] ? im_response['channel']['id'] : message.log_response(im_response)
+    im_response['ok'] ? im_response['channel']['id'] : message_log_response(im_response)
   end
 
   def call
@@ -20,9 +20,7 @@ class PostMessageToSlackService
 
     attr_reader :message, :token
 
-    def message_user
-      @_message_user ||= message.user
-    end
+    delegate :channel, :user, :log_response, :text, :attachments, to: :message, prefix: true
 
     def slack_client
       @_slack_client ||= Slack.new(token)
@@ -36,8 +34,8 @@ class PostMessageToSlackService
       {
         as_user: 'true',
         channel: channel,
-        text: message.text,
-        attachments: message.attachments,
+        text: message_text,
+        attachments: message_attachments,
         mrkdwn: true,
       }.delete_if { |_, v| v.blank? }
     end
