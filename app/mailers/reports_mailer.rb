@@ -24,6 +24,8 @@ class ReportsMailer < ApplicationMailer
       to: @user.email,
       subject: "Your botmetrics Daily Summary for #{yesterday_in_words(@user)}"
     )
+
+    @user.log_daily_summary_sent
   end
 
   private

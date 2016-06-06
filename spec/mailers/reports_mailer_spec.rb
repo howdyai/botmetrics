@@ -5,6 +5,7 @@ RSpec.describe ReportsMailer do
 
   before do
     allow(User).to receive(:find) { user }
+    allow(user).to receive(:log_daily_summary_sent)
     allow(Dashboarder).to receive(:new) do
       double(
         :dashboard,

@@ -43,6 +43,10 @@ class User < ActiveRecord::Base
     daily_reports == '1'
   end
 
+  def log_daily_summary_sent
+    update(tracking_attributes: { 'last_daily_summary_sent_at': Time.current.to_i })
+  end
+
   private
 
     def init_email_preferences
