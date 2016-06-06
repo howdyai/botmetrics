@@ -9,13 +9,13 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :api_key, if: Proc.new { |u| u.api_key.present? }
 
-  scope :subscribed_to, ->(email_preference) do
-    where('email_preferences @> ?', { email_preference => '1' }.to_json)
-  end
-
   before_create :init_email_preferences
 
   store_accessor :email_preferences, :created_bot_instance, :disabled_bot_instance, :daily_reports
+
+  scope :subscribed_to, ->(email_preference) do
+    where('email_preferences @> ?', { email_preference => '1' }.to_json)
+  end
 
   def to_param
     'me'
