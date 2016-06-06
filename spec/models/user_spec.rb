@@ -68,5 +68,45 @@ RSpec.describe User do
       it { expect(subject).to respond_to :disabled_bot_instance }
       it { expect(subject).to respond_to :daily_reports }
     end
+
+    describe 'tracking_attributes' do
+      it { expect(subject).to respond_to :last_daily_summary_sent_at }
+    end
+  end
+
+  describe '#daily_summary_not_sent_yet_today?' do
+    context 'today not sent yet in Singapore 10:00 AM' do
+      let(:timezone) { 'Asia/Singapore' }
+
+      it 'pulls out user not sent yet' do
+        travel_to Time.parse('6 June, 2016 10:00 +0800') do
+          # Users sent
+          create(:user, full_name: 'Sent', timezone: 'Asia/Singapore',
+          tracking_attributes: Hash(last_daily_summary_sent_at: Time.current.to_i))
+          create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
+          tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago + 1.second).to_i))
+
+          # Users to send
+          to_send = create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
+          tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago - 1.second).to_i))
+
+          expect(User.find_each.map(&:daily_summary_not_sent_yet_today?)).to match_array [false, false, true]
+        end
+      end
+    end
+  end
+
+  describe '#subscribed?' do
+    it "returns true if daily_reports is '1'" do
+      user = build_stubbed(:user, daily_reports: '1')
+
+      expect(user).to be_subscribed
+    end
+
+    it "returns false if daily_reports is not '1'" do
+      user = build_stubbed(:user, daily_reports: nil)
+
+      expect(user).not_to be_subscribed
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -12,6 +14,7 @@ class User < ActiveRecord::Base
   before_create :init_email_preferences
 
   store_accessor :email_preferences, :created_bot_instance, :disabled_bot_instance, :daily_reports
+  store_accessor :tracking_attributes, :last_daily_summary_sent_at
 
   scope :subscribed_to, ->(email_preference) do
     where('email_preferences @> ?', { email_preference => '1' }.to_json)
@@ -27,6 +30,15 @@ class User < ActiveRecord::Base
 
   def set_api_key!
     self.api_key = JsonWebToken.encode({'user_id' => self.id}, 10.years.from_now)
+  end
+
+  def daily_summary_not_sent_yet_today?
+    last_daily_summary_sent_at.present? &&
+    last_daily_summary_sent_at.to_i < (Time.now.in_time_zone(timezone) - 24.hours).to_i
+  end
+
+  def subscribed?
+    daily_reports == '1'
   end
 
   private
