@@ -75,6 +75,14 @@ RSpec.describe User do
   end
 
   describe '#can_send_daily_summary?' do
+    context 'never send' do
+      it 'returns true' do
+        user = build_stubbed(:user)
+
+        expect(user.can_send_daily_summary?).to be true
+      end
+    end
+
     context 'today not sent yet in Singapore 10:00 AM' do
       let(:timezone) { 'Asia/Singapore' }
 

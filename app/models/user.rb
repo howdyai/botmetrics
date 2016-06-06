@@ -33,6 +33,8 @@ class User < ActiveRecord::Base
   end
 
   def can_send_daily_summary?
+    return true if last_daily_summary_sent_at.nil?
+
     last_daily_summary_sent_at.present? &&
     last_daily_summary_sent_at.to_i < (Time.now.in_time_zone(timezone) - 24.hours).to_i
   end
