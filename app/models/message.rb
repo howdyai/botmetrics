@@ -41,6 +41,10 @@ class Message < ActiveRecord::Base
     )
   end
 
+  def log_response(response)
+    update(success: response['ok'], response: response)
+  end
+
   private
 
     def duplicate_provider_from_bot_instance

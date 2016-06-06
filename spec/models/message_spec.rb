@@ -71,4 +71,34 @@ RSpec.describe Message do
         )
     end
   end
+
+  describe '#log_response' do
+    context 'success' do
+      let(:response) { { 'ok' => true } }
+
+      it 'log success, response and returns true' do
+        message = build_stubbed(:message)
+
+        expect(message).to receive(:update).with(
+          success: true, response: response
+        )
+
+        result = message.log_response(response)
+      end
+    end
+
+    context 'failure' do
+      let(:response) { { 'ok' => false } }
+
+      it 'log success, response and returns false' do
+        message = build_stubbed(:message)
+
+        expect(message).to receive(:update).with(
+          success: false, response: response
+        )
+
+        result = message.log_response(response)
+      end
+    end
+  end
 end
