@@ -74,7 +74,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#daily_summary_not_sent_yet_today?' do
+  describe '#can_send_daily_summary?' do
     context 'today not sent yet in Singapore 10:00 AM' do
       let(:timezone) { 'Asia/Singapore' }
 
@@ -90,7 +90,7 @@ RSpec.describe User do
           to_send = create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
           tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago - 1.second).to_i))
 
-          expect(User.find_each.map(&:daily_summary_not_sent_yet_today?)).to match_array [false, false, true]
+          expect(User.find_each.map(&:can_send_daily_summary?)).to match_array [false, false, true]
         end
       end
     end

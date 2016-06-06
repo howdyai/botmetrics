@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
     self.api_key = JsonWebToken.encode({'user_id' => self.id}, 10.years.from_now)
   end
 
-  def daily_summary_not_sent_yet_today?
+  def can_send_daily_summary?
     last_daily_summary_sent_at.present? &&
     last_daily_summary_sent_at.to_i < (Time.now.in_time_zone(timezone) - 24.hours).to_i
   end
