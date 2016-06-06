@@ -410,7 +410,8 @@ CREATE TABLE users (
     timezone_utc_offset integer NOT NULL,
     mixpanel_properties jsonb DEFAULT '{}'::jsonb NOT NULL,
     api_key character varying,
-    email_preferences jsonb DEFAULT '{}'::jsonb
+    email_preferences jsonb DEFAULT '{}'::jsonb,
+    tracking_attributes jsonb DEFAULT '{}'::jsonb
 );
 
 
@@ -981,3 +982,5 @@ INSERT INTO schema_migrations (version) VALUES ('20160603142732');
 INSERT INTO schema_migrations (version) VALUES ('20160603155423');
 
 INSERT INTO schema_migrations (version) VALUES ('20160603155535');
+
+INSERT INTO schema_migrations (version) VALUES ('20160606041533');
