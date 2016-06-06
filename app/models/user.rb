@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
     last_daily_summary_sent_at.to_i < (Time.now.in_time_zone(timezone) - 24.hours).to_i
   end
 
-  def subscribed?
+  def subscribed_to_daily_summary?
     daily_reports == '1'
   end
 

@@ -104,17 +104,17 @@ RSpec.describe User do
     end
   end
 
-  describe '#subscribed?' do
+  describe '#subscribed_to_daily_summary?' do
     it "returns true if daily_reports is '1'" do
       user = build_stubbed(:user, daily_reports: '1')
 
-      expect(user).to be_subscribed
+      expect(user).to be_subscribed_to_daily_summary
     end
 
     it "returns false if daily_reports is not '1'" do
       user = build_stubbed(:user, daily_reports: nil)
 
-      expect(user).not_to be_subscribed
+      expect(user).not_to be_subscribed_to_daily_summary
     end
   end
 end
