@@ -2,7 +2,7 @@ RSpec.describe Query do
   context 'constants' do
     context 'FIELDS' do
       it 'keys include' do
-        expect(Query::FIELDS.keys).to match_array %w(
+        expect(Queries::Slack::FIELDS.keys).to match_array %w(
           nickname email full_name interaction_count interacted_at user_created_at)
       end
     end

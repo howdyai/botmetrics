@@ -50,38 +50,40 @@ RSpec.describe FilterBotUsersService do
           expect(service.scope.map(&:id)).to eq [bot_user_3].map(&:id)
         end
       end
-    end
 
-    context 'datetime queries' do
-      context 'interacted_at' do
-        let(:queries) do
-          [
-            Query.new(field: :interacted_at, method: :between,
-              min_value: 4.days.ago, max_value: 2.days.ago)
-          ]
+      context 'datetime queries' do
+        context 'interacted_at' do
+          let(:queries) do
+            [
+              Query.new(
+                provider: provider, field: :interacted_at, method: :between,
+                min_value: 4.days.ago, max_value: 2.days.ago
+              )
+            ]
+          end
+
+          it 'returns filtered' do
+            create(:messages_to_bot_event, bot_instance_id: instance_1.id, bot_user_id: bot_user_1.id, created_at: 3.days.ago)
+
+            expect(service.scope.map(&:id)).to match_array [user.id]
+          end
         end
 
-        it 'returns filtered' do
-          instance = create(:bot_instance, :with_attributes, uid: '999', bot: bot, state: 'enabled')
-          user = create(:bot_user, bot_instance: instance)
-          create(:messages_to_bot_event, bot_instance_id: instance.id, bot_user_id: user.id, created_at: 3.days.ago)
+        context 'user_created_at' do
+          let(:queries) do
+            [
+              Query.new(
+                provider: provider, field: :user_created_at, method: :between,
+                min_value: 8.days.ago, max_value: 6.days.ago
+              )
+            ]
+          end
 
-          expect(service.scope.map(&:id)).to match_array [user.id]
-        end
-      end
+          it 'returns filtered' do
+            one_week_user = create(:bot_user, created_at: 7.days.ago, bot_instance: instance_1)
 
-      context 'user_created_at' do
-        let(:queries) do
-          [
-            Query.new(field: :user_created_at, method: :between,
-              min_value: 8.days.ago, max_value: 6.days.ago)
-          ]
-        end
-
-        it 'returns filtered' do
-          one_week_user = create(:bot_user, created_at: 7.days.ago, bot_instance: instance_1)
-
-          expect(service.scope.map(&:id)).to match_array [one_week_user.id]
+            expect(service.scope.map(&:id)).to match_array [one_week_user.id]
+          end
         end
       end
     end
