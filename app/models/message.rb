@@ -26,7 +26,9 @@ class Message < ActiveRecord::Base
   end
 
   def can_send_now?
-    scheduled_at <= Time.current && sent_at.nil?
+    return false if sent_at
+
+    scheduled_at <= Time.current
   end
 
   def ping_pusher_for_notification
