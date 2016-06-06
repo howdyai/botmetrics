@@ -14,6 +14,7 @@ RSpec.describe Query do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :provider }
+    it { is_expected.to validate_inclusion_of(:provider).in_array(%w(slack kik facebook telegram)) }
 
     it { is_expected.to validate_presence_of :field }
     it { is_expected.to validate_presence_of :method }
