@@ -83,6 +83,16 @@ RSpec.describe User do
       end
     end
 
+    context 'exactly 24 hours' do
+      it 'returns true' do
+        travel_to Time.parse('6 June, 2016 09:00 +0800') do
+          user = build_stubbed(:user, tracking_attributes: { 'last_daily_summary_sent_at': 24.hours.ago })
+
+          expect(user.can_send_daily_summary?).to be true
+        end
+      end
+    end
+
     context 'today not sent yet in Singapore 10:00 AM' do
       let(:timezone) { 'Asia/Singapore' }
 
