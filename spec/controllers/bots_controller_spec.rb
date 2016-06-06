@@ -166,8 +166,6 @@ RSpec.describe BotsController do
     end
 
     it 'should update the name of the bot' do
-      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
-
       expect {
         do_request
         bot.reload
@@ -175,8 +173,6 @@ RSpec.describe BotsController do
     end
 
     it 'should redirect to bot_verifying_webhook_path' do
-      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
-
       do_request
 
       expect(response).to redirect_to bot_verifying_webhook_path(bot)
@@ -192,8 +188,6 @@ RSpec.describe BotsController do
       let!(:bot_params) { { name: 'test', webhook_url: '' } }
 
       it 'should redirect to bot_path' do
-        expect(ValidateWebhookAndUpdatesJob).not_to receive(:perform_async)
-
         do_request
 
         expect(response).to redirect_to bot_path(bot)
@@ -229,15 +223,15 @@ RSpec.describe BotsController do
     end
 
     def do_request
-      get :verifying_webhook, id: bot.to_param
+      get :verifying_webhook, bot_id: bot.to_param
     end
 
     it 'should invoke ValidateWebhookAndUpdatesJob' do
-      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_async)
+      allow(ValidateWebhookAndUpdatesJob).to receive(:perform_in)
 
       do_request
 
-      expect(ValidateWebhookAndUpdatesJob).to have_received(:perform_async)
+      expect(ValidateWebhookAndUpdatesJob).to have_received(:perform_in)
     end
   end
 
