@@ -26,6 +26,19 @@ RSpec.describe User do
         end
       end
     end
+
+    describe '.local_time_is_after' do
+      let(:san_franciscan) { create(:user, timezone: 'America/Los_Angeles') }
+      let(:singaporean) { create(:user, timezone: 'Asia/Singapore') }
+
+      it "find people's local time is after 9" do
+        travel_to Time.parse('6 June, 2016 09:30 +0800') do
+          result = User.local_time_is_after(9)
+
+          expect(result).to match_array [singaporean]
+        end
+      end
+    end
   end
 
   context 'before actions' do

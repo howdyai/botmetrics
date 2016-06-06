@@ -17,6 +17,10 @@ class User < ActiveRecord::Base
     where('email_preferences @> ?', { email_preference => '1' }.to_json)
   end
 
+  def self.local_time_is_after(hour)
+    where(timezone: ActiveSupport::TimeZone.zones_after(hour))
+  end
+
   def to_param
     'me'
   end
