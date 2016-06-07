@@ -3,7 +3,7 @@ require './config/boot'
 require './config/environment'
 
 module Clockwork
-  every(5.minutes, 'Messages.Send') do
+  every(2.minutes, 'Messages.Send') do
     SendScheduledMessageJob.perform_async
   end
 
