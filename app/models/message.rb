@@ -31,18 +31,6 @@ class Message < ActiveRecord::Base
     scheduled_at <= Time.current
   end
 
-  def ping_pusher_for_notification
-    PusherJob.perform_async(
-      "notification",
-      "notification-#{notification.id}",
-      {
-        ok: success,
-        recipient: (user || channel),
-        sent: notification.messages.sent.count
-      }.to_json
-    )
-  end
-
   def log_response(response)
     update(success: response['ok'], response: response)
   end

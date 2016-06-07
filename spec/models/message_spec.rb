@@ -50,28 +50,6 @@ RSpec.describe Message do
     end
   end
 
-  describe '#ping_pusher_for_notification' do
-    let(:notification) { create(:notification) }
-    let(:message) { create(:message, :to_user, notification: notification) }
-
-    it 'invokes PusherJob' do
-      allow(PusherJob).to receive(:perform_async)
-
-      message.ping_pusher_for_notification
-
-      expect(PusherJob).to have_received(:perform_async).
-        with(
-          "notification",
-          "notification-#{notification.id}",
-          {
-            ok: message.success,
-            recipient: message.user,
-            sent: notification.messages.sent.count
-          }.to_json
-        )
-    end
-  end
-
   describe '#log_response' do
     context 'success' do
       let(:response) { { 'ok' => true } }
