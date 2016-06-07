@@ -5,7 +5,7 @@ RSpec.describe DailyReportsService do
     before { allow(ReportsMailer).to receive(:daily_summary) { double(:mail).as_null_object } }
 
     def create_singaporean(options = {})
-      create(:user, timezone: 'Asia/Singapore', **options)
+      create(:user, timezone: 'Singapore', **options)
     end
 
     it 'unsubscribed user' do
