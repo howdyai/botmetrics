@@ -22,23 +22,37 @@ class BotUser < ActiveRecord::Base
     )
   end
 
-  scope :interaction_count_eq, ->(bot_instances, count)do
+  scope :interaction_count_eq, ->(count)do
     joins(:events).
-      where(events: { event_type: 'message', bot_instance: bot_instances, is_for_bot: true }).
+      where(events: { event_type: 'message', is_for_bot: true }).
       group('bot_users.id').
       having('count(*) = ?', count)
   end
 
-  scope :interaction_count_betw, ->(bot_instances, min, max)do
+  scope :interaction_count_lt, ->(count)do
     joins(:events).
-      where(events: { event_type: 'message', bot_instance: bot_instances, is_for_bot: true }).
+      where(events: { event_type: 'message', is_for_bot: true }).
+      group('bot_users.id').
+      having('count(*) < ?', count)
+  end
+
+  scope :interaction_count_gt, ->(count)do
+    joins(:events).
+      where(events: { event_type: 'message', is_for_bot: true }).
+      group('bot_users.id').
+      having('count(*) > ?', count)
+  end
+
+  scope :interaction_count_betw, ->(min, max)do
+    joins(:events).
+      where(events: { event_type: 'message', is_for_bot: true }).
       group('bot_users.id').
       having('count(*) BETWEEN ? AND ?', min, max)
   end
 
-  scope :interacted_at_betw, ->(bot_instances, min, max) do
+  scope :interacted_at_betw, ->(min, max) do
     joins(:events).
-      where(events: { event_type: 'message', bot_instance: bot_instances, is_for_bot: true }).
+      where(events: { event_type: 'message', is_for_bot: true }).
       where('events.created_at BETWEEN ? AND ?', min, max).
       uniq
   end

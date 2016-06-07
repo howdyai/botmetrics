@@ -23,7 +23,7 @@ RSpec.describe BotUser do
   context 'scopes' do
     let!(:user)       { create(:user) }
     let!(:bot)        { create(:bot) }
-    let!(:instance)   { create(:bot_instance, :with_attributes, uid: '123', bot: bot, state: 'enabled') }
+    let!(:instance) { create(:bot_instance, :with_attributes, uid: '123', bot: bot) }
 
     let!(:bot_user_1) { create(:bot_user, bot_instance: instance, user_attributes: { nickname: 'john', email: 'john@example.com' }) }
     let!(:bot_user_2) { create(:bot_user, bot_instance: instance, user_attributes: { nickname: 'sean', email: 'sean@example.com' }) }
@@ -41,18 +41,28 @@ RSpec.describe BotUser do
     end
 
     describe '#interaction_count_eq' do
-      it { expect(BotUser.interaction_count_eq([instance], 1)).to eq [bot_user_1] }
-      it { expect(BotUser.interaction_count_eq([instance], 2)).to eq [bot_user_2] }
+      it { expect(BotUser.interaction_count_eq(1)).to eq [bot_user_1] }
+      it { expect(BotUser.interaction_count_eq(2)).to eq [bot_user_2] }
+    end
+
+    describe '#interaction_count_lt' do
+      it { expect(BotUser.interaction_count_lt(1)).to eq [] }
+      it { expect(BotUser.interaction_count_lt(2)).to eq [bot_user_1] }
+    end
+
+    describe '#interaction_count_gt' do
+      it { expect(BotUser.interaction_count_gt(1)).to eq [bot_user_2] }
+      it { expect(BotUser.interaction_count_gt(2)).to eq [] }
     end
 
     describe '#interaction_count_betw' do
-      it { expect(BotUser.interaction_count_betw([instance], 0, 1)).to eq [bot_user_1] }
-      it { expect(BotUser.interaction_count_betw([instance], 0, 5)).to eq [bot_user_1, bot_user_2] }
+      it { expect(BotUser.interaction_count_betw(0, 1)).to eq [bot_user_1] }
+      it { expect(BotUser.interaction_count_betw(0, 5)).to eq [bot_user_1, bot_user_2] }
     end
 
     describe '#interacted_at_betw' do
-      it { expect(BotUser.interacted_at_betw([instance], 6.days.ago, 4.days.ago)).to eq [bot_user_1] }
-      it { expect(BotUser.interacted_at_betw([instance], 3.days.ago, 1.day.ago)).to eq [bot_user_2] }
+      it { expect(BotUser.interacted_at_betw(6.days.ago, 4.days.ago)).to eq [bot_user_1] }
+      it { expect(BotUser.interacted_at_betw(3.days.ago, 1.day.ago)).to eq [bot_user_2] }
     end
 
     describe '.user_signed_up_betw' do

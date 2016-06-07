@@ -15,8 +15,10 @@ module Queries
     }
 
     NUMBER_METHODS = {
-      'equals_to' => 'Equals To',
-      'between'   => 'Between'
+      'equals_to'    => 'Equals To',
+      'lesser_than'  => 'Lesser Than',
+      'greater_than' => 'Greater Than',
+      'between'      => 'Between'
     }
 
     DATETIME_METHODS = {

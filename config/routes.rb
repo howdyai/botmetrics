@@ -24,7 +24,21 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :notifications
+    resources :notifications, except: [:new, :create, :edit, :update]
+    resources :new_notification, only: [:create] do
+      collection do
+        get :step_1
+        get :step_2
+        get :step_3
+      end
+    end
+    resources :edit_notification, only: [:update] do
+      member do
+        get :step_1
+        get :step_2
+        get :step_3
+      end
+    end
 
     resources :messages, only: [:create]
 

@@ -3,13 +3,18 @@ require 'rails_helper'
 RSpec.describe NotificationService do
   let(:service)      { NotificationService.new(notification) }
 
-  let(:bot_instance) { create(:bot_instance, :with_attributes) }
+  let(:bot)          { create(:bot) }
+  let(:bot_instance) { create(:bot_instance, :with_attributes, bot: bot) }
   let(:bot_user)     { create(:bot_user, :with_attributes, bot_instance: bot_instance) }
 
   before { allow(SendMessageJob).to receive(:perform_async) }
 
+  let(:query_set)    { build(:query_set, :with_slack_queries, bot: bot) }
+
+  before { allow(FilterBotUsersService).to receive_message_chain(:new, :scope) { [bot_user] } }
+
   describe '#send_now' do
-    let(:notification) { create(:notification, bot_user_ids: [bot_user.id]) }
+    let(:notification) { create(:notification, query_set: query_set) }
 
     context 'notification has messages' do
       let!(:message) { create(:message, :to_user, bot_instance: bot_instance, notification: notification) }
@@ -18,6 +23,8 @@ RSpec.describe NotificationService do
         expect {
           service.send_now
         }.to_not change(Message, :count)
+
+        expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
         # Test that message was deleted and recreated
         expect(Message.last.id).to_not         eq message.id
@@ -33,6 +40,8 @@ RSpec.describe NotificationService do
           service.send_now
         }.to change(Message, :count).by(1)
 
+        expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
         message = Message.last
         expect(message.team_id).to eq bot_user.bot_instance.team_id
         expect(message.user).to eq bot_user.uid
@@ -44,7 +53,7 @@ RSpec.describe NotificationService do
   end
 
   describe '#enqueue_messages' do
-    let(:notification) { create(:notification, bot_user_ids: [bot_user.id], scheduled_at: 'May 25, 2016 8:00 PM') }
+    let(:notification) { create(:notification, query_set: query_set, scheduled_at: 'May 25, 2016 8:00 PM') }
 
     context 'notification has messages' do
       let!(:message) { create(:message, :to_user, bot_instance: bot_instance, notification: notification) }
@@ -53,6 +62,8 @@ RSpec.describe NotificationService do
         expect {
           service.enqueue_messages
         }.to_not change(Message, :count)
+
+        expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
         # Test that message was deleted and recreated
         expect(Message.last.id).to_not         eq message.id
@@ -67,6 +78,8 @@ RSpec.describe NotificationService do
         expect {
           service.enqueue_messages
         }.to change(Message, :count).by(1)
+
+        expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
         message = Message.last
         expect(message.team_id).to eq bot_user.bot_instance.team_id

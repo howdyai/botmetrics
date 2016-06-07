@@ -2,10 +2,11 @@ class Notification < ActiveRecord::Base
   include WithUidUniqueness
 
   belongs_to :bot
+
+  has_one :query_set, dependent: :destroy
   has_many :messages, dependent: :destroy
 
   validates_presence_of :content
-  validates_presence_of :bot_user_ids
 
   with_options on: :schedule do |n|
     n.validate :verify_scheduled_at

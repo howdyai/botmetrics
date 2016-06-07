@@ -7,39 +7,13 @@
     .col-xs-12
       .well
         %h3 Filters
-        = simple_form_for @query_set, url: bot_analytics_path(@bot), method: :get do |f|
-          = f.simple_fields_for :queries do |query|
-            = render 'query', f: query
+        = render 'shared/filters/form',
+          query_set: @query_set,
+          get_url: bot_analytics_path(@bot),
+          default_query: default_query,
+          reset_url: bot_analytics_path
 
-          .add_query.text-center
-            = link_to_add_association 'Add AND Clause', f, :queries, partial: 'query', class: 'btn btn-warning',
-              wrap_object: Proc.new { |query| query.assign_attributes(query_params) }
-
-          = f.submit 'Search'
-
-          = link_to 'Reset', bot_analytics_path, class: 'btn btn-clear'
-
-  .row
-    .col-xs-12
-      %table.table.table-striped.tableized
-        %thead
-          %tr
-            %th Full Name
-            %th Nickname
-            %th Email
-            %th Team
-            %th Signed Up
-            %th Last Interacted With Bot
-        %tbody
-          - @tableized.each do |bot_user|
-            %tr{class: bot_user.id}
-              %td= bot_user.full_name
-              %td= bot_user.nickname
-              %td= bot_user.email
-              %td= bot_user.bot_instance.team_name
-              %td= "#{time_ago_in_words(bot_user.created_at)} ago"
-              %td= bot_user.last_event_at.present? ? "#{time_ago_in_words(bot_user.last_event_at)} ago" : '-'
-      = will_paginate @tableized, renderer: BootstrapPagination::Rails
+  = render 'shared/filters/tableized', tableized: @tableized
 
 - content_for :page_scripts do
   :javascript

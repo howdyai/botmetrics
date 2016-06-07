@@ -30,4 +30,8 @@ class Query < ActiveRecord::Base
   def is_datetime_query?
     query_source.is_datetime_query?(field)
   end
+
+  def to_form_params
+    { provider: provider, field: field, method: method, value: value }
+  end
 end

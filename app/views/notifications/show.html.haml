@@ -10,13 +10,13 @@
   .row
     .col-sm-8.col-sm-offset-2
       %p
-        %strong Notification to #{pluralize(@notification.bot_user_ids.count, 'User')}
+        %strong Notification to #{pluralize(@send_count, 'User')}
 
       .progress.progress-striped.active
-        .progress-bar.progress-bar-success{role: "progressbar", 'aria-valuenow' => "0", 'aria-valuemin' => "0", 'aria-valuemax' => "100", data: { sent: @notification.messages.sent.count, total: @notification.bot_user_ids.count } }
+        .progress-bar.progress-bar-success{role: "progressbar", 'aria-valuenow' => "0", 'aria-valuemin' => "0", 'aria-valuemax' => "100", data: { sent: @notification.messages.sent.count, total: @send_count } }
           %span.progress-sent  #{@notification.messages.sent.count}
           \/
-          %span.progress-total #{@notification.bot_user_ids.count}
+          %span.progress-total #{@send_count}
 
       .failures
         %ul

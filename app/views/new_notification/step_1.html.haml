@@ -1,0 +1,40 @@
+.secondary-menu.row
+  .col-sm-12
+    = link_to bot_notifications_path(@bot), class: 'breadcrumb' do
+      %h2 All Notifications
+    %span.breadcrumb-separator
+      \/
+    %h2 New Notification
+    %span.breadcrumb-separator
+      \/
+    %h2 Step 1
+
+.row.steps
+  .col-sm-12
+    %h3 Step 1: Filter Users
+    %p Who will you like to send this notification to? Select the set of users who will receive this notification then "Continue" to Step 2.
+
+.container-fluid.notifications-container
+  .row.query-set
+    .col-xs-12
+      .well
+        %h3 Filters
+        = render 'shared/filters/form',
+            query_set: @query_set,
+            get_url: step_1_bot_new_notification_index_path(@bot),
+            default_query: default_query,
+            reset_url: step_1_bot_new_notification_index_path(@bot, reset: :reset)
+
+  %h3
+    Send to #{pluralize(@tableized.count, 'user')}
+  %hr
+
+  = render 'shared/filters/tableized', tableized: @tableized
+
+.steps-navigation
+  = link_to 'Continue', step_2_bot_new_notification_index_path(@bot), class: 'btn btn-lg btn-success'
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.Filter();
+    App.page.run();

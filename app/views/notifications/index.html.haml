@@ -3,7 +3,7 @@
     %h2 All Notifications
   .col-md-8.col-sm-8.col-xs-8.text-right
     .btn-group
-      = link_to new_bot_notification_path(@bot), class: 'btn btn-primary' do
+      = link_to step_1_bot_new_notification_index_path(@bot), class: 'btn btn-primary' do
         New Notification
 
 .container-fluid.notifications-container
@@ -21,7 +21,7 @@
             %tr
               %td= truncate(notification.content, length: 20)
               %td
-                #{notification.bot_user_ids.count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
+                #{notification.messages.count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
               %td
                 - if notification.send_immediately?
                   = notification.created_at.strftime('%b %d, %Y %l:%M %p')
@@ -32,7 +32,7 @@
                   .text-muted
                     %em Already Sent
                 - else
-                  = link_to edit_bot_notification_path(@bot, notification) do
+                  = link_to step_1_bot_edit_notification_path(@bot, notification) do
                     = icon('wrench')
                     Edit
                   &nbsp;|&nbsp;

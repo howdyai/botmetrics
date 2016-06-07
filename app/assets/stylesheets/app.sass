@@ -4,6 +4,8 @@ body.bots,
 body.teams,
 body.dashboards,
 body.notifications,
+body.new_notification,
+body.edit_notification,
 body.analytics
   &.setting_up
     p
@@ -72,6 +74,8 @@ body.bots,
 body.bot_instances,
 body.dashboards,
 body.notifications,
+body.new_notification,
+body.edit_notification,
 body.users,
 body.analytics
   &.edit
@@ -167,6 +171,8 @@ body.bots,
 body.teams,
 body.dashboards,
 body.notifications,
+body.new_notification,
+body.edit_notification,
 body.users,
 body.bot_instances,
 body.analytics
@@ -216,9 +222,11 @@ body.analytics
         font-size: 64px
         z-index: 99999
 
-body.notifications
+body.notifications,
+body.new_notification,
+body.edit_notification
   .notifications-container
-    margin-top: 25px
+    margin: 25px 0 100px
 
     .no-notifications
       padding: 20px
@@ -245,7 +253,9 @@ body.notifications
 .webhook-failed
   color: #bd2c00
 
-body.analytics
+body.analytics,
+body.new_notification,
+body.edit_notification
   .query-set
     margin-top: 30px
 
@@ -269,3 +279,27 @@ body.analytics
       display: block
       float: right
       padding: 5px
+
+body.new_notification,
+body.edit_notification
+  .steps
+    box-shadow: 0 1px 1px #dae1e3
+
+  .steps-navigation
+    position: fixed
+    bottom: 0
+    z-index: 5
+    width: 100%
+    margin-left: -200px
+    padding: 20px 25px
+    background-color: #99a0a9
+    text-align: right
+
+    a.btn-success,
+    input[type="submit"]
+      font-size: 16px
+      padding: 18px 25px
+      margin-top: 0px
+
+  .scheduler-options
+    margin-top: 20px

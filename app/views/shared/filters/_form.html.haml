@@ -1,0 +1,11 @@
+= simple_form_for query_set, url: get_url, method: :get do |f|
+  = f.simple_fields_for :queries do |query|
+    = render 'shared/filters/query', f: query
+
+  .add_query.text-center
+    = link_to_add_association 'Add AND Clause', f, :queries, partial: 'shared/filters/query', class: 'btn btn-warning',
+            wrap_object: Proc.new { |query| query.assign_attributes(default_query) }
+
+  = f.submit 'Search'
+
+  = link_to 'Reset', reset_url, class: 'btn btn-clear'

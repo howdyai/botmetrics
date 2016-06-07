@@ -278,12 +278,12 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 CREATE TABLE notifications (
     id integer NOT NULL,
     content text NOT NULL,
-    bot_user_ids text[] DEFAULT '{}'::text[],
     bot_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     scheduled_at character varying,
-    uid character varying NOT NULL
+    uid character varying NOT NULL,
+    query_set_id integer
 );
 
 
@@ -316,13 +316,13 @@ CREATE TABLE queries (
     method character varying NOT NULL,
     value character varying,
     query_set_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     min_value character varying,
     max_value character varying,
-    provider character varying,
+    provider character varying NOT NULL,
     CONSTRAINT validate_field CHECK ((((provider)::text = 'slack'::text) AND (((((((field)::text = 'nickname'::text) OR ((field)::text = 'email'::text)) OR ((field)::text = 'full_name'::text)) OR ((field)::text = 'interaction_count'::text)) OR ((field)::text = 'interacted_at'::text)) OR ((field)::text = 'user_created_at'::text)))),
-    CONSTRAINT validate_method CHECK (((((((provider)::text = 'slack'::text) AND ((((field)::text = 'nickname'::text) OR ((field)::text = 'email'::text)) OR ((field)::text = 'full_name'::text))) AND (((method)::text = 'equals_to'::text) OR ((method)::text = 'contains'::text))) OR ((((provider)::text = 'slack'::text) AND ((field)::text = 'interaction_count'::text)) AND (((method)::text = 'equals_to'::text) OR ((method)::text = 'between'::text)))) OR ((((provider)::text = 'slack'::text) AND (((field)::text = 'interacted_at'::text) OR ((field)::text = 'user_created_at'::text))) AND ((method)::text = 'between'::text))))
+    CONSTRAINT validate_method CHECK (((((((provider)::text = 'slack'::text) AND ((((field)::text = 'nickname'::text) OR ((field)::text = 'email'::text)) OR ((field)::text = 'full_name'::text))) AND (((method)::text = 'equals_to'::text) OR ((method)::text = 'contains'::text))) OR ((((provider)::text = 'slack'::text) AND ((field)::text = 'interaction_count'::text)) AND (((((method)::text = 'equals_to'::text) OR ((method)::text = 'greater_than'::text)) OR ((method)::text = 'lesser_than'::text)) OR ((method)::text = 'between'::text)))) OR ((((provider)::text = 'slack'::text) AND (((field)::text = 'interacted_at'::text) OR ((field)::text = 'user_created_at'::text))) AND ((method)::text = 'between'::text))))
 );
 
 
@@ -351,9 +351,13 @@ ALTER SEQUENCE queries_id_seq OWNED BY queries.id;
 
 CREATE TABLE query_sets (
     id integer NOT NULL,
-    name character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    user_id integer,
+    notification_id integer,
+    instances_scope character varying NOT NULL,
+    time_zone character varying NOT NULL,
+    bot_id integer
 );
 
 
@@ -739,6 +743,13 @@ CREATE INDEX index_notifications_on_bot_id ON notifications USING btree (bot_id)
 
 
 --
+-- Name: index_notifications_on_query_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_notifications_on_query_set_id ON notifications USING btree (query_set_id);
+
+
+--
 -- Name: index_notifications_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -750,6 +761,27 @@ CREATE UNIQUE INDEX index_notifications_on_uid ON notifications USING btree (uid
 --
 
 CREATE INDEX index_queries_on_query_set_id ON queries USING btree (query_set_id);
+
+
+--
+-- Name: index_query_sets_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_query_sets_on_bot_id ON query_sets USING btree (bot_id);
+
+
+--
+-- Name: index_query_sets_on_notification_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_query_sets_on_notification_id ON query_sets USING btree (notification_id);
+
+
+--
+-- Name: index_query_sets_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_query_sets_on_user_id ON query_sets USING btree (user_id);
 
 
 --
@@ -984,3 +1016,19 @@ INSERT INTO schema_migrations (version) VALUES ('20160603155423');
 INSERT INTO schema_migrations (version) VALUES ('20160603155535');
 
 INSERT INTO schema_migrations (version) VALUES ('20160606041533');
+
+INSERT INTO schema_migrations (version) VALUES ('20160606124940');
+
+INSERT INTO schema_migrations (version) VALUES ('20160606133022');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608080843');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608082053');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608085523');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608091950');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608100732');
+
+INSERT INTO schema_migrations (version) VALUES ('20160608110017');

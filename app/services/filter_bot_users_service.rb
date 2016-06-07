@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 class FilterBotUsersService
-  def initialize(bot, query_set, time_zone)
-    @bot       = bot
+  def initialize(query_set)
     @query_set = query_set
-    @time_zone = time_zone
   end
 
   def scope
-    collection = BotUser.where(bot_instance: bot.instances.legit)
+    collection = initial_collection
 
     query_set.queries.each do |query|
       next if query.value.blank? && (query.min_value.blank? || query.max_value.blank?)
@@ -21,7 +19,18 @@ class FilterBotUsersService
 
   private
 
-    attr_reader :bot, :query_set, :time_zone
+    attr_reader :query_set
+
+    def initial_collection
+      case query_set.instances_scope
+        when 'legit'
+          BotUser.where(bot_instance: query_set.bot.instances.legit)
+        when 'enabled'
+          BotUser.where(bot_instance: query_set.bot.instances.enabled)
+        else
+          raise "Houston, we have a '#{query_set.instances_scope}' problem!"
+      end
+    end
 
     def chain_to(collection, query)
       case
@@ -47,14 +56,17 @@ class FilterBotUsersService
       end
     end
 
-    # currently only for interaction_count
+    # Currently only for interaction_count
     def chain_with_number_query(collection, query)
       case
         when query.method == 'equals_to'
-          collection.interaction_count_eq(bot.instances.legit, query.value)
+          collection.interaction_count_eq(query.value)
+        when query.method == 'lesser_than'
+          collection.interaction_count_lt(query.value)
+        when query.method == 'greater_than'
+          collection.interaction_count_gt(query.value)
         when query.method == 'between'
           collection.interaction_count_betw(
-            bot.instances.legit,
             query.min_value,
             query.max_value
           )
@@ -67,14 +79,13 @@ class FilterBotUsersService
     def chain_with_datetime_query(collection, query)
       if query.field == 'user_created_at'
         collection.user_signed_up_betw(
-          query.min_value.in_time_zone(time_zone),
-          query.max_value.in_time_zone(time_zone)
+          query.min_value.in_time_zone(query_set.time_zone),
+          query.max_value.in_time_zone(query_set.time_zone)
         )
       else
         collection.interacted_at_betw(
-          bot.instances.legit,
-          query.min_value.in_time_zone(time_zone),
-          query.max_value.in_time_zone(time_zone)
+          query.min_value.in_time_zone(query_set.time_zone),
+          query.max_value.in_time_zone(query_set.time_zone)
         )
       end
     end

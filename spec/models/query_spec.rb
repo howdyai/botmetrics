@@ -119,4 +119,12 @@ RSpec.describe Query do
       expect(source).to have_received(:is_datetime_query?).with(query.field)
     end
   end
+
+  describe '#to_form_params' do
+    let(:query) { build(:slack_query) }
+
+    it 'returns a hash' do
+      expect(query.to_form_params).to eq({ provider: query.provider, field: query.field, method: query.method, value: query.value })
+    end
+  end
 end

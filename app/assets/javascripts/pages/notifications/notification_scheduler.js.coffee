@@ -10,8 +10,11 @@ class App.NotificationScheduler extends App.AppBase
     self = @
 
     $(document).ready ->
-      $('.scheduler-toggle a[data-toggle]').on 'click', ->
-        self.toggleAttr($('#notification_scheduled_at'), 'disabled')
+      $('input[id=send_now]').on 'click', ->
+        $('#notification_scheduled_at').val('').attr('readonly', 'readonly')
+
+      $('input[id=send_later]').on 'click', ->
+        $('#notification_scheduled_at').removeAttr('readonly')
 
       $('#notification_scheduled_at').daterangepicker(
         {
@@ -40,7 +43,7 @@ class App.NotificationScheduler extends App.AppBase
         e.preventDefault()
 
       if($('#notification_scheduled_at').val() != undefined && $('#notification_scheduled_at').val() != '')
-        $('.scheduler-toggle a[data-toggle]').click()
+        $('input[id=send_later]').click()
 
   getMinDate: ->
     minDate = new Date();
@@ -48,9 +51,3 @@ class App.NotificationScheduler extends App.AppBase
     minDate.setMinutes(minDate.getMinutes() + 30)
     minDate.setMinutes (0)
     minDate
-
-  toggleAttr: (target, attr)->
-    if(target.attr(attr))
-      target.removeAttr(attr)
-    else
-      target.attr(attr, attr)
