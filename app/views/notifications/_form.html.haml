@@ -6,7 +6,7 @@
 
   .scheduler-toggle
     = link_to '#scheduler-options', { role: 'button', data: { toggle: 'collapse' }, 'aria-expanded' => 'false', 'aria-controls' => 'scheduler-options' } do
-      %i.fa.fa-clock-o
+      = icon('clock-o')
       Scheduling Options
 
   #scheduler-options.collapse
@@ -17,7 +17,7 @@
 
         .col-sm-12
           = link_to '#', class: 'clear-scheduler' do
-            %i.fa.fa-times
+            = icon('times')
             Clear Scheduling Options
 
   - count = notification.bot_user_ids.size

@@ -33,11 +33,11 @@
                     %em Already Sent
                 - else
                   = link_to edit_bot_notification_path(@bot, notification) do
-                    %i.fa.fa-wrench
+                    = icon('wrench')
                     Edit
                   &nbsp;|&nbsp;
                   = link_to bot_notification_path(@bot, notification), method: :delete do
-                    %i.fa.fa-trash
+                    = icon('trash')
                     Delete
 
       = will_paginate @notifications, renderer: BootstrapPagination::Rails
