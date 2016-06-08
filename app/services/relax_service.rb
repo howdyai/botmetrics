@@ -15,9 +15,7 @@ class RelaxService
         bi.update_attribute(:state, 'disabled')
         bi.events.create!(event_type: 'bot_disabled', provider: bi.provider)
 
-        FeatureToggle.active?(:alerts, bi.owners) do
-          Alerts::DisabledBotInstanceJob.perform_async(bi.id)
-        end
+        Alerts::DisabledBotInstanceJob.perform_async(bi.id)
       end
     when 'message_new'
       user = find_bot_user_from(bi, event)

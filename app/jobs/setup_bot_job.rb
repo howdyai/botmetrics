@@ -31,9 +31,7 @@ class SetupBotJob < Job
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
 
-      FeatureToggle.active?(:alerts, @instance.owners) do
-        Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
-      end
+      Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
     else
       if auth_info['error'] == 'account_inactive'
         @instance.update_attribute(:state, 'disabled')
