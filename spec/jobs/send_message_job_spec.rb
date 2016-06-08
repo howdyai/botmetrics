@@ -5,9 +5,11 @@ RSpec.describe SendMessageJob do
     it 'sends message' do
       message = build_stubbed('message')
       allow(Message).to receive(:find) { message }
-      expect(MessageService).to receive_message_chain(:new, :send_now) { true }
+      allow(MessageService).to receive_message_chain(:new, :send_now) { true }
 
       SendMessageJob.new.perform(message.id)
+
+      expect(MessageService).to have_received(:new)
     end
   end
 end
