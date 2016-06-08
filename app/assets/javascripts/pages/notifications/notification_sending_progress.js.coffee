@@ -40,6 +40,6 @@ class App.NotificationSendingProgress extends App.AppBase
 
   redirect_to_notifications: ->
     uri = new Uri(window.location.href)
-    uri.setPath(uri.path().replace(/notifications\/[0-9]*/, 'notifications'))
+    uri.setPath(uri.path().replace(/notifications\/[a-z0-9]*/, 'notifications/'))
 
     Turbolinks.visit(uri)
