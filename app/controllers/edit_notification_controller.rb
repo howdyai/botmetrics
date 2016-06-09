@@ -18,8 +18,8 @@ class EditNotificationController < ApplicationController
         bot: @bot,
         instances_scope: :enabled,
         time_zone: current_user.timezone,
-        params: params,
         default: default_query,
+        params: params,
         session: session[:edit_notification_query_set] || @notification.query_set.to_form_params
       ).query_set
 

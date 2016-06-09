@@ -4,12 +4,12 @@
 #- setting default
 
 class QuerySetBuilder
-  def initialize(bot: nil, instances_scope: nil , time_zone: nil, params: {}, default: {}, session: {})
+  def initialize(bot: nil, instances_scope: nil , time_zone: nil, default: {}, params: {}, session: {})
     @bot             = bot
     @instances_scope = instances_scope
     @time_zone       = time_zone
-    @params          = params
     @default         = default
+    @params          = ActionController::Parameters.new(params)
     @session         = ActionController::Parameters.new(session)
   end
 

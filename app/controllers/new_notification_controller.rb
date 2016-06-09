@@ -16,8 +16,8 @@ class NewNotificationController < ApplicationController
         bot: @bot,
         instances_scope: :enabled,
         time_zone: current_user.timezone,
-        params: params,
         default: default_query,
+        params: params,
         session: session[:new_notification_query_set]
       ).query_set
 

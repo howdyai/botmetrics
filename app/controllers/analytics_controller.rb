@@ -12,8 +12,8 @@ class AnalyticsController < ApplicationController
         bot: @bot,
         instances_scope: :legit,
         time_zone: current_user.timezone,
-        params: params,
-        default: default_query
+        default: default_query,
+        params: params
       ).query_set
 
     @tableized = FilterBotUsersService.new(@query_set).scope.page(params[:page])
