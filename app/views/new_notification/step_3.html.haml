@@ -57,7 +57,7 @@
                 Improve your conversion rates by delaying messages until the indicated time.
 
             .scheduler-options
-              = f.input :scheduled_at, label: false, placeholder: 'Select a Date Time', input_html: { disabled: :disabled }
+              = f.input :scheduled_at, label: false, placeholder: 'Select a Date Time', input_html: { readonly: :readonly }
 
               = link_to '#', class: 'clear-scheduler' do
                 %i.fa.fa-times
