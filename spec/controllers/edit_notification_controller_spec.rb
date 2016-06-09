@@ -12,6 +12,8 @@ RSpec.describe EditNotificationController do
     dt.strftime('%b %d, %Y %l:%M %p')
   end
 
+  before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
+
   shared_examples 'inaccessible if already sent' do
     context 'sent immediately' do
       before { notification.update(scheduled_at: nil) }
@@ -45,12 +47,10 @@ RSpec.describe EditNotificationController do
       it_behaves_like 'inaccessible if already sent'
 
       it 'success' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with('Viewed New Notifications Step 1', user.id)
-
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
 
         # Assigns will be deprecated in Rails 5..
         # But this is the easiest to check that the existing QuerySet was loaded
@@ -63,16 +63,10 @@ RSpec.describe EditNotificationController do
       let(:queries_attributes) { { queries_attributes: { '0' => { provider: 'slack', field: 'nickname', method: 'equals_to', value: 'john' } } } }
 
       it 'success' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with(
-            'Viewed New Notifications Step 1',
-            user.id,
-            query_attributes: queries_attributes
-          )
-
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
 
         # Assigns will be deprecated in Rails 5..
         # But this is the easiest to check that the existing QuerySet was loaded
@@ -119,6 +113,7 @@ RSpec.describe EditNotificationController do
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -151,6 +146,7 @@ RSpec.describe EditNotificationController do
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -204,20 +200,13 @@ RSpec.describe EditNotificationController do
           expect(notification.reload.query_set.queries.first.value).to  eq 'newton'
 
           expect(response).to redirect_to bot_notification_path(bot, Notification.last)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do
           do_request
 
           expect(session[:edit_notification_query_set]).to be_nil
-        end
-
-        it 'tracks the event on Mixpanel' do
-          pending
-
-          do_request
-
-          expect(TrackMixpanelEventJob).to have_received(:perform_async).with 'Created Notification', user.id, bot_users: 2
         end
       end
 
@@ -251,6 +240,7 @@ RSpec.describe EditNotificationController do
           expect(notification.reload.query_set.queries.first.value).to  eq 'newton'
 
           expect(response).to redirect_to bot_notifications_path(bot)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do

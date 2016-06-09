@@ -25,19 +25,19 @@ class NewNotificationController < ApplicationController
 
     session[:new_notification_query_set] = @query_set.to_form_params
 
-    # Track to Mixpanel
+    mixpanel_track('View New Notification Step 1', @query_set.to_form_params)
   end
 
   def step_2
     @notification = @bot.notifications.build(model_params)
 
-    # Track to Mixpanel
+    mixpanel_track('View New Notification Step 2', model_params)
   end
 
   def step_3
     @notification = @bot.notifications.build(model_params)
 
-    # Track to Mixpanel
+    mixpanel_track('View New Notification Step 3', model_params)
   end
 
   def create
@@ -46,7 +46,7 @@ class NewNotificationController < ApplicationController
 
     if @notification.save(context: :schedule)
       session.delete(:new_notification_query_set)
-      # TrackMixpanelEventJob.perform_async('Created Notification', current_user.id, bot_users: @notification.bot_user_ids.count)
+      mixpanel_track('Created Notification', notification_id: @notification.id)
 
       send_or_queue_and_redirect
     else
@@ -96,5 +96,9 @@ class NewNotificationController < ApplicationController
 
         redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
       end
+    end
+
+    def mixpanel_track(event, options={})
+      TrackMixpanelEventJob.perform_async(event, current_user.id, options)
     end
 end

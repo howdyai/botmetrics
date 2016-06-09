@@ -27,19 +27,19 @@ class EditNotificationController < ApplicationController
 
     session[:edit_notification_query_set] = @query_set.to_form_params
 
-    # Track to Mixpanel
+    mixpanel_track('Viewed Edit Notification Step 1', notification_id: @notification.id)
   end
 
   def step_2
     @notification.assign_attributes(model_params)
 
-    # Track to Mixpanel
+    mixpanel_track('Viewed Edit Notification Step 2', notification_id: @notification.id)
   end
 
   def step_3
     @notification.assign_attributes(model_params)
 
-    # Track to Mixpanel
+    mixpanel_track('Viewed Edit Notification Step 3', notification_id: @notification.id)
   end
 
   def update
@@ -48,7 +48,7 @@ class EditNotificationController < ApplicationController
 
     if @notification.save(context: :schedule)
       session.delete(:edit_notification_query_set)
-      # TrackMixpanelEventJob.perform_async('Created Notification', current_user.id, bot_users: @notification.bot_user_ids.count)
+      mixpanel_track('Updated Notification', notification_id: @notification.id)
 
       send_or_queue_and_redirect
     else
@@ -107,5 +107,9 @@ class EditNotificationController < ApplicationController
 
         redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
       end
+    end
+
+    def mixpanel_track(event, options={})
+      TrackMixpanelEventJob.perform_async(event, current_user.id, options)
     end
 end

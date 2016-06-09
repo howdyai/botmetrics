@@ -9,6 +9,8 @@ RSpec.describe NewNotificationController do
     dt.strftime('%b %d, %Y %l:%M %p')
   end
 
+  before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
+
   describe '#step_1' do
     def do_request
       get :step_1, { bot_id: bot.to_param }.merge(params)
@@ -18,12 +20,10 @@ RSpec.describe NewNotificationController do
       let(:params) { {} }
 
       it 'success' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with('Viewed New Notifications Step 1', user.id)
-
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -32,16 +32,10 @@ RSpec.describe NewNotificationController do
       let(:queries_attributes) { { queries_attributes: { '0' => { provider: 'slack', field: 'nickname', method: 'equals_to', value: 'john' } } } }
 
       it 'success' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with(
-            'Viewed New Notifications Step 1',
-            user.id,
-            query_attributes: queries_attributes
-          )
-
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
 
       it 'sets session' do
@@ -82,6 +76,7 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -108,6 +103,7 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
+        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -155,20 +151,13 @@ RSpec.describe NewNotificationController do
             and change(QuerySet, :count).by(1)
 
           expect(response).to redirect_to bot_notification_path(bot, Notification.last)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do
           do_request
 
           expect(session[:new_notification_query_set]).to be_nil
-        end
-
-        it 'tracks the event on Mixpanel' do
-          pending
-
-          do_request
-
-          expect(TrackMixpanelEventJob).to have_received(:perform_async).with 'Created Notification', user.id, bot_users: 2
         end
       end
 
@@ -197,6 +186,7 @@ RSpec.describe NewNotificationController do
           expect(Notification.last.scheduled_at).to eq scheduled_at
 
           expect(response).to redirect_to bot_notifications_path(bot)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do
@@ -218,7 +208,3 @@ RSpec.describe NewNotificationController do
     end
   end
 end
-
-# before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
-
-# expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed New Notification Page', user.id)

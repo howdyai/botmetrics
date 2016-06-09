@@ -1,8 +1,3 @@
-# This class will test for:
-#- empty params
-#- setting attributes based on params or session
-#- setting default
-
 class QuerySetBuilder
   def initialize(bot: nil, instances_scope: nil , time_zone: nil, default: {}, params: {}, session: {})
     @bot             = bot
