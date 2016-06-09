@@ -13,6 +13,25 @@ RSpec.describe QuerySet do
     it { is_expected.to validate_presence_of :time_zone }
   end
 
+  describe '#initial_user_collection' do
+    let!(:bot)        { create(:bot) }
+    let!(:instance_1) { create(:bot_instance, :with_attributes, uid: '123', bot: bot, state: 'pending') }
+    let!(:instance_2) { create(:bot_instance, :with_attributes, uid: '456', bot: bot, state: 'enabled') }
+    let!(:instance_3) { create(:bot_instance, :with_attributes, uid: '789', bot: bot, state: 'disabled') }
+    let!(:bot_user_1) { create(:bot_user, bot_instance: instance_1) }
+    let!(:bot_user_2) { create(:bot_user, bot_instance: instance_2) }
+    let!(:bot_user_3) { create(:bot_user, bot_instance: instance_3) }
+
+    it { expect(QuerySet.new(bot: bot, instances_scope: 'legit').initial_user_collection).to eq [bot_user_2, bot_user_3] }
+    it { expect(QuerySet.new(bot: bot, instances_scope: 'enabled').initial_user_collection).to eq [bot_user_2] }
+
+    it 'raises error' do
+      expect {
+        QuerySet.new(bot: bot, instances_scope: 'xxxxx').initial_user_collection
+      }.to raise_exception "Houston, we have a 'xxxxx' problem!"
+    end
+  end
+
   describe '#to_form_params' do
     let(:query_set) { build(:query_set, :with_slack_queries, bot_id: 1) }
 

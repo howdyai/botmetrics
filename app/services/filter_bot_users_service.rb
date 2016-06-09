@@ -6,7 +6,7 @@ class FilterBotUsersService
   end
 
   def scope
-    collection = initial_collection
+    collection = query_set.initial_user_collection
 
     query_set.queries.each do |query|
       next if query.value.blank? && (query.min_value.blank? || query.max_value.blank?)
@@ -20,17 +20,6 @@ class FilterBotUsersService
   private
 
     attr_reader :query_set
-
-    def initial_collection
-      case query_set.instances_scope
-        when 'legit'
-          BotUser.where(bot_instance: query_set.bot.instances.legit)
-        when 'enabled'
-          BotUser.where(bot_instance: query_set.bot.instances.enabled)
-        else
-          raise "Houston, we have a '#{query_set.instances_scope}' problem!"
-      end
-    end
 
     def chain_to(collection, query)
       case
