@@ -28,7 +28,6 @@ class NotificationService
     end
 
     def create_messages!
-      # binding.pry
       bot_users = FilterBotUsersService.new(notification.query_set).scope
       bot_users.each do |bot_user|
         message_object = Messages::Slack.new(message_params(bot_user))
