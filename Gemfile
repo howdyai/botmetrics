@@ -30,7 +30,7 @@ gem 'groupdate',                '~> 2.5.3'
 gem 'chartkick',                github: 'botmetrics/chartkick', ref: 'fd3918c0113fe75ddff3b0bc4dea446b56364ca6'
 
 # Auth
-gem 'devise',                   '~> 3.4.1'
+gem 'devise',                   '~> 3.5.10'
 gem 'jwt',                      '~> 1.5.4'
 
 # Pagination
