@@ -45,11 +45,6 @@ RSpec.describe BotUser do
       it { expect(BotUser.interaction_count_eq(2)).to eq [bot_user_2] }
     end
 
-    describe '#interaction_count_lt' do
-      it { expect(BotUser.interaction_count_lt(1)).to eq [] }
-      it { expect(BotUser.interaction_count_lt(2)).to eq [bot_user_1] }
-    end
-
     describe '#interaction_count_gt' do
       it { expect(BotUser.interaction_count_gt(1)).to eq [bot_user_2] }
       it { expect(BotUser.interaction_count_gt(2)).to eq [] }
@@ -72,6 +67,41 @@ RSpec.describe BotUser do
 
     describe '#order_by_last_event_at' do
       it { expect(BotUser.order_by_last_event_at(BotUser.all)).to eq [bot_user_2, bot_user_1] }
+    end
+  end
+
+  context 'ago scopes' do
+    let(:timezone) { 'Pacific Time (US & Canada)' }
+
+    def create_bot_user_with_event(days_ago:)
+      create(:bot_user).tap do |bot_user|
+        create(:messages_to_bot_event, bot_user_id: bot_user.id, created_at: days_ago)
+      end.id
+    end
+
+    before { travel_to Time.current }
+    after { travel_back }
+
+    let!(:user_1_id) { create_bot_user_with_event(days_ago: 1.days.ago) }
+    let!(:user_2_id) { create_bot_user_with_event(days_ago: 2.days.ago) }
+    let!(:user_3_id) { create_bot_user_with_event(days_ago: 3.days.ago) }
+    let!(:user_4_id) { create_bot_user_with_event(days_ago: 4.days.ago) }
+    let!(:user_5_id) { create_bot_user_with_event(days_ago: 5.days.ago) }
+
+    describe '.interacted_at_ago_lt' do
+      it 'return users that interacted ago is lesser than given days ago' do
+        result = BotUser.interacted_at_ago_lt(3.days.ago).map(&:id)
+
+        expect(result).to match_array [user_1_id, user_2_id]
+      end
+    end
+
+    describe '.interacted_at_ago_gt' do
+      it 'return users that interacted ago is greater than given days ago' do
+        result = BotUser.interacted_at_ago_gt(3.days.ago).map(&:id)
+
+        expect(result).to match_array [user_4_id, user_5_id]
+      end
     end
   end
 
