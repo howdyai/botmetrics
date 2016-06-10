@@ -3,7 +3,9 @@ RSpec.describe Query do
     context 'FIELDS' do
       it 'keys include' do
         expect(Queries::Slack::FIELDS.keys).to match_array %w(
-          nickname email full_name interaction_count interacted_at user_created_at)
+          nickname email full_name interaction_count
+          interacted_at interacted_at_ago user_created_at
+        )
       end
     end
   end
@@ -29,7 +31,8 @@ RSpec.describe Query do
           in_array(
             Queries::Slack::STRING_METHODS.keys |
               Queries::Slack::NUMBER_METHODS.keys |
-              Queries::Slack::DATETIME_METHODS.keys
+              Queries::Slack::DATETIME_METHODS.keys |
+              Queries::Slack::AGO_METHODS.keys
           )
       end
     end
@@ -117,6 +120,19 @@ RSpec.describe Query do
       query.is_datetime_query?
 
       expect(source).to have_received(:is_datetime_query?).with(query.field)
+    end
+  end
+
+  describe '#is_ago_query?' do
+    let(:source) { double(:query_source).as_null_object }
+
+    before { allow(Queries::Finder).to receive(:for_type) { source } }
+
+    it 'works' do
+      query = Query.new(provider: 'provider')
+      query.is_ago_query?
+
+      expect(source).to have_received(:is_ago_query?).with(query.field)
     end
   end
 

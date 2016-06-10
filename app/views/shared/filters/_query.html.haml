@@ -10,6 +10,8 @@
       = f.input :method, label: false, collection: f.object.number_methods.invert,   include_blank: false
     .datetime-method.hide
       = f.input :method, label: false, collection: f.object.datetime_methods.invert, include_blank: false
+    .ago-method.hide
+      = f.input :method, label: false, collection: f.object.ago_methods.invert, include_blank: false
   .col-sm-6
     .equal-value.hide
       = f.input :value,  label: false
@@ -21,6 +23,11 @@
           %span.query-and AND
         .col-sm-5
           = f.input :max_value, label: false
+    .ago-value.hide
+      .col-sm-11
+        .input-group
+          = f.input :value, label: false
+          %span.input-group-addon days ago
 
     = link_to_remove_association f, wrapper_class: 'query' do
       = icon('times')

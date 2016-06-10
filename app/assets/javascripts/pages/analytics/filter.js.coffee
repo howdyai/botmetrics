@@ -38,18 +38,28 @@ class App.Filter extends App.AppBase
 
             disable(parent, '.number-method')
             disable(parent, '.datetime-method')
+            disable(parent, '.ago-method')
 
           when $(@).val() in ['interaction_count']
             enable(parent, '.number-method')
 
             disable(parent, '.string-method')
             disable(parent, '.datetime-method')
+            disable(parent, '.ago-method')
 
           when $(@).val() in ['interacted_at', 'user_created_at']
             enable(parent, '.datetime-method')
 
             disable(parent, '.string-method')
             disable(parent, '.number-method')
+            disable(parent, '.ago-method')
+
+          when $(@).val() in ['interacted_at_ago']
+            enable(parent, '.ago-method')
+
+            disable(parent, '.string-method')
+            disable(parent, '.number-method')
+            disable(parent, '.datetime-method')
 
         $("[name$='[method]']:visible").change()
 
@@ -59,6 +69,11 @@ class App.Filter extends App.AppBase
           when $(@).val() in ['between']
             enable(parent, '.range-value')
             disable(parent, '.equal-value')
+
+          when $(@).val() in ['lesser_than', 'greater_than']
+            enable(parent, '.ago-value')
+            disable(parent, '.equal-value')
+            disable(parent, '.range-value')
 
           else
             enable(parent, '.equal-value')

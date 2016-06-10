@@ -5,6 +5,7 @@ module Queries
     STRING_METHODS   = {}
     NUMBER_METHODS   = {}
     DATETIME_METHODS = {}
+    AGO_METHODS      = {}
 
     def is_string_query?(field)
       false
@@ -15,6 +16,10 @@ module Queries
     end
 
     def is_datetime_query?(field)
+      false
+    end
+
+    def is_ago_query?(field)
       false
     end
 
@@ -32,6 +37,10 @@ module Queries
 
     def datetime_methods
       DATETIME_METHODS
+    end
+
+    def ago_methods
+      AGO_METHODS
     end
   end
 end
