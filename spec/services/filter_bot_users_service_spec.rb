@@ -85,6 +85,73 @@ RSpec.describe FilterBotUsersService do
             expect(service.scope.map(&:id)).to match_array [one_week_user.id]
           end
         end
+
+        context 'sort' do
+          let(:query_set) { QuerySet.new(bot: bot, instances_scope: :legit, time_zone: user.timezone, queries: queries)}
+
+          def exercise
+            FilterBotUsersService.new(query_set).scope
+          end
+
+          context 'need to sort' do
+            let(:queries) { [Query.new(provider: provider, field: :nickname, method: :contains, value: 'sean')] }
+
+            before do
+              create(:messages_to_bot_event, bot_instance_id: instance_1.id, bot_user_id: bot_user_2.id, created_at: 3.days.ago)
+            end
+
+            it 'invokes BotUser.order_by_last_event_at' do
+              allow(BotUser).to receive(:order_by_last_event_at) { double(includes: true) }
+
+              exercise
+
+              expect(BotUser).to have_received(:order_by_last_event_at)
+            end
+          end
+
+          context 'no need to sort for interacted_at between' do
+            let(:queries) { [Query.new(provider: provider, field: :interacted_at, method: :between, min_value: 4.days.ago, max_value: 2.days.ago)] }
+
+            before do
+              create(:messages_to_bot_event, bot_instance_id: instance_1.id, bot_user_id: bot_user_1.id, created_at: 3.days.ago)
+            end
+
+            it 'returns' do
+              expect(BotUser).to_not receive(:order_by_last_event_at)
+
+              exercise
+            end
+          end
+
+          context 'no need to sort for interacted at ago lesser than' do
+            let(:queries) { [Query.new(provider: provider, field: :interacted_at_ago, method: :lesser_than, value: 3.days.ago)] }
+
+            before do
+              create(:messages_to_bot_event, bot_user_id: bot_user_1.id, created_at: 2.days.ago)
+            end
+
+            it 'returns' do
+              expect(BotUser).to_not receive(:order_by_last_event_at)
+
+              exercise
+            end
+          end
+
+          context 'no need to sort for interacted at ago greater than' do
+            let(:queries) { [Query.new(provider: provider, field: :interacted_at_ago, method: :greater_than, value: "3")] }
+
+            before do
+              travel_to Time.current
+              create(:messages_to_bot_event, bot_user_id: bot_user_1.id, created_at: 4.days.ago)
+            end
+
+            it 'returns' do
+              expect(BotUser).to_not receive(:order_by_last_event_at)
+
+              exercise
+            end
+          end
+        end
       end
     end
   end

@@ -14,7 +14,11 @@ class FilterBotUsersService
       collection = chain_to(collection, query)
     end
 
-    sort(collection)
+    if no_need_to_sort?(collection)
+      collection.includes(:bot_instance)
+    else
+      sort(collection)
+    end
   end
 
   private
@@ -29,6 +33,8 @@ class FilterBotUsersService
           chain_with_number_query(collection, query)
         when query.is_datetime_query?
           chain_with_datetime_query(collection, query)
+        when query.is_ago_query?
+          chain_with_ago_query(collection, query)
         else
           collection
       end
@@ -77,6 +83,25 @@ class FilterBotUsersService
           query.max_value.in_time_zone(query_set.time_zone)
         )
       end
+    end
+
+    def chain_with_ago_query(collection, query)
+      beginning_of_that_days_ago = (
+        Time.current.in_time_zone(query_set.time_zone) - (query.value.to_i).days
+      ).beginning_of_day
+
+      case
+        when query.method == 'lesser_than'
+          collection.interacted_at_ago_lt(beginning_of_that_days_ago)
+        when query.method == 'greater_than'
+          collection.interacted_at_ago_gt(beginning_of_that_days_ago)
+      end
+    end
+
+    def no_need_to_sort?(collection)
+      return true if collection.blank?
+
+      collection.any? { |element| element.respond_to?(:last_event_at) }
     end
 
     def sort(collection)
