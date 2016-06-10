@@ -55,11 +55,6 @@ RSpec.describe BotUser do
       it { expect(BotUser.interaction_count_betw(0, 5)).to eq [bot_user_1, bot_user_2] }
     end
 
-    describe '#interacted_at_betw' do
-      it { expect(BotUser.interacted_at_betw(6.days.ago, 4.days.ago)).to eq [bot_user_1] }
-      it { expect(BotUser.interacted_at_betw(3.days.ago, 1.day.ago)).to eq [bot_user_2] }
-    end
-
     describe '.user_signed_up_betw' do
       let(:one_week_user) { create(:bot_user, created_at: 7.days.ago) }
       it { expect(BotUser.user_signed_up_betw(8.days.ago, 5.days.ago)).to eq [one_week_user] }
@@ -70,7 +65,7 @@ RSpec.describe BotUser do
     end
   end
 
-  context 'ago scopes' do
+  context 'interacted related scopes' do
     let(:timezone) { 'Pacific Time (US & Canada)' }
 
     def create_bot_user_with_event(days_ago:)
@@ -87,6 +82,14 @@ RSpec.describe BotUser do
     let!(:user_3_id) { create_bot_user_with_event(days_ago: 3.days.ago) }
     let!(:user_4_id) { create_bot_user_with_event(days_ago: 4.days.ago) }
     let!(:user_5_id) { create_bot_user_with_event(days_ago: 5.days.ago) }
+
+    describe '.interacted_at_betw' do
+      it 'return users that interacted ago is within given range' do
+        result = BotUser.interacted_at_betw(3.days.ago - 1.second, 3.days.ago + 1.second).map(&:id)
+
+        expect(result).to match_array [user_3_id]
+      end
+    end
 
     describe '.interacted_at_ago_lt' do
       it 'return users that interacted ago is lesser than given days ago' do

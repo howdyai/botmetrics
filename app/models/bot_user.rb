@@ -51,9 +51,14 @@ class BotUser < ActiveRecord::Base
   end
 
   scope :interacted_at_betw, ->(min, max) do
-    joins(:events).
-      where(events: { event_type: 'message', is_for_bot: true }).
-      where('events.created_at BETWEEN ? AND ?', min, max).
+    select("bot_users.*, COALESCE(events.last_event_at, NULL) AS last_event_at").
+      joins(
+        "LEFT JOIN (
+          SELECT bot_user_id, MAX(events.created_at) AS last_event_at FROM events
+          WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id
+        ) events ON events.bot_user_id = bot_users.id").
+      where('events.last_event_at BETWEEN ? AND ?', min, max).
+      order("last_event_at DESC NULLS LAST").
       uniq
   end
 
