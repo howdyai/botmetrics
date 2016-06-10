@@ -62,26 +62,26 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
-  scope :interacted_at_ago_lt, ->(number_of_days_ago_in_time_zone) do
+  scope :interacted_at_ago_lt, ->(days_ago) do
     select("bot_users.*, COALESCE(events.last_event_at, NULL) AS last_event_at").
       joins(
         "LEFT JOIN (
           SELECT bot_user_id, MAX(events.created_at) AS last_event_at FROM events
           WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id
         ) events ON events.bot_user_id = bot_users.id").
-      where('events.last_event_at > ?', number_of_days_ago_in_time_zone).
+      where('events.last_event_at > ?', days_ago).
       order("last_event_at DESC NULLS LAST").
       uniq
   end
 
-  scope :interacted_at_ago_gt, ->(number_of_days_ago_in_time_zone) do
+  scope :interacted_at_ago_gt, ->(days_ago) do
     select("bot_users.*, COALESCE(events.last_event_at, NULL) AS last_event_at").
       joins(
         "LEFT JOIN (
           SELECT bot_user_id, MAX(events.created_at) AS last_event_at FROM events
           WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id
         ) events ON events.bot_user_id = bot_users.id").
-      where('events.last_event_at < ?', number_of_days_ago_in_time_zone).
+      where('events.last_event_at < ?', days_ago).
       order("last_event_at DESC NULLS LAST").
       uniq
   end
