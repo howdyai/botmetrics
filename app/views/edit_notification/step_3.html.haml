@@ -46,7 +46,6 @@
               = label_tag do
                 = radio_button_tag :send, :now, :checked
                 %strong ASAP
-                Your message will be sent to customers within 30 minutes of matching your criteria.
 
             %hr
 
@@ -54,7 +53,6 @@
               = label_tag do
                 = radio_button_tag :send, :later
                 %strong SCHEDULED
-                Improve your conversion rates by delaying messages until the indicated time.
 
             .scheduler-options
               = f.input :scheduled_at, label: false, placeholder: 'Select a Date Time', input_html: { readonly: :readonly }
