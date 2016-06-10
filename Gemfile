@@ -11,7 +11,7 @@ gem 'pg',    '~> 0.18.4'
 gem 'turbolinks',    '~> 5.0.0.beta'
 gem 'excon',         '~> 0.49.0'
 gem 'with_advisory_lock',       '~> 3.0.0'
-
+gem 'local_time',               '~> 1.0.3'
 gem 'haml',                     '~> 4.0.6'
 gem 'sass-rails',               '~> 5.0.1'
 gem 'bootstrap-sass',           '~> 3.3.1'

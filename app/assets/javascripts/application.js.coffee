@@ -11,6 +11,7 @@
 #= require chartkick
 #= require jsUri/Uri
 #= require cocoon
+#= require local_time
 
 #= require utils
 #= require pages/base
