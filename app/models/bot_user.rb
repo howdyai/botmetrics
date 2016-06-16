@@ -62,7 +62,7 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
-  scope :interacted_at_ago_lt, ->(days_ago) do
+  scope :interacted_at_lt, ->(days_ago) do
     select("bot_users.*, COALESCE(events.last_event_at, NULL) AS last_event_at").
       joins(
         "LEFT JOIN (
@@ -74,7 +74,7 @@ class BotUser < ActiveRecord::Base
       uniq
   end
 
-  scope :interacted_at_ago_gt, ->(days_ago) do
+  scope :interacted_at_gt, ->(days_ago) do
     select("bot_users.*, COALESCE(events.last_event_at, NULL) AS last_event_at").
       joins(
         "LEFT JOIN (
@@ -84,6 +84,14 @@ class BotUser < ActiveRecord::Base
       where('events.last_event_at < ?', days_ago).
       order("last_event_at DESC NULLS LAST").
       uniq
+  end
+
+  scope :user_signed_up_gt, ->(days_ago) do
+    where('created_at < ?', days_ago)
+  end
+
+  scope :user_signed_up_lt, ->(days_ago) do
+    where('created_at > ?', days_ago)
   end
 
   scope :user_signed_up_betw, ->(min, max) do

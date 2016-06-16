@@ -60,6 +60,18 @@ RSpec.describe BotUser do
       it { expect(BotUser.user_signed_up_betw(8.days.ago, 5.days.ago)).to eq [one_week_user] }
     end
 
+    describe '.user_signed_up_gt' do
+      let(:one_week_user) { create(:bot_user, created_at: 7.days.ago) }
+
+      it { expect(BotUser.user_signed_up_gt(5.days.ago)).to eq [one_week_user] }
+    end
+
+    describe '.user_signed_up_lt' do
+      let(:one_week_user) { create(:bot_user, created_at: 7.days.ago) }
+
+      it { expect(BotUser.user_signed_up_lt(5.days.ago)).to eq [bot_user_1, bot_user_2] }
+    end
+
     describe '#order_by_last_event_at' do
       it { expect(BotUser.order_by_last_event_at(BotUser.all)).to eq [bot_user_2, bot_user_1] }
     end
@@ -91,17 +103,17 @@ RSpec.describe BotUser do
       end
     end
 
-    describe '.interacted_at_ago_lt' do
-      it 'return users that interacted ago is lesser than given days ago' do
-        result = BotUser.interacted_at_ago_lt(3.days.ago).map(&:id)
+    describe '.interacted_at_lt' do
+      it 'return users that interacted is lesser than given days ago' do
+        result = BotUser.interacted_at_lt(3.days.ago).map(&:id)
 
         expect(result).to match_array [user_1_id, user_2_id]
       end
     end
 
-    describe '.interacted_at_ago_gt' do
-      it 'return users that interacted ago is greater than given days ago' do
-        result = BotUser.interacted_at_ago_gt(3.days.ago).map(&:id)
+    describe '.interacted_at_gt' do
+      it 'return users that interacted is greater than given days ago' do
+        result = BotUser.interacted_at_gt(3.days.ago).map(&:id)
 
         expect(result).to match_array [user_4_id, user_5_id]
       end

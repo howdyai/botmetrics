@@ -36,6 +36,7 @@ class App.Filter extends App.AppBase
 
       $(document).on 'change', "[name$='[field]']", ->
         parent = $(@).closest('.query')
+
         switch
           when $(@).val() in ['nickname', 'email', 'full_name']
             enable(parent, '.string-method')
@@ -58,13 +59,6 @@ class App.Filter extends App.AppBase
             disable(parent, '.number-method')
             disable(parent, '.ago-method')
 
-          when $(@).val() in ['interacted_at_ago']
-            enable(parent, '.ago-method')
-
-            disable(parent, '.string-method')
-            disable(parent, '.number-method')
-            disable(parent, '.datetime-method')
-
         $("[name$='[method]']:visible").change()
 
       $(document).on 'change', "[name$='[method]']", ->
@@ -72,16 +66,19 @@ class App.Filter extends App.AppBase
         field  = $("[name$='[field]']", parent)
 
         switch
-          when field.val() in ['interacted_at_ago']
-            enable(parent, '.ago-value')
-            disable(parent, '.equal-value')
-            disable(parent, '.range-value')
-
           when $(@).val() in ['between']
             enable(parent, '.range-value')
             disable(parent, '.equal-value')
             disable(parent, '.ago-value')
-
+          when $(@).val() in ['lesser_than', 'greater_than']
+            if field.val() in ['interacted_at', 'user_created_at']
+              enable(parent, '.ago-value')
+              disable(parent, '.equal-value')
+              disable(parent, '.range-value')
+            else
+              enable(parent, '.equal-value')
+              disable(parent, '.range-value')
+              disable(parent, '.ago-value')
           else
             enable(parent, '.equal-value')
             disable(parent, '.range-value')

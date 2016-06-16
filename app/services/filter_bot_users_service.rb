@@ -34,8 +34,6 @@ class FilterBotUsersService
           chain_with_number_query(collection, query)
         when query.is_datetime_query?
           chain_with_datetime_query(collection, query)
-        when query.is_ago_query?
-          chain_with_ago_query(collection, query)
         else
           collection
       end
@@ -73,29 +71,25 @@ class FilterBotUsersService
 
     # Currently only for interacted_at and BotUser's created_at
     def chain_with_datetime_query(collection, query)
-      if query.field == 'user_created_at'
-        collection.user_signed_up_betw(
+      case query.method
+      when 'between'
+        method = query.field == 'user_created_at' ? :user_signed_up_betw : :interacted_at_betw
+        collection.send(method,
           query.min_value.in_time_zone(query_set.time_zone),
           query.max_value.in_time_zone(query_set.time_zone)
         )
-      else
-        collection.interacted_at_betw(
-          query.min_value.in_time_zone(query_set.time_zone),
-          query.max_value.in_time_zone(query_set.time_zone)
-        )
-      end
-    end
+      when 'lesser_than', 'greater_than'
+        beginning_of_that_days_ago = (
+          Time.current.in_time_zone(query_set.time_zone) - (query.value.to_i).days
+        ).beginning_of_day
 
-    def chain_with_ago_query(collection, query)
-      beginning_of_that_days_ago = (
-        Time.current.in_time_zone(query_set.time_zone) - (query.value.to_i).days
-      ).beginning_of_day
+        method = if query.field == 'user_created_at'
+          query.method == 'greater_than' ? :user_signed_up_gt : :user_signed_up_lt
+        elsif query.field == 'interacted_at'
+          query.method == 'greater_than' ? :interacted_at_gt: :interacted_at_lt
+        end
 
-      case
-        when query.method == 'lesser_than'
-          collection.interacted_at_ago_lt(beginning_of_that_days_ago)
-        when query.method == 'greater_than'
-          collection.interacted_at_ago_gt(beginning_of_that_days_ago)
+        collection.send(method, beginning_of_that_days_ago)
       end
     end
 

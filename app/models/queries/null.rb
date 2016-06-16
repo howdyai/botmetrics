@@ -19,10 +19,6 @@ module Queries
       false
     end
 
-    def is_ago_query?(field)
-      false
-    end
-
     def fields
       FIELDS
     end
@@ -37,10 +33,6 @@ module Queries
 
     def datetime_methods
       DATETIME_METHODS
-    end
-
-    def ago_methods
-      AGO_METHODS
     end
   end
 end

@@ -5,8 +5,7 @@ module Queries
       'email'             => 'Email',
       'full_name'         => 'Full Name',
       'interaction_count' => 'Number of Interactions with Bot',
-      'interacted_at'     => 'Interacted With Bot',
-      'interacted_at_ago' => 'Last Interacted With Bot',
+      'interacted_at'     => 'Last Interacted With Bot',
       'user_created_at'   => 'Signed Up',
     }
 
@@ -23,12 +22,9 @@ module Queries
     }
 
     DATETIME_METHODS = {
-      'between'   => 'Between'
-    }
-
-    AGO_METHODS = {
-      'lesser_than'  => 'Lesser Than',
-      'greater_than' => 'Greater Than',
+      'between'   => 'Between',
+      'lesser_than'  => 'Less Than',
+      'greater_than' => 'More Than'
     }
 
     def is_string_query?(field)
@@ -41,10 +37,6 @@ module Queries
 
     def is_datetime_query?(field)
       field.in?(['interacted_at', 'user_created_at'])
-    end
-
-    def is_ago_query?(field)
-      field.in?(['interacted_at_ago'])
     end
 
     def fields
@@ -61,10 +53,6 @@ module Queries
 
     def datetime_methods
       DATETIME_METHODS
-    end
-
-    def ago_methods
-      AGO_METHODS
     end
   end
 end
