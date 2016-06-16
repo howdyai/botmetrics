@@ -30,6 +30,10 @@ class App.Filter extends App.AppBase
           }
         )
 
+      disable_datepicker = (parent, selector) ->
+        $(selector, parent).off()
+        $(selector, parent).val('')
+
       $(document).on 'change', "[name$='[field]']", ->
         parent = $(@).closest('.query')
         switch
@@ -83,8 +87,11 @@ class App.Filter extends App.AppBase
             disable(parent, '.range-value')
             disable(parent, '.ago-value')
 
-        if $(parent).find("[name$='[field]']").val() in ['interacted_at', 'user_created_at'] && $(this).val() == 'between'
-          enable_datepicker(parent, "[name$='_value]']:visible")
+        if $(this).val() == 'between'
+          if field.val() in ['interacted_at', 'user_created_at']
+            enable_datepicker(parent, "[name$='_value]']:visible")
+          else
+            disable_datepicker(parent, "[name$='_value]']:visible")
 
       $('.query-set').on 'cocoon:after-insert', ->
         $("[name$='[field]']:visible").change()
