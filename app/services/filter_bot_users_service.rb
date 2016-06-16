@@ -6,24 +6,25 @@ class FilterBotUsersService
   end
 
   def scope
-    collection = query_set.initial_user_collection
+    bot_user_ids = scoped_users.map(&:id)
 
     query_set.queries.each do |query|
       next if query.value.blank? && (query.min_value.blank? || query.max_value.blank?)
 
-      collection = chain_to(collection, query)
+      collection   = chain_to(scoped_users, query)
+      bot_user_ids = bot_user_ids & collection.map(&:id)
     end
 
-    if no_need_to_sort?(collection)
-      collection.includes(:bot_instance)
-    else
-      sort(collection)
-    end
+    sort(bot_user_ids)
   end
 
   private
 
     attr_reader :query_set
+
+    def scoped_users
+      query_set.initial_user_collection
+    end
 
     def chain_to(collection, query)
       case
@@ -96,12 +97,6 @@ class FilterBotUsersService
         when query.method == 'greater_than'
           collection.interacted_at_ago_gt(beginning_of_that_days_ago)
       end
-    end
-
-    def no_need_to_sort?(collection)
-      return true if collection.blank?
-
-      collection.any? { |element| element.respond_to?(:last_event_at) }
     end
 
     def sort(collection)
