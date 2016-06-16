@@ -24,10 +24,11 @@
         .col-sm-5
           = f.input :max_value, label: false
     .ago-value.hide
-      .col-sm-11
-        .input-group
-          = f.input :value, label: false
-          %span.input-group-addon days ago
+      .row
+        .col-sm-12
+          .input-group
+            = f.input_field :value, class: 'form-control'
+            %span.input-group-addon days ago
 
     = link_to_remove_association f, wrapper_class: 'query' do
       = icon('times')

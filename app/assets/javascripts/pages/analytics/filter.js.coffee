@@ -65,19 +65,23 @@ class App.Filter extends App.AppBase
 
       $(document).on 'change', "[name$='[method]']", ->
         parent = $(@).closest('.query')
-        switch
-          when $(@).val() in ['between']
-            enable(parent, '.range-value')
-            disable(parent, '.equal-value')
+        field  = $("[name$='[field]']", parent)
 
-          when $(@).val() in ['lesser_than', 'greater_than']
+        switch
+          when field.val() in ['interacted_at_ago']
             enable(parent, '.ago-value')
             disable(parent, '.equal-value')
             disable(parent, '.range-value')
 
+          when $(@).val() in ['between']
+            enable(parent, '.range-value')
+            disable(parent, '.equal-value')
+            disable(parent, '.ago-value')
+
           else
             enable(parent, '.equal-value')
             disable(parent, '.range-value')
+            disable(parent, '.ago-value')
 
         if $(parent).find("[name$='[field]']").val() in ['interacted_at', 'user_created_at'] && $(this).val() == 'between'
           enable_datepicker(parent, "[name$='_value]']:visible")

@@ -4,7 +4,7 @@
 
   .add_query.text-center
     = link_to_add_association 'Add AND Clause', f, :queries, partial: 'shared/filters/query', class: 'btn btn-warning',
-            wrap_object: Proc.new { |query| query.assign_attributes(default_query) }
+            wrap_object: Proc.new { |query| query.assign_attributes(default_query); query }
 
   = f.submit 'Search'
 
