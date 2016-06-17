@@ -16,6 +16,6 @@
             %td= bot_user.nickname
             %td= bot_user.email
             %td= bot_user.bot_instance.team_name
-            %td= local_time_ago(bot_user.created_at)
-            %td= bot_user.last_event_at.present? ? local_time_ago(bot_user.last_event_at) : '-'
+            %td= "#{time_ago_in_words(bot_user.created_at)} ago"
+            %td= bot_user.last_event_at.present? ? "#{time_ago_in_words(bot_user.last_event_at)} ago" : '-'
     = will_paginate tableized, renderer: BootstrapPagination::Rails
