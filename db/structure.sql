@@ -126,6 +126,8 @@ CREATE TABLE bot_users (
     updated_at timestamp without time zone NOT NULL,
     bot_instance_id integer NOT NULL,
     provider character varying NOT NULL,
+    last_interacted_with_bot_at timestamp without time zone,
+    bot_interaction_count integer DEFAULT 0 NOT NULL,
     CONSTRAINT valid_provider_on_bot_users CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
@@ -1014,4 +1016,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160608100732');
 INSERT INTO schema_migrations (version) VALUES ('20160608110017');
 
 INSERT INTO schema_migrations (version) VALUES ('20160616234620');
+
+INSERT INTO schema_migrations (version) VALUES ('20160620162429');
 
