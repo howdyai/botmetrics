@@ -23,7 +23,7 @@ class RelaxService
         Rails.logger.error "couldn't find bot instance for #{event.inspect}"
       end
 
-      bi.events.create!(
+      e = bi.events.create(
         user: user,
         event_attributes: {
           channel: event.channel_uid,
@@ -35,6 +35,11 @@ class RelaxService
         provider: bi.provider,
         event_type: 'message'
       )
+
+      if e.persisted? && e.is_for_bot?
+        user.increment!(:bot_interaction_count)
+        user.update_attribute(:last_interacted_with_bot_at, Time.now)
+      end
     when 'reaction_added'
       user = find_bot_user_from(bi, event)
       return if user.blank?
