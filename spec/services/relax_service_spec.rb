@@ -178,6 +178,7 @@ RSpec.describe RelaxService do
           expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
+          expect(e.text).to be_nil
         end
 
         it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -210,6 +211,7 @@ RSpec.describe RelaxService do
             expect(e.is_from_bot).to be_truthy
             expect(e.is_im).to be_falsey
             expect(e.is_for_bot).to be_falsey
+            expect(e.text).to eql 'thanks'
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -242,6 +244,7 @@ RSpec.describe RelaxService do
           expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_truthy
           expect(e.is_for_bot).to be_truthy
+          expect(e.text).to eql 'thanks'
         end
 
         it 'should change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -275,6 +278,7 @@ RSpec.describe RelaxService do
             expect(e.is_im).to be_truthy
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
+            expect(e.text).to eql 'thanks'
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -307,6 +311,7 @@ RSpec.describe RelaxService do
           expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_truthy
+          expect(e.text).to eql 'thanks <@UNESTOR1>!'
         end
 
         it 'should change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -340,6 +345,7 @@ RSpec.describe RelaxService do
             expect(e.is_im).to be_falsey
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
+            expect(e.text).to eql 'thanks <@UNESTOR1>!'
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do

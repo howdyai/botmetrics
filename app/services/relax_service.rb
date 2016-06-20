@@ -32,6 +32,7 @@ class RelaxService
         is_for_bot: is_for_bot?(event),
         is_im: event.im,
         is_from_bot: event.relax_bot_uid == event.user_uid,
+        text: is_for_bot?(event) || event.relax_bot_uid == event.user_uid ? event.text : nil,
         provider: bi.provider,
         event_type: 'message'
       )
