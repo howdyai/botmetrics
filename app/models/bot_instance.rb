@@ -14,9 +14,9 @@ class BotInstance < ActiveRecord::Base
 
   validates_with BotInstanceAttributesValidator
 
-  scope :legit,     -> { where("state <> ?", 'pending') }
-  scope :enabled,   -> { where("state = ?", 'enabled') }
-  scope :disabled,  -> { where("state = ?", 'disabled') }
+  scope :legit,     -> { where("bot_instances.state <> ?", 'pending') }
+  scope :enabled,   -> { where("bot_instances.state = ?", 'enabled') }
+  scope :disabled,  -> { where("bot_instances.state = ?", 'disabled') }
 
   delegate :owners, to: :bot
 
