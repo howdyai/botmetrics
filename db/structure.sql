@@ -285,7 +285,8 @@ CREATE TABLE notifications (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     scheduled_at character varying,
-    uid character varying NOT NULL
+    uid character varying NOT NULL,
+    recurring boolean DEFAULT false NOT NULL
 );
 
 
@@ -1021,4 +1022,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160616234620');
 INSERT INTO schema_migrations (version) VALUES ('20160620162429');
 
 INSERT INTO schema_migrations (version) VALUES ('20160620213719');
+
+INSERT INTO schema_migrations (version) VALUES ('20160621155032');
 
