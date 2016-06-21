@@ -26,7 +26,7 @@
                 - if notification.send_immediately?
                   = notification.created_at.strftime('%b %d, %Y %l:%M %p')
                 - else
-                  = notification.scheduled_at
+                  = notification.recurring? ? "#{notification.scheduled_at} every day" : notification.scheduled_at
               %td
                 - if notification.sent?
                   .text-muted

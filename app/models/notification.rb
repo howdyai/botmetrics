@@ -38,6 +38,6 @@ class Notification < ActiveRecord::Base
   end
 
   def schedule_at_in_past?
-    scheduled_at.in_time_zone('Pacific/Apia').past?
+    !self.recurring? && scheduled_at.in_time_zone('Pacific/Apia').past?
   end
 end
