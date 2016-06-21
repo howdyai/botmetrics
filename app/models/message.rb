@@ -36,8 +36,7 @@ class Message < ActiveRecord::Base
   end
 
   private
-
-    def duplicate_provider_from_bot_instance
-      self.provider = bot_instance.provider
-    end
+  def duplicate_provider_from_bot_instance
+    self.provider = bot_instance.provider
+  end
 end

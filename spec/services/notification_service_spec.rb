@@ -11,7 +11,7 @@ RSpec.describe NotificationService do
 
   let(:query_set)    { build(:query_set, :with_slack_queries, bot: bot) }
 
-  before { allow(FilterBotUsersService).to receive_message_chain(:new, :scope) { [bot_user] } }
+  before { allow(FilterBotUsersService).to receive_message_chain(:new, :scope) { BotUser.where(id: bot_user.id) } }
 
   describe '#send_now' do
     let(:notification) { create(:notification, query_set: query_set) }
@@ -22,12 +22,14 @@ RSpec.describe NotificationService do
       it 'recreates and sends messages' do
         expect {
           service.send_now
-        }.to_not change(Message, :count)
+          notification.reload
+        }.to_not change(notification.messages, :count)
 
         expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
         # Test that message was deleted and recreated
-        expect(Message.last.id).to_not         eq message.id
+        new_message = notification.messages.last
+        expect(new_message.id).to_not         eq message.id
         expect(notification.messages.count).to eq 1
 
         expect(SendMessageJob).to have_received(:perform_async).with(Message.last.id)
@@ -38,11 +40,12 @@ RSpec.describe NotificationService do
       it 'creates and sends messages' do
         expect {
           service.send_now
-        }.to change(Message, :count).by(1)
+          notification.reload
+        }.to change(notification.messages, :count).by(1)
 
         expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
-        message = Message.last
+        message = notification.messages.last
         expect(message.team_id).to eq bot_user.bot_instance.team_id
         expect(message.user).to eq bot_user.uid
         expect(message.text).to eq notification.content
@@ -58,18 +61,82 @@ RSpec.describe NotificationService do
     context 'notification has messages' do
       let!(:message) { create(:message, :to_user, bot_instance: bot_instance, notification: notification) }
 
-      it 'recreates and enqueues messages' do
-        expect {
-          service.enqueue_messages
-        }.to_not change(Message, :count)
+      context "message hasn't been sent yet" do
+        it 'recreates and enqueues messages' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to_not change(notification.messages, :count)
 
-        expect(FilterBotUsersService).to have_received(:new).with(query_set)
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
-        # Test that message was deleted and recreated
-        expect(Message.last.id).to_not         eq message.id
-        expect(notification.messages.count).to eq 1
+          # Test that message was deleted and recreated
+          new_message = notification.messages.last
+          expect(new_message.id).to_not          eq message.id
+          expect(notification.messages.count).to eq 1
 
-        expect(SendMessageJob).to_not have_received(:perform_async)
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
+
+      context "message hasn't been sent yet (but is meant for the user returned by FilterBotUsersService)" do
+        before { message.update_attributes(message_attributes: { user: bot_user.uid, team_id: 'T123' }) }
+
+        it 'recreates and enqueues messages' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to_not change(notification.messages, :count)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
+          # Test that message was deleted and recreated
+          new_message = notification.messages.last
+          expect(new_message.id).to_not         eq message.id
+          expect(new_message.user).to eql       bot_user.uid
+          expect(notification.messages.count).to eq 1
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
+
+      context "message has been sent already" do
+        before { message.update_attribute(:sent_at, 2.days.ago) }
+
+        it 'recreates and enqueues messages' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to change(notification.messages, :count).by(1)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
+          # Test that message was deleted and recreated
+          new_message = notification.messages.last
+          expect(new_message.id).to_not         eq message.id
+          expect(notification.messages.count).to eq 2
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
+
+      context "message has been sent already to the user returned by FilterBotUsersService" do
+        before { message.update_attributes(sent_at: 2.days.ago, message_attributes: { user: bot_user.uid, team_id: 'T123' }) }
+
+        it "doesn't add any new messages" do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to_not change(notification.messages, :count)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+          new_message = notification.messages.last
+
+          expect(new_message.id).to         eq message.id
+          expect(notification.messages.count).to eq 1
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
       end
     end
 
@@ -77,11 +144,12 @@ RSpec.describe NotificationService do
       it 'creates and enqueues messages' do
         expect {
           service.enqueue_messages
-        }.to change(Message, :count).by(1)
+          notification.reload
+        }.to change(notification.messages, :count).by(1)
 
         expect(FilterBotUsersService).to have_received(:new).with(query_set)
 
-        message = Message.last
+        message = notification.messages.last
         expect(message.team_id).to eq bot_user.bot_instance.team_id
         expect(message.user).to eq bot_user.uid
         expect(message.text).to eq notification.content

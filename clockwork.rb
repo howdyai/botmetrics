@@ -10,4 +10,8 @@ module Clockwork
   every(5.minutes, 'DailyReport.Send') do
     SendDailyReportsJob.perform_async
   end
+
+  every(5.minutes, 'Notification.recurring_send') do
+    SendRecurringNotificationsJob.perform_async
+  end
 end
