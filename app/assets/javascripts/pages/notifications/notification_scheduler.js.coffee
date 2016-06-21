@@ -11,12 +11,28 @@ class App.NotificationScheduler extends App.AppBase
 
     $(document).ready ->
       $('input[id=send_now]').on 'click', ->
-        $('#notification_scheduled_at').val('').attr('readonly', 'readonly')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('readonly', 'readonly')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('readonly', 'readonly')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
+        $('input[name="notification[recurring]"]').val(false)
 
-      $('input[id=send_later]').on 'click', ->
-        $('#notification_scheduled_at').removeAttr('readonly')
+      $('input[id=send_later_once]').on 'click', ->
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').removeAttr('readonly')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('readonly', 'readonly')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').removeAttr('disabled')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
+        $('input[name="notification[recurring]"]').val(false)
 
-      $('#notification_scheduled_at').daterangepicker(
+      $('input[id=send_later_recurring]').on 'click', ->
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('readonly', 'readonly')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('readonly')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('disabled')
+
+        $('input[name="notification[recurring]"]').val(true)
+
+      $('.scheduler-options.once input[name="notification[scheduled_at]"]').daterangepicker(
         {
           autoUpdateInput: false,
           singleDatePicker: true,
@@ -32,18 +48,16 @@ class App.NotificationScheduler extends App.AppBase
         }
       )
 
-      $('#notification_scheduled_at').on 'apply.daterangepicker hide.daterangepicker', (ev, picker)->
+      $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').timepicker()
+
+      $('.scheduler-options.once input[name="notification[scheduled_at]"]').on 'apply.daterangepicker hide.daterangepicker', (ev, picker)->
         $(this).val picker.startDate.format('LLL')
 
-      $('#notification_scheduled_at').on 'cancel.daterangepicker', (ev, picker)->
+      $('.scheduler-options.once input[name="notification[scheduled_at]"]').on 'cancel.daterangepicker', (ev, picker)->
         $(this).val ''
 
-      $('.clear-scheduler').on 'click', (e)->
-        $('#notification_scheduled_at').val('')
-        e.preventDefault()
-
-      if($('#notification_scheduled_at').val() != undefined && $('#notification_scheduled_at').val() != '')
-        $('input[id=send_later]').click()
+      #if($('#notification_notification[scheduled_at]').val() != undefined && $('#notification_notification[scheduled_at]').val() != '')
+        #$('input[id=send_later]').click()
 
   getMinDate: ->
     minDate = new Date();

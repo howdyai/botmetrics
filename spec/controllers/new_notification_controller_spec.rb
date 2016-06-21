@@ -137,7 +137,7 @@ RSpec.describe NewNotificationController do
       end
 
       context 'send now' do
-        let(:params) { { notification: { content: 'Hello World' } } }
+        let(:params) { { notification: { content: 'Hello World', recurring: 'false' } } }
 
         it 'queues up a job' do
           do_request
@@ -150,6 +150,7 @@ RSpec.describe NewNotificationController do
             to change(Notification, :count).by(1).
             and change(QuerySet, :count).by(1)
 
+          expect(Notification.last.recurring).to be_falsey
           expect(response).to redirect_to bot_notification_path(bot, Notification.last)
           expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
@@ -166,7 +167,8 @@ RSpec.describe NewNotificationController do
           { notification:
               {
                 content: 'Hello World',
-                scheduled_at: scheduled_at
+                scheduled_at: scheduled_at,
+                recurring: 'false'
               }
           }
         end
@@ -183,7 +185,48 @@ RSpec.describe NewNotificationController do
             do_request
           }.to change(Notification, :count).by(1)
 
-          expect(Notification.last.scheduled_at).to eq scheduled_at
+          notification = Notification.last
+          expect(notification.scheduled_at).to eq scheduled_at
+          expect(notification.recurring).to be_falsey
+
+          expect(response).to redirect_to bot_notifications_path(bot)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
+        end
+
+        it 'clears the session' do
+          do_request
+
+          expect(session[:new_notification_query_set]).to be_nil
+        end
+      end
+
+      context 'send at a specific time (recurring)' do
+        let(:params) do
+          { notification:
+              {
+                content: 'Hello World',
+                scheduled_at: scheduled_at,
+                recurring: 'true'
+              }
+          }
+        end
+        let(:scheduled_at) { '9:00AM' }
+
+        it 'queues up a job' do
+          do_request
+
+          expect(EnqueueNotificationJob).to_not have_received(:perform_async)
+        end
+
+        it 'saves and redirects' do
+          expect {
+            do_request
+          }.to change(Notification, :count).by(1)
+
+          notification = Notification.last
+
+          expect(notification.scheduled_at).to eq scheduled_at
+          expect(notification.recurring).to be_truthy
 
           expect(response).to redirect_to bot_notifications_path(bot)
           expect(TrackMixpanelEventJob).to have_received(:perform_async)
@@ -198,12 +241,22 @@ RSpec.describe NewNotificationController do
     end
 
     context 'failure' do
-      let(:params) { { notification: { content: '' } } }
+      context 'no content' do
+        let(:params) { { notification: { content: '' } } }
 
-      it 'does not queue up a job' do
-        do_request
+        it 'does not queue up a job' do
+          do_request
+          expect(response).to redirect_to step_3_bot_new_notification_index_path(bot, params.slice(:notification))
+        end
+      end
 
-        expect(response).to redirect_to step_3_bot_new_notification_index_path(bot, params.slice(:notification))
+      context 'invalid recurring scheduled_at' do
+        let(:params) { { notification: { content: 'abc', scheduled_at: '13:00', recurring: true } } }
+
+        it 'does not queue up a job' do
+          do_request
+          expect(response).to redirect_to step_3_bot_new_notification_index_path(bot, params.slice(:notification))
+        end
       end
     end
   end

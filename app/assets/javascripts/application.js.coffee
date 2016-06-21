@@ -7,6 +7,7 @@
 #= require pusher-3.0/pusher-min
 #= require moment-2.13.0/moment
 #= require daterangepicker/daterangepicker
+#= require jquery-timepicker-1.11.1/jquery.timepicker
 #= require chart.js-2.0.0-beta2/Chart
 #= require chartkick
 #= require jsUri/Uri

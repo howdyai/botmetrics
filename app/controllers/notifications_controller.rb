@@ -26,16 +26,15 @@ class NotificationsController < ApplicationController
   end
 
   private
+  def find_notification
+    @notification = @bot.notifications.find_by!(uid: params[:id])
+  end
 
-    def find_notification
-      @notification = @bot.notifications.find_by!(uid: params[:id])
-    end
+  def valid_notification?
+    raise ActiveRecord::RecordNotFound if @notification.sent?
+  end
 
-    def valid_notification?
-      raise ActiveRecord::RecordNotFound if @notification.sent?
-    end
-
-    def model_params
-      params.require(:notification).permit(:content, :scheduled_at)
-    end
+  def model_params
+    params.require(:notification).permit(:content, :scheduled_at)
+  end
 end

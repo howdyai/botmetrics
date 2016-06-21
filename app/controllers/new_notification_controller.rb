@@ -55,50 +55,49 @@ class NewNotificationController < ApplicationController
   end
 
   private
+  def default_query
+    { provider: @bot.provider, field: :interaction_count, method: :greater_than, value: 1 }
+  end
 
-    def default_query
-      { provider: @bot.provider, field: :interaction_count, method: :greater_than, value: 1 }
+  def model_params
+    if params[:notification].present?
+      params.require(:notification).permit(:content, :scheduled_at, :recurring)
+    else
+      Hash.new
     end
+  end
 
-    def model_params
-      if params[:notification].present?
-        params.require(:notification).permit(:content, :scheduled_at)
-      else
-        Hash.new
-      end
+  def reset_session!
+    if params[:reset].present?
+      session.delete(:new_notification_query_set)
     end
+  end
 
-    def reset_session!
-      if params[:reset].present?
-        session.delete(:new_notification_query_set)
-      end
+  def validate_step_1!
+    if session[:new_notification_query_set].blank?
+      redirect_to step_1_bot_new_notification_index_path(@bot) and return
     end
+  end
 
-    def validate_step_1!
-      if session[:new_notification_query_set].blank?
-        redirect_to step_1_bot_new_notification_index_path(@bot) and return
-      end
+  def validate_step_2!
+    if params.dig(:notification, :content).blank?
+      redirect_to step_2_bot_new_notification_index_path(@bot, params.slice(:notification)) and return
     end
+  end
 
-    def validate_step_2!
-      if params.dig(:notification, :content).blank?
-        redirect_to step_2_bot_new_notification_index_path(@bot, params.slice(:notification)) and return
-      end
+  def send_or_queue_and_redirect
+    if @notification.send_immediately?
+      SendNotificationJob.perform_async(@notification.id)
+
+      redirect_to [@bot, @notification]
+    else
+      EnqueueNotificationJob.perform_async(@notification.id) unless @notification.recurring?
+
+      redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
     end
+  end
 
-    def send_or_queue_and_redirect
-      if @notification.send_immediately?
-        SendNotificationJob.perform_async(@notification.id)
-
-        redirect_to [@bot, @notification]
-      else
-        EnqueueNotificationJob.perform_async(@notification.id)
-
-        redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
-      end
-    end
-
-    def mixpanel_track(event, options={})
-      TrackMixpanelEventJob.perform_async(event, current_user.id, options)
-    end
+  def mixpanel_track(event, options={})
+    TrackMixpanelEventJob.perform_async(event, current_user.id, options)
+  end
 end

@@ -15,30 +15,10 @@
     %p Would you like the notification to be sent now or at a later date?
 
 .container-fluid.notifications-container
-  .row
-    .col-sm-8.col-sm-offset-2
-      - if @bot.notifications.count == 0
-        .no-notifications
-          %p
-            With notifications you can send product announcements / maintenance window announcments and so on
-            to your users. Notifications will only be sent to users
-            %strong
-              who have interacted with your bot at least once.
-          %p
-            - _time = 2.days.from_now
-            You can also schedule your notification to be sent at a specific time. For e.g. if you schedule your message to be sent at
-            = _time.strftime("%B %d, %Y 9:00AM")
-            , the notification will be sent
-            %strong
-              at 9AM in each user's timezone
-            on
-            = _time.strftime("%B %e")
-
   = simple_form_for @notification, url: bot_new_notification_index_path(@bot), method: :post  do |f|
     .row
       .col-sm-8.col-sm-offset-2
-
-        = f.input :content, input_html: { rows: 10, readonly: true }, label: 'Message'
+        = f.input :content, input_html: { rows: 10 }, label: 'Message', placeholder: 'e.g. We are proud to announce a new feature...', input_html: { readonly: :readonly }
 
         .row
           .col-sm-12
@@ -46,20 +26,32 @@
               = label_tag do
                 = radio_button_tag :send, :now, :checked
                 %strong ASAP
+                %span (for e.g. emergency announcements such as maintenance windows)
 
             %hr
 
             .radio
               = label_tag do
-                = radio_button_tag :send, :later
+                = radio_button_tag :send, :later_once
                 %strong SCHEDULED
+                %span (for e.g. one-off product announcements that you would like to make at a specified time)
 
-            .scheduler-options
-              = f.input :scheduled_at, label: false, placeholder: 'Select a Date Time', input_html: { readonly: :readonly }
+            .scheduler-options.once
+              = f.input :scheduled_at, label: false, placeholder: 'Choose a Date & Time', input_html: { readonly: :readonly }
 
-              = link_to '#', class: 'clear-scheduler' do
-                %i.fa.fa-times
-                Clear Scheduling Options
+            %hr
+
+            .radio
+              = label_tag do
+                = radio_button_tag :send, :later_recurring
+                %strong RECURRING
+                %span (for e.g. notifications to users who have met conditions such as "hasn't interacted with bot in more than 5 days")
+
+            .scheduler-options.recurring
+              .input-group
+                %span.input-group-addon every day at
+                = f.input :scheduled_at, label: false, placeholder: 'Choose a Time', input_html: { readonly: :readonly }
+              = f.input :recurring, as: :hidden
 
     .steps-navigation
       = link_to 'Previous', step_2_bot_new_notification_index_path(@bot, params.slice(:notification)), class: 'btn btn-lg btn-warning'

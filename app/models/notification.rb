@@ -23,16 +23,21 @@ class Notification < ActiveRecord::Base
   end
 
   private
+  def verify_scheduled_at
+    return if scheduled_at.blank?
 
-    def verify_scheduled_at
-      return if scheduled_at.blank?
-
+    if self.recurring?
+      if !scheduled_at.match /\A(?:[1-9]|1[0-2]):[0-5][0-9][ap]m\Z/im
+        errors.add(:scheduled_at, 'is invalid for a recurring notification')
+      end
+    else
       if schedule_at_in_past?
         errors.add(:scheduled_at, 'has already past in some time zones')
       end
     end
+  end
 
-    def schedule_at_in_past?
-      scheduled_at.in_time_zone('Pacific/Apia').past?
-    end
+  def schedule_at_in_past?
+    scheduled_at.in_time_zone('Pacific/Apia').past?
+  end
 end
