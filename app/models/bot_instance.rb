@@ -10,7 +10,6 @@ class BotInstance < ActiveRecord::Base
   validates_inclusion_of  :state, in: %w(pending enabled disabled)
 
   validates_presence_of :uid, if: Proc.new { |bi| bi.state == 'enabled' }
-  validates_uniqueness_of :uid, if: Proc.new { |bi| bi.uid.present? }
 
   validates_with BotInstanceAttributesValidator
 
