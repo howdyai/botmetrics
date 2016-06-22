@@ -32,11 +32,10 @@ class QuerySet < ActiveRecord::Base
   end
 
   private
-
-    def queries_attributes
-      queries.each_with_index.inject({}) do |hash, (query, index)|
-        hash[index.to_s] = query.to_form_params
-        hash
-      end
+  def queries_attributes
+    queries.each_with_index.inject({}) do |hash, (query, index)|
+      hash[index.to_s] = query.to_form_params
+      hash
     end
+  end
 end

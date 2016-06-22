@@ -44,7 +44,7 @@ class NewNotificationController < ApplicationController
     @query_set    = QuerySetBuilder.new(session: session[:new_notification_query_set]).query_set
     @notification = @bot.notifications.build(model_params.merge(query_set: @query_set))
 
-    if @notification.save(context: :schedule)
+    if @query_set.present? && @query_set.valid? && @notification.save(context: :schedule)
       session.delete(:new_notification_query_set)
       mixpanel_track('Created Notification', notification_id: @notification.id)
 

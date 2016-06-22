@@ -46,7 +46,7 @@ class EditNotificationController < ApplicationController
     @query_set = QuerySetBuilder.new(session: session[:edit_notification_query_set]).query_set
     @notification.assign_attributes(model_params.merge(query_set: @query_set))
 
-    if @notification.save(context: :schedule)
+    if @query_set.present? && @query_set.valid? && @notification.save(context: :schedule)
       session.delete(:edit_notification_query_set)
       mixpanel_track('Updated Notification', notification_id: @notification.id)
 
