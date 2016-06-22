@@ -14,6 +14,7 @@ class RegistrationsController < Devise::RegistrationsController
 
         IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
         TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
+        NotifyAdminOnSlackJob.perform_async(resource.id, title: 'User Signed Up')
       end
     end
   end

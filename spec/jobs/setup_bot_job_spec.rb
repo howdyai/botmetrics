@@ -77,6 +77,7 @@ RSpec.describe SetupBotJob do
 
           allow(PusherJob).to receive(:perform_async)
           allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
+          allow(NotifyAdminOnSlackJob).to receive(:perform_async)
         end
 
         it 'should enable the bot and setup team_id, team_name and team_url' do
@@ -97,6 +98,11 @@ RSpec.describe SetupBotJob do
         it 'should send an alert' do
           SetupBotJob.new.perform(bi.id, user.id)
           expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(bi.id, user.id)
+        end
+
+        it 'should notify admins' do
+          SetupBotJob.new.perform(bi.id, user.id)
+          expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: 'Bot Instance Created', team: 'My Team', bot: bi.bot.name, members: 3)
         end
 
         it 'should track the event on Mixpanel' do

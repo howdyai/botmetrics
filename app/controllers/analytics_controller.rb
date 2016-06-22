@@ -20,15 +20,14 @@ class AnalyticsController < ApplicationController
   end
 
   private
+  def default_query
+    { provider: @bot.provider }
+  end
 
-    def default_query
-      { provider: @bot.provider }
-    end
-
-    def mixpanel_tracking
-      TrackMixpanelEventJob.perform_async(
-        'Viewed Analytics Index Page', current_user.id,
-        query_set: @query_set.to_form_params
-      )
-    end
+  def mixpanel_tracking
+    TrackMixpanelEventJob.perform_async(
+      'Viewed Analytics Index Page', current_user.id,
+      query_set: @query_set.to_form_params
+    )
+  end
 end
