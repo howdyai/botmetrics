@@ -180,7 +180,7 @@ RSpec.describe EditNotificationController do
       end
 
       context 'send now' do
-        let(:params) { { notification: { content: 'New Hello World', scheduled_at: '' } } }
+        let(:params) { { notification: { content: 'New Hello World', scheduled_at: '', recurring: 'false' } } }
 
         it 'queues up a job' do
           do_request
@@ -215,11 +215,53 @@ RSpec.describe EditNotificationController do
           { notification:
               {
                 content: 'New Hello World',
-                scheduled_at: scheduled_at
+                scheduled_at: scheduled_at,
+                recurring: 'false'
               }
           }
         end
         let(:scheduled_at) { dt_fmt 5.days.from_now }
+
+        it 'queues up a job' do
+          do_request
+
+          expect(EnqueueNotificationJob).to have_received(:perform_async)
+        end
+
+        it 'saves and redirects' do
+          expect { do_request }.
+            to change(Notification, :count).by(0).
+            and change(QuerySet, :count).by(0)
+
+          expect(notification.reload.content).to match 'New'
+          expect(notification.reload.scheduled_at).to eq scheduled_at
+
+          expect(notification.reload.query_set.queries.first.field).to  eq 'email'
+          expect(notification.reload.query_set.queries.first.method).to eq 'contains'
+          expect(notification.reload.query_set.queries.first.value).to  eq 'newton'
+
+          expect(response).to redirect_to bot_notifications_path(bot)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async)
+        end
+
+        it 'clears the session' do
+          do_request
+
+          expect(session[:edit_notification_query_set]).to be_nil
+        end
+      end
+
+      context 'send at a specific time (recurring)' do
+        let(:params) do
+          { notification:
+              {
+                content: 'New Hello World',
+                scheduled_at: scheduled_at,
+                recurring: 'true'
+              }
+          }
+        end
+        let(:scheduled_at) { '9:00am' }
 
         it 'queues up a job' do
           do_request
@@ -260,6 +302,16 @@ RSpec.describe EditNotificationController do
         do_request
 
         expect(response).to redirect_to step_3_bot_edit_notification_path(bot, notification, params.slice(:notification))
+      end
+
+      context 'invalid recurring scheduled_at' do
+        let(:params) { { notification: { content: 'abc', scheduled_at: '13:00', recurring: true } } }
+
+        it 'does not queue up a job' do
+          do_request
+
+          expect(response).to redirect_to step_3_bot_edit_notification_path(bot, notification, params.slice(:notification))
+        end
       end
     end
   end

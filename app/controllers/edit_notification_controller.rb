@@ -72,7 +72,7 @@ class EditNotificationController < ApplicationController
 
   def model_params
     if params[:notification].present?
-      params.require(:notification).permit(:content, :scheduled_at)
+      params.require(:notification).permit(:content, :scheduled_at, :recurring)
     else
       Hash.new
     end
@@ -104,7 +104,7 @@ class EditNotificationController < ApplicationController
     else
       EnqueueNotificationJob.perform_async(@notification.id)
 
-      redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
+      redirect_to bot_notifications_path(@bot), notice: 'This notification has been queued.'
     end
   end
 
