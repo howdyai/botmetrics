@@ -88,12 +88,10 @@ class NewNotificationController < ApplicationController
   def send_or_queue_and_redirect
     if @notification.send_immediately?
       SendNotificationJob.perform_async(@notification.id)
-
       redirect_to [@bot, @notification]
     else
-      EnqueueNotificationJob.perform_async(@notification.id) unless @notification.recurring?
-
-      redirect_to bot_notifications_path(@bot), notice: 'The notification has been queued to be sent at a later date.'
+      EnqueueNotificationJob.perform_async(@notification.id)
+      redirect_to bot_notifications_path(@bot), notice: 'This notification has been queued.'
     end
   end
 

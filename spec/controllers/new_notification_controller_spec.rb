@@ -215,7 +215,7 @@ RSpec.describe NewNotificationController do
         it 'queues up a job' do
           do_request
 
-          expect(EnqueueNotificationJob).to_not have_received(:perform_async)
+          expect(EnqueueNotificationJob).to have_received(:perform_async)
         end
 
         it 'saves and redirects' do
