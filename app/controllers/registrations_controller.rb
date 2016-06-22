@@ -1,22 +1,20 @@
 class RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
-      bot = Bot.create!(name: 'My First Bot', provider: 'slack')
-      resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner')
+      if resource.persisted?
+        bot = Bot.create!(name: 'My First Bot', provider: 'slack')
+        resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner')
 
-      mixpanel_properties = @mixpanel_attributes.dup
-      mixpanel_properties.delete('distinct_id')
+        mixpanel_properties = @mixpanel_attributes.dup
+        mixpanel_properties.delete('distinct_id')
 
-      resource.mixpanel_properties = mixpanel_properties
+        resource.mixpanel_properties = mixpanel_properties
+        resource.set_api_key!  if resource.api_key.blank?
+        resource.save
 
-      if resource.api_key.blank?
-        resource.set_api_key!
+        IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
+        TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
       end
-
-      resource.save
-
-      IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
-      TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
     end
   end
 
