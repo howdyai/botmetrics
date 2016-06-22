@@ -22,6 +22,7 @@ class ReportsMailer < ApplicationMailer
 
     mail(
       to: @user.email,
+      bcc: 'admins@getbotmetrics.com',
       subject: "Your botmetrics Daily Summary for #{yesterday_in_words(@user)}"
     )
 
@@ -29,12 +30,11 @@ class ReportsMailer < ApplicationMailer
   end
 
   private
+  def monday_in_time_zone?(time_zone)
+    Time.current.in_time_zone(time_zone).monday?
+  end
 
-    def monday_in_time_zone?(time_zone)
-      Time.current.in_time_zone(time_zone).monday?
-    end
-
-    def yesterday_in_words(user)
-      (Time.current.in_time_zone(user.timezone) - 1.day).strftime('%b %d, %Y')
-    end
+  def yesterday_in_words(user)
+    (Time.current.in_time_zone(user.timezone) - 1.day).strftime('%b %d, %Y')
+  end
 end

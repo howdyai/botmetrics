@@ -19,8 +19,7 @@ class AlertsMailer < ApplicationMailer
   end
 
   private
-
-    def recipient_emails(users, setting)
-      users.subscribed_to(setting).pluck(:email)
-    end
+  def recipient_emails(users, setting)
+    users.subscribed_to(setting).pluck(:email)
+  end
 end
