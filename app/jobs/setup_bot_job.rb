@@ -15,9 +15,20 @@ class SetupBotJob < Job
     auth_info = slack.call('auth.test', :get)
 
     if auth_info['ok']
+      bi = @instance.bot.instances.where("uid = ? AND instance_attributes->>'team_id' = ? AND state = ?", auth_info['user_id'], auth_info['team_id'], 'enabled').first
+      token = @instance.token
+
+      # If there is an existing bot instance with the same uid/team_id, then delete the current one and update attributes
+      # on the old one
+      if bi.present?
+        @instance.destroy
+        @instance = bi
+      end
+
       @instance.update_attributes!(
         uid: auth_info['user_id'],
         state: 'enabled',
+        token: token,
         instance_attributes: {
           team_id: auth_info['team_id'],
           team_name: auth_info['team'],

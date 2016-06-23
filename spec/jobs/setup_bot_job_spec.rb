@@ -13,67 +13,74 @@ RSpec.describe SetupBotJob do
       end
 
       context 'when token is valid' do
+        let!(:auth_test_response) do
+          { ok: true, url: "https://myteam.slack.com/", team: "My Team", user: "cal", team_id: "T12345", user_id: "U12345"}.to_json
+        end
+
+        let!(:users_list_response) do
+          {
+            "ok" => true,
+            "members" => [
+              {
+                'id' => 'UDEADBEEF1',
+                'name' => 'sjobs',
+                'tz' => 'Los Angeles',
+                'tz_label' => 'Pacific Daylight Time',
+                'tz_offset' => '-25200',
+                'profile' => {
+                  'email' => 'sjobs@apple.com',
+                  'first_name' => 'Steve',
+                  'last_name' => 'Jobs',
+                  'real_name' => 'Steve Jobs',
+                },
+                'is_admin' => true,
+                'is_owner' => true,
+                'is_restricted' => false
+              },
+              {
+                'id' => 'UDEADBEEF2',
+                'name' => 'elonmusk',
+                'profile' => {
+                  'email' => 'elon@apple.com',
+                  'first_name' => 'Elon',
+                  'last_name' => 'Musk',
+                  'real_name' => 'Elon Musk',
+                },
+                'tz' => 'Los Angeles',
+                'tz_label' => 'Pacific Daylight Time',
+                'tz_offset' => '-25200',
+                'is_admin' => false,
+                'is_owner' => false,
+                'is_restricted' => true
+              },
+              {
+                'id' => 'UDEADBEEF3',
+                'name' => 'timcook',
+                'profile' => {
+                  'email' => 'tim@apple.com',
+                  'first_name' => 'Tim',
+                  'last_name' => 'Cook',
+                  'real_name' => 'Tim Cook',
+                },
+                'tz' => 'Los Angeles',
+                'tz_label' => 'Pacific Daylight Time',
+                'tz_offset' => '-25200',
+                'is_admin' => true,
+                'is_owner' => false,
+                'is_restricted' => false,
+                'deleted' => true
+              },
+            ]
+          }.to_json
+        end
+
+
         before do
           allow(Relax::Bot).to receive(:start!)
           stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
-            to_return(status: 200, body: { ok: true, url: "https://myteam.slack.com/", team: "My Team", user: "cal", team_id: "T12345", user_id: "U12345"}.to_json)
+            to_return(status: 200, body: auth_test_response)
           stub_request(:get, "#{api}/users.list?token=#{bi.token}").
-            to_return(status: 200, body:
-            {
-              "ok" => true,
-              "members" => [
-                {
-                  'id' => 'UDEADBEEF1',
-                  'name' => 'sjobs',
-                  'tz' => 'Los Angeles',
-                  'tz_label' => 'Pacific Daylight Time',
-                  'tz_offset' => '-25200',
-                  'profile' => {
-                    'email' => 'sjobs@apple.com',
-                    'first_name' => 'Steve',
-                    'last_name' => 'Jobs',
-                    'real_name' => 'Steve Jobs',
-                  },
-                  'is_admin' => true,
-                  'is_owner' => true,
-                  'is_restricted' => false
-                },
-                {
-                  'id' => 'UDEADBEEF2',
-                  'name' => 'elonmusk',
-                  'profile' => {
-                    'email' => 'elon@apple.com',
-                    'first_name' => 'Elon',
-                    'last_name' => 'Musk',
-                    'real_name' => 'Elon Musk',
-                  },
-                  'tz' => 'Los Angeles',
-                  'tz_label' => 'Pacific Daylight Time',
-                  'tz_offset' => '-25200',
-                  'is_admin' => false,
-                  'is_owner' => false,
-                  'is_restricted' => true
-                },
-                {
-                  'id' => 'UDEADBEEF3',
-                  'name' => 'timcook',
-                  'profile' => {
-                    'email' => 'tim@apple.com',
-                    'first_name' => 'Tim',
-                    'last_name' => 'Cook',
-                    'real_name' => 'Tim Cook',
-                  },
-                  'tz' => 'Los Angeles',
-                  'tz_label' => 'Pacific Daylight Time',
-                  'tz_offset' => '-25200',
-                  'is_admin' => true,
-                  'is_owner' => false,
-                  'is_restricted' => false,
-                  'deleted' => true
-                },
-              ]
-            }.to_json
-          )
+            to_return(status: 200, body: users_list_response)
 
           allow(PusherJob).to receive(:perform_async)
           allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
@@ -88,6 +95,30 @@ RSpec.describe SetupBotJob do
           expect(bi.instance_attributes['team_id']).to eql 'T12345'
           expect(bi.instance_attributes['team_name']).to eql 'My Team'
           expect(bi.instance_attributes['team_url']).to eql 'https://myteam.slack.com/'
+        end
+
+        context 'an existing bot instance exists that is enabled with the same uid and team_id' do
+          let!(:existing_bi) { create :bot_instance, bot: bi.bot, uid: 'U12345', state: 'enabled', token: 'old-token', instance_attributes: { team_id: 'T12345', team_name: 'My Team', team_url: 'https://myteam.slack.com' } }
+
+          before do
+            stub_request(:get, "#{api}/auth.test?token=#{existing_bi.token}").
+              to_return(status: 200, body: auth_test_response)
+            stub_request(:get, "#{api}/users.list?token=#{existing_bi.token}").
+              to_return(status: 200, body: users_list_response)
+          end
+
+          it 'should enable the bot and setup team_id, team_name and team_url' do
+            SetupBotJob.new.perform(bi.id, user.id)
+            expect(BotInstance.find_by(id: bi.id)).to be_nil
+
+            existing_bi.reload
+            expect(existing_bi.state).to eql 'enabled'
+            expect(existing_bi.uid).to eql 'U12345'
+            expect(existing_bi.token).to eql 'token'
+            expect(existing_bi.instance_attributes['team_id']).to eql 'T12345'
+            expect(existing_bi.instance_attributes['team_name']).to eql 'My Team'
+            expect(existing_bi.instance_attributes['team_url']).to eql 'https://myteam.slack.com/'
+          end
         end
 
         it 'should send a message to Pusher' do
