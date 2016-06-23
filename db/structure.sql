@@ -643,7 +643,7 @@ ALTER TABLE ONLY webhook_events
 -- Name: bot_instances_team_id_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
-CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid, ((instance_attributes -> 'team_id'::text))) WHERE (((provider)::text = 'slack'::text) AND ((state)::text = 'enabled'::text));
+CREATE UNIQUE INDEX bot_instances_team_id_uid ON bot_instances USING btree (uid, ((instance_attributes -> 'team_id'::text))) WHERE ((((provider)::text = 'slack'::text) AND ((state)::text = 'enabled'::text)) AND (uid IS NOT NULL));
 
 
 --
@@ -791,13 +791,6 @@ CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 --
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
-
-
---
--- Name: unique_bot_instance_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
---
-
-CREATE UNIQUE INDEX unique_bot_instance_uid ON bot_instances USING btree (uid) WHERE (uid IS NOT NULL);
 
 
 --
@@ -1026,4 +1019,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160620213719');
 INSERT INTO schema_migrations (version) VALUES ('20160621155032');
 
 INSERT INTO schema_migrations (version) VALUES ('20160622234825');
+
+INSERT INTO schema_migrations (version) VALUES ('20160623000848');
 
