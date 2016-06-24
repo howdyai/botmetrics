@@ -55,6 +55,19 @@ RSpec.describe AlertsMailer do
         expect(mail.body.encoded).to match bot_instance.team_url
       end
     end
+
+    context 'with no owners subscribed' do
+      let(:owners) do
+        create(:user, created_bot_instance: '0')
+        create(:user, created_bot_instance: '0')
+        User.all # returns as ActiveRecord query so the stub works
+      end
+
+      it "doesn't send email to bot owners" do
+        mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
+        expect(mail.to).to be_nil
+      end
+    end
   end
 
   describe '#disabled_bot_instance' do
@@ -91,6 +104,19 @@ RSpec.describe AlertsMailer do
 
         expect(mail.body.encoded).to match bot_instance.team_name
         expect(mail.body.encoded).to match bot_instance.team_url
+      end
+    end
+
+    context 'with no owners subscribed' do
+      let(:owners) do
+        create(:user, disabled_bot_instance: '0')
+        create(:user, disabled_bot_instance: '0')
+        User.all # returns as ActiveRecord query so the stub works
+      end
+
+      it "doesn't send email to bot owners" do
+        mail = AlertsMailer.disabled_bot_instance(bot_instance.id)
+        expect(mail.to).to be_nil
       end
     end
   end
