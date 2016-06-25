@@ -1,0 +1,3 @@
+#!/bin/bash
+
+BUNDLE_GEMFILE=Gemfile.jruby BUNDLE_PATH=.bundle.jruby BUNDLE_BIN=.bundle.jruby/binstubs bundle install
