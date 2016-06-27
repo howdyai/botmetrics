@@ -8,7 +8,7 @@
       = f.input :name, label: "Your Bot's Name", required: true
       = f.input :webhook_url, label: webhook_label(@bot)
       %span.small.help-block
-        - if @bot.webhook_events.present?
+        - if @bot.webhook_events.count > 0
           = link_to "View Events", webhook_events_bot_path(@bot)
 
       = f.submit 'Save'
