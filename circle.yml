@@ -1,7 +1,9 @@
 machine:
-  ruby:
-    version: 2.3.1
+  java:
+    version: openjdk7
   environment:
+    RAILS_ENV: test
+    JRUBY_OPTS: -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -X-C -Xcompile.invokedynamic=false --1.9 -J-Xmx2g
     REDIS_URL: redis://localhost:6379
     JSON_WEB_TOKEN_SECRET: json_web_token_secret
     PUSHER_API_KEY: pusher-api-key
@@ -15,3 +17,34 @@ machine:
     RELAX_SEND_BOT_REPLIES: true
     RAILS_HOST: http://localhost:9000
     SLACK_API_URL: http://localhost:9000/slack_api_mocks
+
+dependencies:
+  cache_directories:
+    - '~/.rvm/rubies'
+    - 'vendor'
+
+  pre:
+    - gem install rake
+
+  override:
+    - >
+      case $CIRCLE_NODE_INDEX in
+       0)
+         rvm-exec 2.3.1 gem install bundler
+         rvm-exec 2.3.1 bash -c "bundle check --path=vendor/bundle_2.3 || bundle install --path=vendor/bundle_2.3"
+         ;;
+       1)
+         rvm-exec jruby gem install bundler
+         rvm-exec jruby bash -c "bundle check --path=vendor/bundle_java --gemfile Gemfile.jruby || bundle install --path=vendor/bundle_java --gemfile Gemfile.jruby"
+         ;;
+      esac
+
+database:
+  override:
+    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rake db:create;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create ;; esac:
+        parallel: true
+
+test:
+  override:
+    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rspec spec;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rspec spec;; esac:
+        parallel: true
