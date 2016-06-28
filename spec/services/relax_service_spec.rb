@@ -133,6 +133,7 @@ RSpec.describe RelaxService do
           expect(e.is_from_bot).to be_falsey
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
+          expect(e.created_at.to_f).to eql event.timestamp.to_f
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
@@ -179,6 +180,7 @@ RSpec.describe RelaxService do
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_falsey
           expect(e.text).to be_nil
+          expect(e.created_at.to_f).to eql event.timestamp.to_f
         end
 
         it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -212,6 +214,7 @@ RSpec.describe RelaxService do
             expect(e.is_im).to be_falsey
             expect(e.is_for_bot).to be_falsey
             expect(e.text).to eql 'thanks'
+            expect(e.created_at.to_f).to eql event.timestamp.to_f
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -245,13 +248,14 @@ RSpec.describe RelaxService do
           expect(e.is_im).to be_truthy
           expect(e.is_for_bot).to be_truthy
           expect(e.text).to eql 'thanks'
+          expect(e.created_at.to_f).to eql event.timestamp.to_f
         end
 
         it 'should change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
           RelaxService.handle(event)
           user.reload
           expect(user.bot_interaction_count).to eql 1
-          expect(user.last_interacted_with_bot_at).to_not be_nil
+          expect(user.last_interacted_with_bot_at.to_f).to eql event.timestamp.to_f
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
@@ -279,6 +283,7 @@ RSpec.describe RelaxService do
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
             expect(e.text).to eql 'thanks'
+            expect(e.created_at.to_f).to eql event.timestamp.to_f
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
@@ -312,13 +317,14 @@ RSpec.describe RelaxService do
           expect(e.is_im).to be_falsey
           expect(e.is_for_bot).to be_truthy
           expect(e.text).to eql 'thanks <@UNESTOR1>!'
+          expect(e.created_at.to_f).to eql event.timestamp.to_f
         end
 
         it 'should change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do
           RelaxService.handle(event)
           user.reload
           expect(user.bot_interaction_count).to eql 1
-          expect(user.last_interacted_with_bot_at).to_not be_nil
+          expect(user.last_interacted_with_bot_at.to_f).to eql event.timestamp.to_f
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
@@ -346,6 +352,7 @@ RSpec.describe RelaxService do
             # is_for_bot will be falsey if it is_from_bot
             expect(e.is_for_bot).to be_falsey
             expect(e.text).to eql 'thanks <@UNESTOR1>!'
+            expect(e.created_at.to_f).to eql event.timestamp.to_f
           end
 
           it 'should not change BotUser#last_interacted_with_bot_at & BotUser#bot_interaction_count' do

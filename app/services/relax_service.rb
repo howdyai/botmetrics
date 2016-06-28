@@ -34,12 +34,13 @@ class RelaxService
         is_from_bot: event.relax_bot_uid == event.user_uid,
         text: is_for_bot?(event) || event.relax_bot_uid == event.user_uid ? event.text : nil,
         provider: bi.provider,
-        event_type: 'message'
+        event_type: 'message',
+        created_at: Time.at(event.timestamp.to_f)
       )
 
       if e.persisted? && e.is_for_bot?
         user.increment!(:bot_interaction_count)
-        user.update_attribute(:last_interacted_with_bot_at, Time.now)
+        user.update_attribute(:last_interacted_with_bot_at, e.created_at)
       end
     when 'reaction_added'
       user = find_bot_user_from(bi, event)
@@ -56,7 +57,8 @@ class RelaxService
         is_im: event.im,
         is_from_bot: event.relax_bot_uid == event.user_uid,
         provider: bi.provider,
-        event_type: 'message_reaction'
+        event_type: 'message_reaction',
+        created_at: Time.at(event.timestamp.to_f)
       )
 
       if !e.persisted?
