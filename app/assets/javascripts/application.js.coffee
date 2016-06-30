@@ -20,6 +20,7 @@
 #= require pages/static/index
 #= require pages/bot_instances/setting_up
 #= require pages/bots/bots_detail
+#= require pages/bots/edit
 #= require pages/notifications/notification_scheduler
 #= require pages/notifications/notification_sending_progress
 #= require pages/bots/verifying_webhook

@@ -22,7 +22,19 @@
             = mail_to user.email, user.full_name
             - if current_user == user
               %span (That's you!)
+      = link_to 'Invite Team Member', new_user_invitation_path, class: 'btn btn-success invite-teammember'
+      .add-teammember
+        = simple_form_for User.new, url: user_invitation_path, method: :post do |f|
+          = f.input :email, label: "Your New Team Member's Email", required: true
+          = f.input :full_name, label: "Your New Team Member's Full Name", required: true
+          = f.input :timezone, as: :hidden, input_html: { value: current_user.timezone }
+          = f.submit 'Invite Team Member'
 
     %h2.api API
     %hr
     = render partial: 'api'
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.BotsEdit();
+    App.page.run();
