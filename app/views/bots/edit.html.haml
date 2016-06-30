@@ -6,12 +6,14 @@
   .col-md-6
     = simple_form_for [@bot], url: bot_path(@bot), method: :patch do |f|
       = f.input :name, label: "Your Bot's Name", required: true
-      = f.input :webhook_url, label: webhook_label(@bot)
-      %span.small.help-block
-        - if @bot.webhook_events.count > 0
-          = link_to "View Events", webhook_events_bot_path(@bot)
+      - if @bot.webhooks_enabled?
+        = f.input :webhook_url, label: webhook_label(@bot)
+        %span.small.help-block
+          - if @bot.webhook_events.count > 0
+            = link_to "View Events", webhook_events_bot_path(@bot)
 
       = f.submit 'Save'
 
     %h2.api API
+    %hr
     = render partial: 'api'

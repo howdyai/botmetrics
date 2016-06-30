@@ -164,6 +164,7 @@ CREATE TABLE bots (
     updated_at timestamp without time zone NOT NULL,
     webhook_url character varying,
     webhook_status boolean DEFAULT false,
+    webhooks_enabled boolean DEFAULT false NOT NULL,
     CONSTRAINT valid_provider_on_bots CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
@@ -1021,4 +1022,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160621155032');
 INSERT INTO schema_migrations (version) VALUES ('20160622234825');
 
 INSERT INTO schema_migrations (version) VALUES ('20160623000848');
+
+INSERT INTO schema_migrations (version) VALUES ('20160630194618');
 
