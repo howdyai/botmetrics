@@ -418,7 +418,14 @@ CREATE TABLE users (
     mixpanel_properties jsonb DEFAULT '{}'::jsonb NOT NULL,
     api_key character varying,
     email_preferences jsonb DEFAULT '{}'::jsonb,
-    tracking_attributes jsonb DEFAULT '{}'::jsonb
+    tracking_attributes jsonb DEFAULT '{}'::jsonb,
+    invitation_token character varying,
+    invitation_created_at timestamp without time zone,
+    invitation_sent_at timestamp without time zone,
+    invitation_accepted_at timestamp without time zone,
+    invitation_limit integer,
+    invited_by_id integer,
+    invited_by_type character varying
 );
 
 
@@ -788,6 +795,13 @@ CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 
 
 --
+-- Name: index_users_on_invitation_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_users_on_invitation_token ON users USING btree (invitation_token);
+
+
+--
 -- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -1024,4 +1038,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160622234825');
 INSERT INTO schema_migrations (version) VALUES ('20160623000848');
 
 INSERT INTO schema_migrations (version) VALUES ('20160630194618');
+
+INSERT INTO schema_migrations (version) VALUES ('20160630202830');
 
