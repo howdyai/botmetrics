@@ -14,6 +14,15 @@
 
       = f.submit 'Save'
 
+    %h2.teams Team
+    %hr
+      %ul
+        - @bot.collaborators.each do |user|
+          %li
+            = mail_to user.email, user.full_name
+            - if current_user == user
+              %span (That's you!)
+
     %h2.api API
     %hr
     = render partial: 'api'
