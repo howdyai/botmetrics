@@ -32,6 +32,7 @@ gem 'chartkick',                github: 'botmetrics/chartkick', ref: 'fd3918c011
 # Auth
 gem 'devise',                   '~> 3.5.10'
 gem 'jwt',                      '~> 1.5.4'
+gem 'devise_invitable',         '~> 1.6.0'
 
 # Pagination
 gem 'will_paginate',            '~> 3.1.0'
