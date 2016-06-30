@@ -11,14 +11,14 @@
 .stats.row
   = link_to new_bots_bot_dashboards_path(@bot) do
     .stat.col-sm-6.col-md-3
-      %h3 New Bots
+      %h3 Bots Installed
       = formatted_growth(@dashboarder.new_bots_growth)
       %p.number= number_with_delimiter(@dashboarder.new_bots_count)
       - if @show_trends
         = line_chart @dashboarder.new_bots, dashboard_chartjs_opts
   = link_to disabled_bots_bot_dashboards_path(@bot) do
     .stat.col-sm-6.col-md-3
-      %h3 Bots Disabled
+      %h3 Bots Uninstalled
       = formatted_growth(@dashboarder.disabled_bots_growth)
       %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
       - if @show_trends
