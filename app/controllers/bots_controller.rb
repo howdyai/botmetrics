@@ -18,7 +18,7 @@ class BotsController < ApplicationController
     @bot.provider = 'slack'
 
     if @bot.save
-      bc = current_user.bot_collaborators.create(bot: @bot, collaborator_type: 'owner')
+      bc = current_user.bot_collaborators.create(bot: @bot, collaborator_type: 'owner', confirmed_at: Time.now)
       if bc.persisted?
         redirect_to bot_path(@bot)
         TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)

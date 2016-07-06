@@ -48,6 +48,15 @@ RSpec.describe BotsController do
       expect(bot.provider).to eql 'slack'
     end
 
+    it 'should set confirmed_at for the bot collaborator model created' do
+      expect { do_request }.to change(BotCollaborator, :count).by(1)
+      bc = BotCollaborator.last
+
+      expect(bc.confirmed_at).to_not be_nil
+      expect(bc.user).to eql user
+      expect(bc.bot).to eql Bot.last
+    end
+
     it 'should redirect to bot_path' do
       do_request
       bot = user.bots.last
