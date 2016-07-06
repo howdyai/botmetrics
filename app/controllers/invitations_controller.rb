@@ -11,13 +11,19 @@ class InvitationsController < Devise::InvitationsController
     end
   end
 
+  def update
+    super do |resource|
+      if resource.errors.empty?
+        resource.bot_collaborators.where(confirmed_at: nil).update_all(confirmed_at: Time.now)
+      end
+    end
+  end
+
   protected
   def invite_resource
     ## skip sending emails on invite
     ## They will be sent after the bot has been added to user
-    super do |u|
-      u.skip_invitation = true
-    end
+    super { |u| u.skip_invitation = true }
   end
 
   def invite_params

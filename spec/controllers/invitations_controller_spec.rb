@@ -58,4 +58,31 @@ RSpec.describe InvitationsController, type: :controller do
       expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
     end
   end
+
+  describe 'PATCH#update' do
+    let!(:user) { create :user }
+    let!(:inviting_user) { create :user }
+
+    let!(:bot) { create :bot }
+    let!(:bc1) { create :bot_collaborator, bot: bot, user: inviting_user, confirmed_at: Time.now }
+    let!(:bc2) { create :bot_collaborator, bot: bot, user: user }
+
+    before do
+      user.invite!(inviting_user)
+      user.send(:generate_invitation_token)
+      @invitation_token = user.instance_variable_get('@raw_invitation_token')
+      user.save(validate: false)
+    end
+
+    def do_request
+      patch :update, user: { invitation_token: @invitation_token, password: 'password123', password_confirmation: 'password123' }
+    end
+
+    it 'should update the confirmed_at for bot collaborations that are not yet confirmed' do
+      expect {
+        do_request
+        bc2.reload
+      }.to change(bc2, :confirmed_at).from(nil)
+    end
+  end
 end
