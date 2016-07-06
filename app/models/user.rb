@@ -21,6 +21,8 @@ class User < ActiveRecord::Base
     where('email_preferences @> ?', { email_preference => '1' }.to_json)
   end
 
+  attr_accessor :bot_id
+
   def self.local_time_is_after(hour)
     where(timezone: ActiveSupport::TimeZone.zones_after(hour))
   end

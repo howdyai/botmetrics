@@ -45,6 +45,13 @@ RSpec.describe RegistrationsController do
       expect(bot.provider).to eql 'slack'
     end
 
+    it 'should set confirmed_at for the bot collaborator model created' do
+      expect { do_request }.to change(BotCollaborator, :count).by(1)
+      bc = BotCollaborator.last
+
+      expect(bc.confirmed_at).to_not be_nil
+    end
+
     it 'should redirect to the bot_path' do
       do_request
       bot = Bot.last

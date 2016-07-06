@@ -53,7 +53,8 @@ CREATE TABLE bot_collaborators (
     bot_id integer NOT NULL,
     collaborator_type character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    confirmed_at timestamp without time zone
 );
 
 
@@ -1040,4 +1041,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160623000848');
 INSERT INTO schema_migrations (version) VALUES ('20160630194618');
 
 INSERT INTO schema_migrations (version) VALUES ('20160630202830');
+
+INSERT INTO schema_migrations (version) VALUES ('20160706164507');
 

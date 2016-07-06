@@ -3,7 +3,7 @@ class RegistrationsController < Devise::RegistrationsController
     super do |resource|
       if resource.persisted?
         bot = Bot.create!(name: 'My First Bot', provider: 'slack')
-        resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner')
+        resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner', confirmed_at: Time.now)
 
         mixpanel_properties = @mixpanel_attributes.dup
         mixpanel_properties.delete('distinct_id')

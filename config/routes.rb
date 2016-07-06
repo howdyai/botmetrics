@@ -1,7 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: :registrations }
+  devise_for :users, controllers: { registrations: :registrations, invitations: :invitations }
 
   resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
     resources :dashboards, only: [] do
