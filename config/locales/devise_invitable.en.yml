@@ -17,7 +17,7 @@ en:
         submit_button: "Set my password"
     mailer:
       invitation_instructions:
-        subject: "Invitation Instructions"
+        subject: "Invitation to Botmetrics"
         hello: "Hello %{email},"
         someone_invited_you: "%{inviter} has invited you to Botmetrics (the best way for you to collect & analyze metrics for your Slack Bot), you can accept it through the link below."
         accept: "Accept Invitation"
