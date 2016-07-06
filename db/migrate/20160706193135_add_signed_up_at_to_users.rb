@@ -1,7 +1,11 @@
 class AddSignedUpAtToUsers < ActiveRecord::Migration
   def up
     add_column :users, :signed_up_at, :datetime
-    User.find_each { |u| u.update_attribute(:signed_up_at, u.created_at) }
+    User.reset_column_information
+
+    User.find_each do |u|
+      u.update_attributes!(signed_up_at: u.created_at)
+    end
   end
 
   def down
