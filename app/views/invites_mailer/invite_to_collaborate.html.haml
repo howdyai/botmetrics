@@ -1,0 +1,8 @@
+%p
+  Hello #{@invited_user.full_name},
+%p
+  #{@inviting_user.full_name} has invited you to view metrics for the bot #{@bot.name} on
+  = link_to 'Botmetrics', root_url
+
+%p
+  = link_to "View #{@bot.name} Metrics", bot_url(@bot.uid)

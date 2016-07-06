@@ -1,13 +1,16 @@
 class InvitationsController < Devise::InvitationsController
   def create
-    super do |resource|
-      if resource.persisted?
-        bot = current_user.bots.find_by(uid: params[:invite][:bot_id])
-        BotCollaborator.create!(bot: bot, user: resource, collaborator_type: 'member')
-        TrackMixpanelEventJob.perform_async('Invited Collaborator to Bot', current_user.id, bot_id: bot.uid)
+    existing_user = User.find_by(email: params[:invite][:email])
+    bot = current_user.bots.find_by(uid: params[:invite][:bot_id])
 
-        resource.deliver_invitation
-      end
+    if existing_user.present? && existing_user.signed_up_at.present?
+      add_to_bot!(existing_user, bot)
+      flash[:info] = "Invitation sent to #{existing_user.email}"
+      redirect_to(bot_path(bot.id)) && return
+    end
+
+    super do |resource|
+      add_to_bot!(resource, bot) if resource.persisted?
     end
   end
 
@@ -21,6 +24,23 @@ class InvitationsController < Devise::InvitationsController
   end
 
   protected
+  def add_to_bot!(invited_user, bot)
+    if BotCollaborator.find_by(bot_id: bot.id, user_id: invited_user.id).blank?
+      BotCollaborator.create!(bot: bot,
+                              user: invited_user,
+                              collaborator_type: 'member',
+                              confirmed_at: invited_user.signed_up_at.present? ? Time.now : nil)
+
+      TrackMixpanelEventJob.perform_async('Invited Collaborator to Bot', current_user.id, bot_id: bot.uid)
+
+      if invited_user.signed_up_at.blank?
+        invited_user.deliver_invitation
+      else
+        InvitesMailer.invite_to_collaborate(invited_user.id, current_user.id, bot.id).deliver_later
+      end
+    end
+  end
+
   def invite_resource
     ## skip sending emails on invite
     ## They will be sent after the bot has been added to user

@@ -9,6 +9,7 @@ RSpec.describe InvitationsController, type: :controller do
     let!(:user) { create :user }
     let!(:bot)  { create :bot  }
     let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
+    let!(:message_delivery) { double(ActionMailer::MessageDelivery) }
 
     let!(:invite_attributes) do
       {
@@ -21,6 +22,8 @@ RSpec.describe InvitationsController, type: :controller do
 
     before do
       allow(TrackMixpanelEventJob).to receive(:perform_async)
+      allow(InvitesMailer).to receive(:invite_to_collaborate).and_return(message_delivery)
+      allow(message_delivery).to receive(:deliver_later)
       sign_in user
     end
 
@@ -28,39 +31,78 @@ RSpec.describe InvitationsController, type: :controller do
       post :create, invite: invite_attributes
     end
 
-    it 'creates a new user invited by the signed in user' do
-      expect { do_request }.to change(User, :count).by(1)
+    context 'user does not exist' do
+      it 'creates a new user invited by the signed in user' do
+        expect { do_request }.to change(User, :count).by(1)
 
-      invited_user = User.last
-      expect(invited_user.full_name).to eql 'Mclovin'
-      expect(invited_user.email).to eql 'x@mclov.in'
-      expect(invited_user.timezone).to eql 'Pacific Time (US & Canada)'
-      expect(invited_user.timezone_utc_offset).to eql -28800
-      expect(invited_user.invited_by).to eql user
-      expect(invited_user.invitation_token).to_not be_nil
-    end
+        invited_user = User.last
+        expect(invited_user.full_name).to eql 'Mclovin'
+        expect(invited_user.email).to eql 'x@mclov.in'
+        expect(invited_user.timezone).to eql 'Pacific Time (US & Canada)'
+        expect(invited_user.timezone_utc_offset).to eql -28800
+        expect(invited_user.invited_by).to eql user
+        expect(invited_user.invitation_token).to_not be_nil
+      end
 
-    it 'creates a new "unconfirmed" bot collaborator model' do
-      expect {
+      it 'creates a new "unconfirmed" bot collaborator model' do
+        expect {
+          do_request
+          bot.reload
+        }.to change(bot.collaborators, :count).by(1)
+
+        bc = BotCollaborator.last
+        expect(bc.user).to eql User.last
+        expect(bc.bot).to eql bot
+        expect(bc.confirmed_at).to be_nil
+        expect(bc.collaborator_type).to eql 'member'
+      end
+
+      it 'should track the event on Mixpanel' do
         do_request
-        bot.reload
-      }.to change(bot.collaborators, :count).by(1)
+        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
+      end
 
-      bc = BotCollaborator.last
-      expect(bc.user).to eql User.last
-      expect(bc.bot).to eql bot
-      expect(bc.confirmed_at).to be_nil
-      expect(bc.collaborator_type).to eql 'member'
+      it 'does not send the email meant for an existing user' do
+        do_request
+        expect(message_delivery).to_not have_received(:deliver_later)
+      end
     end
 
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
+    context 'user does exist' do
+      let!(:existing_user) { create :user, email: 'x@mclov.in' }
+
+      it "doesn't create a new user" do
+        expect { do_request }.to_not change(User, :count)
+      end
+
+      it 'creates a new "confirmed" bot collaborator model' do
+        expect {
+          do_request
+          bot.reload
+        }.to change(bot.collaborators, :count).by(1)
+
+        bc = BotCollaborator.last
+        expect(bc.user).to eql existing_user
+        expect(bc.bot).to eql bot
+        expect(bc.confirmed_at).to_not be_nil
+        expect(bc.collaborator_type).to eql 'member'
+      end
+
+      it 'should track the event on Mixpanel' do
+        do_request
+        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
+      end
+
+      it 'should send the email meant for an existing user' do
+        do_request
+        expect(InvitesMailer).to have_received(:invite_to_collaborate).with(User.last.id, user.id, bot.id)
+        expect(message_delivery).to have_received(:deliver_later)
+      end
     end
   end
 
   describe 'PATCH#update' do
-    let!(:user) { create :user }
+    let!(:user) { create :user, signed_up_at: nil }
     let!(:inviting_user) { create :user }
 
     let!(:bot) { create :bot }
