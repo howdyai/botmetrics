@@ -5,7 +5,7 @@ RSpec.describe AlertsMailer do
       :bot_instance,
       id: 1,
       bot: bot,
-      owners: owners,
+      collaborators: collaborators,
       team_name: 'T123', team_url: 'T123.slack.com',
       users: [double(:user), double(:user)]
     )
@@ -18,16 +18,16 @@ RSpec.describe AlertsMailer do
   end
 
   describe '#created_bot_instance' do
-    context 'with all owners subscribed' do
-      let(:owners) do
+    context 'with all collaborators subscribed' do
+      let(:collaborators) do
         create_list(:user, 2)
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it 'send email to bot owners' do
+      it 'send email to bot collaborators' do
         mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
 
-        expect(mail.to).to      eq bot_instance.owners.map(&:email)
+        expect(mail.to).to      eq bot_instance.collaborators.map(&:email)
         expect(mail.to.size).to eq 2
         expect(mail.subject).to match bot.name
 
@@ -37,14 +37,14 @@ RSpec.describe AlertsMailer do
       end
     end
 
-    context 'with some owners subscribed' do
-      let(:owners) do
+    context 'with some collaborators subscribed' do
+      let(:collaborators) do
         create(:user, created_bot_instance: '0')
         create(:user, created_bot_instance: '1')
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it 'send email to bot owners' do
+      it 'send email to bot collaborators' do
         mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
 
         expect(mail.to.size).to eq 1
@@ -56,14 +56,14 @@ RSpec.describe AlertsMailer do
       end
     end
 
-    context 'with no owners subscribed' do
-      let(:owners) do
+    context 'with no collaborators subscribed' do
+      let(:collaborators) do
         create(:user, created_bot_instance: '0')
         create(:user, created_bot_instance: '0')
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it "doesn't send email to bot owners" do
+      it "doesn't send email to bot collaborators" do
         mail = AlertsMailer.created_bot_instance(bot_instance.id, user.id)
         expect(mail.to).to be_nil
       end
@@ -71,16 +71,16 @@ RSpec.describe AlertsMailer do
   end
 
   describe '#disabled_bot_instance' do
-    context 'with all owners subscribed' do
-      let(:owners) do
+    context 'with all collaborators subscribed' do
+      let(:collaborators) do
         create_list(:user, 2)
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it 'sends email to bot owners' do
+      it 'sends email to bot collaborators' do
         mail = AlertsMailer.disabled_bot_instance(bot_instance.id)
 
-        expect(mail.to).to      eq bot_instance.owners.map(&:email)
+        expect(mail.to).to      eq bot_instance.collaborators.map(&:email)
         expect(mail.to.size).to eq 2
         expect(mail.subject).to match bot.name
 
@@ -89,14 +89,14 @@ RSpec.describe AlertsMailer do
       end
     end
 
-    context 'with some owners subscribed' do
-      let(:owners) do
+    context 'with some collaborators subscribed' do
+      let(:collaborators) do
         create(:user, disabled_bot_instance: '0')
         create(:user, disabled_bot_instance: '1')
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it 'sends email to bot owners' do
+      it 'sends email to bot collaborators' do
         mail = AlertsMailer.disabled_bot_instance(bot_instance.id)
 
         expect(mail.to.size).to eq 1
@@ -107,14 +107,14 @@ RSpec.describe AlertsMailer do
       end
     end
 
-    context 'with no owners subscribed' do
-      let(:owners) do
+    context 'with no collaborators subscribed' do
+      let(:collaborators) do
         create(:user, disabled_bot_instance: '0')
         create(:user, disabled_bot_instance: '0')
         User.all # returns as ActiveRecord query so the stub works
       end
 
-      it "doesn't send email to bot owners" do
+      it "doesn't send email to bot collaborators" do
         mail = AlertsMailer.disabled_bot_instance(bot_instance.id)
         expect(mail.to).to be_nil
       end

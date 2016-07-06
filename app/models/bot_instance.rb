@@ -18,6 +18,7 @@ class BotInstance < ActiveRecord::Base
   scope :disabled,  -> { where("bot_instances.state = ?", 'disabled') }
 
   delegate :owners, to: :bot
+  delegate :collaborators, to: :bot
 
   store_accessor :instance_attributes, :team_id, :team_name, :team_url
 

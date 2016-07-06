@@ -3,7 +3,7 @@ class AlertsMailer < ApplicationMailer
     @bot_instance = BotInstance.find(bot_instance_id)
     @user         = User.find(user_id)
 
-    to = recipient_emails(@bot_instance.owners, :created_bot_instance)
+    to = recipient_emails(@bot_instance.collaborators, :created_bot_instance)
     return if to.blank?
 
     mail(
@@ -15,7 +15,7 @@ class AlertsMailer < ApplicationMailer
   def disabled_bot_instance(bot_instance_id)
     @bot_instance = BotInstance.find(bot_instance_id)
 
-    to = recipient_emails(@bot_instance.owners, :disabled_bot_instance)
+    to = recipient_emails(@bot_instance.collaborators, :disabled_bot_instance)
     return if to.blank?
 
     mail(
