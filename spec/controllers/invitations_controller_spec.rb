@@ -84,5 +84,12 @@ RSpec.describe InvitationsController, type: :controller do
         bc2.reload
       }.to change(bc2, :confirmed_at).from(nil)
     end
+
+    it 'should set signed_up_at on User' do
+      expect {
+        do_request
+        user.reload
+      }.to change(user, :signed_up_at).from(nil)
+    end
   end
 end

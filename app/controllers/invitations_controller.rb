@@ -14,6 +14,7 @@ class InvitationsController < Devise::InvitationsController
   def update
     super do |resource|
       if resource.errors.empty?
+        resource.update_attribute(:signed_up_at, Time.now) if resource.signed_up_at.blank?
         resource.bot_collaborators.where(confirmed_at: nil).update_all(confirmed_at: Time.now)
       end
     end

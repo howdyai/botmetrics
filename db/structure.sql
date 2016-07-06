@@ -426,7 +426,8 @@ CREATE TABLE users (
     invitation_accepted_at timestamp without time zone,
     invitation_limit integer,
     invited_by_id integer,
-    invited_by_type character varying
+    invited_by_type character varying,
+    signed_up_at timestamp without time zone
 );
 
 
@@ -1043,4 +1044,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160630194618');
 INSERT INTO schema_migrations (version) VALUES ('20160630202830');
 
 INSERT INTO schema_migrations (version) VALUES ('20160706164507');
+
+INSERT INTO schema_migrations (version) VALUES ('20160706193135');
 

@@ -10,6 +10,7 @@ class RegistrationsController < Devise::RegistrationsController
 
         resource.mixpanel_properties = mixpanel_properties
         resource.set_api_key!  if resource.api_key.blank?
+        resource.signed_up_at = Time.now if resource.signed_up_at.blank?
         resource.save
 
         IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)

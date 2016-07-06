@@ -33,6 +33,7 @@ RSpec.describe RegistrationsController do
       expect(user.timezone).to eql 'Pacific Time (US & Canada)'
       expect(user.timezone_utc_offset).to eql -28800
       expect(user.api_key).to_not be_blank
+      expect(user.signed_up_at).to_not be_nil
     end
 
     it 'should create a new bot' do
