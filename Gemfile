@@ -60,6 +60,7 @@ group :development do
   gem 'git',                      '~> 1.3.0'
   gem 'parity',                   '~> 0.9.3'
   gem 'letter_opener'
+  gem 'derailed',                 '~> 0.1.0'
 end
 
 group :development, :test do
