@@ -53,6 +53,10 @@ gem 'passenger',                '~> 5.0.27'
 # Cron
 gem 'clockwork'
 
+# GC Tuning
+
+gem 'tunemygc',                 '~> 1.0.65'
+
 group :development do
   gem 'dotenv',                   '~> 2.1.1'
   gem 'foreman',                  '~> 0.82.0'
