@@ -91,7 +91,10 @@ class BotInstance < ActiveRecord::Base
 
     if json_list['ok'] == true
       BotInstance.with_advisory_lock("team-import-#{self.uid}") do
-        json_list['members'].each do |user|
+        members = json_list['members']
+        Rails.logger.warn "[ImportUsersForBotInstanceJob] importing members: #{members.length} ID: #{self.id}"
+
+        members.each do |user|
           u = self.users.find_by(uid: user['id']) || self.users.new(uid: user['id'], provider: 'slack')
 
           u.user_attributes['nickname'] = user['name']
