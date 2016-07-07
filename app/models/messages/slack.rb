@@ -19,7 +19,7 @@ module Messages
     end
 
     def save_for(bot_instance, opts = {})
-      message = bot_instance.messages.build(model_params.merge(opts))
+      message = bot_instance.messages.build(model_params.merge!(opts))
 
       if valid? && message.save
         message

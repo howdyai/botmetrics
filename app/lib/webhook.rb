@@ -9,7 +9,7 @@ class Webhook
 
   def ping
     options[:body] = payload(dummy_payload.to_json)
-    Excon.post bot.webhook_url, default_options.merge(options)
+    Excon.post bot.webhook_url, default_options.merge!(options)
   end
 
   def deliver
@@ -18,7 +18,7 @@ class Webhook
     options[:body] = payload(@relax_event.to_json)
 
     elapsed_time = Stopwatch.record do
-      response = Excon.post(bot.webhook_url, default_options.merge(options))
+      response = Excon.post(bot.webhook_url, default_options.merge!(options))
     end
 
     log_webhook_execution(bot, elapsed_time, response.status, @relax_event)
