@@ -7,7 +7,7 @@ class Slack
     @token = token
   end
 
-  def call(slack_api, method, params = {})
+  def call(slack_api, method, params = {}, &block)
     params = params.select { |k,v| v.present? }
     params.merge!(token: @token)
     encoded_params = URI.encode_www_form(params)
@@ -29,9 +29,15 @@ class Slack
       opts[:headers] = { "Content-Type" => "application/x-www-form-urlencoded" }
     end
 
-    connection = Excon.new(url, opts)
 
-    response = connection.request(method: method)
-    JSON.parse(response.body)
+    if !block_given?
+      connection = Excon.new(url, opts)
+      response = connection.request(method: method)
+      return JSON.parse(response.body)
+    else
+      opts[:response_block] = block
+      connection = Excon.new(url, opts)
+      connection.request(method: method)
+    end
   end
 end

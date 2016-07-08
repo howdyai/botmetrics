@@ -87,30 +87,67 @@ class BotInstance < ActiveRecord::Base
 
   def import_users!
     slack_client = Slack.new(self.token)
-    json_list = slack_client.call('users.list', :get)
 
-    if json_list['ok'] == true
-      BotInstance.with_advisory_lock("team-import-#{self.uid}") do
-        members = json_list['members']
-        Rails.logger.warn "[ImportUsersForBotInstanceJob] importing members: #{members.length} ID: #{self.id}"
+    BotInstance.with_advisory_lock("team-import-#{self.uid}") do
+      object_nesting_level = 0
+      current_user = {}
+      current_profile = {}
 
-        members.each do |user|
-          u = self.users.find_by(uid: user['id']) || self.users.new(uid: user['id'], provider: 'slack')
+      current_user_key = nil
+      current_profile_key = nil
+      _bi = self
 
-          u.user_attributes['nickname'] = user['name']
-          u.user_attributes['email'] = user['profile']['email']
+      parser = JSON::Stream::Parser.new do
+        start_object { object_nesting_level += 1 }
+        end_object do
+          if object_nesting_level.eql? 2
+            _bi.import_user_from_hash!(current_user)
+            current_user = {}
+          elsif object_nesting_level.eql? 3
+            current_user[current_user_key] = current_profile
+            current_profile = {}
+          end
 
-          u.user_attributes['first_name'] = user['profile']['first_name']
-          u.user_attributes['last_name'] = user['profile']['last_name']
-          u.user_attributes['full_name'] = user['profile']['real_name']
+          object_nesting_level -= 1
+        end
 
-          u.user_attributes['timezone'] = user['tz']
-          u.user_attributes['timezone_description'] = user['tz_label']
-          u.user_attributes['timezone_offset'] = user['tz_offset'].to_i
-          u.membership_type = BotInstance.membership_type_from_hash(user)
-          u.save!
+        key do |k|
+          if object_nesting_level.eql? 2
+            current_user_key = k
+          elsif object_nesting_level.eql? 3
+            current_profile_key = k
+          end
+        end
+
+        value do |v|
+          if object_nesting_level.eql? 2
+            current_user[current_user_key] = v
+          elsif object_nesting_level.eql? 3
+            current_profile[current_profile_key] = v
+          end
         end
       end
+
+      slack_client.call('users.list', :get) do |chunk, remaining_bytes, total_bytes|
+        parser << chunk
+      end
     end
+  end
+
+  def import_user_from_hash!(user)
+    u = self.users.find_by(uid: user['id']) || self.users.new(uid: user['id'], provider: 'slack')
+
+    u.user_attributes['nickname'] = user['name']
+    u.user_attributes['email'] = user['profile']['email']
+
+    u.user_attributes['first_name'] = user['profile']['first_name']
+    u.user_attributes['last_name'] = user['profile']['last_name']
+    u.user_attributes['full_name'] = user['profile']['real_name']
+
+    u.user_attributes['timezone'] = user['tz']
+    u.user_attributes['timezone_description'] = user['tz_label']
+    u.user_attributes['timezone_offset'] = user['tz_offset'].to_i
+    u.membership_type = BotInstance.membership_type_from_hash(user)
+    u.save!
   end
 end
