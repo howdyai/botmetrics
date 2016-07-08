@@ -132,6 +132,8 @@ class BotInstance < ActiveRecord::Base
         parser << chunk
       end
     end
+
+    Rails.logger.warn "[ImportUsersForBotInstanceJob] importing members: #{self.members.length} ID: #{self.id}"
   end
 
   def import_user_from_hash!(user)
