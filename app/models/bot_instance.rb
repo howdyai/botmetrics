@@ -133,7 +133,7 @@ class BotInstance < ActiveRecord::Base
       end
     end
 
-    Rails.logger.warn "[ImportUsersForBotInstanceJob] importing members: #{self.members.length} ID: #{self.id}"
+    Rails.logger.warn "[ImportUsersForBotInstanceJob] importing members: #{self.users.count} ID: #{self.id}"
   end
 
   def import_user_from_hash!(user)
