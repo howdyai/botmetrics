@@ -1,6 +1,7 @@
 class ReportsMailer < ApplicationMailer
   def daily_summary(user_id)
     @user = User.find(user_id)
+    return if @user.bots.count == 0
 
     if monday_in_time_zone?(@user.timezone)
       @weekly_dashboarders = {}
