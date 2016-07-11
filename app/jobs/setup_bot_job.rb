@@ -43,7 +43,7 @@ class SetupBotJob < Job
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
 
       Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
-      NotifyAdminOnSlackJob.perform_async(@user.id, title: 'Bot Instance Created', team: @instance.team_name, bot: @instance.bot.name, members: @instance.users.count)
+      NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", team: @instance.team_name, bot: @instance.bot.name, members: @instance.users.count)
     else
       if auth_info['error'] == 'account_inactive'
         @instance.update_attribute(:state, 'disabled')

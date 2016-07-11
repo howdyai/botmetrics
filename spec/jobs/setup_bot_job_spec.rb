@@ -133,7 +133,7 @@ RSpec.describe SetupBotJob do
 
         it 'should notify admins' do
           SetupBotJob.new.perform(bi.id, user.id)
-          expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: 'Bot Instance Created', team: 'My Team', bot: bi.bot.name, members: 3)
+          expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: "New Team Signed Up for #{bi.bot.name}", team: 'My Team', bot: bi.bot.name, members: 3)
         end
 
         it 'should track the event on Mixpanel' do
