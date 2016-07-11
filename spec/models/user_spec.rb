@@ -101,14 +101,16 @@ RSpec.describe User do
           # Users sent
           create(:user, full_name: 'Sent', timezone: 'Asia/Singapore',
           tracking_attributes: Hash(last_daily_summary_sent_at: Time.current.to_i))
-          create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
-          tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago + 1.second).to_i))
 
           # Users to send
+          # 1: sent on previous day
+          create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
+          tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago + 1.second).to_i))
+          # 2: sent exactly 24 hours ago
           to_send = create(:user, full_name: 'To Send', timezone: 'Asia/Singapore',
           tracking_attributes: Hash(last_daily_summary_sent_at: (24.hours.ago - 1.second).to_i))
 
-          expect(User.find_each.map(&:can_send_daily_summary?)).to match_array [false, false, true]
+          expect(User.find_each.map(&:can_send_daily_summary?)).to match_array [false, true, true]
         end
       end
     end

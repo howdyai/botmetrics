@@ -38,8 +38,8 @@ class User < ActiveRecord::Base
   def can_send_daily_summary?
     return true if last_daily_summary_sent_at.nil?
 
-    last_daily_summary_sent_at.present? &&
-    last_daily_summary_sent_at.to_i < (Time.now.in_time_zone(timezone) - 24.hours).to_i
+    # Check if previous email was sent in the previous day
+    Time.now.in_time_zone(timezone).to_date - Time.at(last_daily_summary_sent_at.to_i).in_time_zone(timezone).to_date >= 1
   end
 
   def subscribed_to_daily_summary?

@@ -37,7 +37,20 @@ RSpec.describe DailyReportsService do
       travel_to Time.parse('May 20, 2016 09:00 +0800') do
         create_singaporean(
           email_preferences: { daily_reports: '1' },
-          tracking_attributes: { last_daily_summary_sent_at: (24.hours.ago + 1.second).to_i }
+          tracking_attributes: { last_daily_summary_sent_at: 10.hours.ago.in_time_zone('Singapore').to_i }
+        )
+
+        service.send_now
+
+        expect(ReportsMailer).to have_received(:daily_summary)
+      end
+    end
+
+    it 'sent on the same day, subscribed, 9 am (in user timezone)' do
+      travel_to Time.parse('May 20, 2016 09:00 +0800') do
+        create_singaporean(
+          email_preferences: { daily_reports: '1' },
+          tracking_attributes: { last_daily_summary_sent_at: 9.hours.ago.in_time_zone('Singapore').to_i }
         )
 
         service.send_now
