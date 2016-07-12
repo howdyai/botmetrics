@@ -79,7 +79,7 @@ class EditNotificationController < ApplicationController
   end
 
   def reset_session!
-    if params[:reset].present?
+    if params[:reset].present? || action_name == 'step_1'
       session.delete(:edit_notification_query_set)
     end
   end
