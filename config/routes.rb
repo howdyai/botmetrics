@@ -53,7 +53,7 @@ Rails.application.routes.draw do
 
   root 'static#index'
 
-  get '/.well-known/acme-challenge/:id' => 'static#letsencrypt'
+  get '/.well-known/acme-challenge/:id' => 'static#letsencrypt', protocol: 'http'
   get '/privacy' => 'static#privacy'
 
   Sidekiq::Web.use Rack::Auth::Basic do |username, password|
