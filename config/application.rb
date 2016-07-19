@@ -48,6 +48,8 @@ module BotMetrics
     config.settings.pusher_url            = ENV['PUSHER_URL']
     config.settings.json_web_token_secret = ENV['JSON_WEB_TOKEN_SECRET']
     config.settings.rails_host            = ENV['RAILS_HOST']
+    config.settings.on_premise            = ENV['ON_PREMISE']
+    config.settings.letsencrypt_challenge = ENV['LETSENCRYPT_CHALLENGE']
   end
 end
 
