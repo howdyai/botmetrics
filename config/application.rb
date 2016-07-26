@@ -50,6 +50,8 @@ module BotMetrics
     config.settings.rails_host            = ENV['RAILS_HOST']
     config.settings.on_premise            = ENV['ON_PREMISE']
     config.settings.letsencrypt_challenge = ENV['LETSENCRYPT_CHALLENGE']
+    config.settings.facebook_id           = ENV['FACEBOOK_ID']
+
   end
 end
 

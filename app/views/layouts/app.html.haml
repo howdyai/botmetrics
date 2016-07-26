@@ -11,6 +11,7 @@
     :javascript
       try{Typekit.load();}catch(e){}
     = csrf_meta_tags
+    = render partial: 'facebook'
 
   %body{class: body_classes(yield :body_classes)}
     = render partial: 'layouts/flash', locals: { flash: flash }
