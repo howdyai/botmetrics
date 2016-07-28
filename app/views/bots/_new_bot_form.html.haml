@@ -1,0 +1,8 @@
+= simple_form_for @bot, url: bots_path, method: :post do |f|
+  = f.input :name, as: :hidden, input_html: { value: "My Facebook Bot" }
+  %label.bot-platform
+    What platform is your bot on?
+  .providers
+    - Bot::PROVIDERS.each do |p, enabled|
+      = image_tag "providers/#{p}com.png", data: { provider: p , enabled: enabled }, class: "bot-provider img img-rounded #{p == 'facebook' ? 'active' : ''} #{enabled ? 'enabled' : 'disabled'}", width: '60px'
+  = f.input :provider, as: :hidden, input_html: { value: 'facebook' }

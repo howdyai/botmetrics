@@ -36,27 +36,10 @@ RSpec.describe RegistrationsController do
       expect(user.signed_up_at).to_not be_nil
     end
 
-    it 'should create a new bot' do
-      expect { do_request }.to change(Bot, :count).by(1)
-      bot = Bot.last
-      user = User.last
-
-      expect(bot.owners).to match_array [user]
-      expect(bot.name).to eql 'My First Bot'
-      expect(bot.provider).to eql 'slack'
-    end
-
-    it 'should set confirmed_at for the bot collaborator model created' do
-      expect { do_request }.to change(BotCollaborator, :count).by(1)
-      bc = BotCollaborator.last
-
-      expect(bc.confirmed_at).to_not be_nil
-    end
-
-    it 'should redirect to the bot_path' do
+    it 'should redirect to new_bot_path' do
       do_request
       bot = Bot.last
-      expect(response).to redirect_to bot_path(bot)
+      expect(response).to redirect_to new_bot_path
     end
 
     it 'should identify the user on Mixpanel' do

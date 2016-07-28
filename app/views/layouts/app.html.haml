@@ -73,11 +73,11 @@
             %h4.modal-title#myModalLabel
               Create a New Bot
           .modal-body
-            = simple_form_for current_user.bots.new, url: bots_path, method: :post do |f|
-              = f.input :name, label: "Your Bot's Name", required: true
-              = f.submit 'Start Collecting Metrics'
+            - @bot = current_user.bots.new
+            = render partial: 'bots/new_bot_form'
 
     = render partial: 'ga'
     = render partial: 'mixpanel'
+    = render partial: 'common_js'
     = yield :page_scripts
     = yield :charts_js

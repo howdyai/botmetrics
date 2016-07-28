@@ -1,0 +1,23 @@
+:javascript
+  $(document).ready(function() {
+    console.log('hello');
+
+    var capitalize = function(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
+    $('form.new_bot img.bot-provider').on('click', function(e) {
+      var elem = $(e.target);
+      if(elem.attr('data-enabled') == 'true') {
+        var provider = elem.attr('data-provider');
+        $('img.bot-provider').removeClass('active');
+        elem.addClass('active');
+
+        $('input[name="bot[provider]"]').val(provider);
+        $('input[name="bot[name]"').val("My " + capitalize(provider) + " Bot");
+        $('form.new_bot').submit();
+      } else {
+        alert("We don't have support for " + elem.attr('data-provider') + " yet.");
+      }
+    });
+  });

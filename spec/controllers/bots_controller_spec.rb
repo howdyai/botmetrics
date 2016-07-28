@@ -30,7 +30,7 @@ RSpec.describe BotsController do
       allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
-    let!(:bot_params) { { name: 'My First Bot', webhook_url: 'https://example.com/bot_metrics' } }
+    let!(:bot_params) { { name: 'My First Bot', provider: 'facebook', webhook_url: 'https://example.com/bot_metrics' } }
 
     def do_request
       post :create, bot: bot_params
@@ -45,7 +45,7 @@ RSpec.describe BotsController do
       bot = user.bots.last
       expect(bot.name).to eql 'My First Bot'
       expect(bot.webhook_url).to eql 'https://example.com/bot_metrics'
-      expect(bot.provider).to eql 'slack'
+      expect(bot.provider).to eql 'facebook'
     end
 
     it 'should set confirmed_at for the bot collaborator model created' do

@@ -9,7 +9,6 @@
   .col-md-6
     = simple_form_for [@bot, @instance], url: bot_instances_path, as: :instance, method: :post do |f|
       = f.input :token, label: "Your Bot's Token", required: true
-      = f.input :provider, collection: {Slack: 'slack'}, label: 'What Bot Is It?', selected: 'slack'
       %p.disclaimer
         Support for Kik, Facebook, Telegram and Skype Bots are coming soon! Ping us at
         = link_to 'hello@getbotmetrics.com', 'mailto:hello@getbotmetrics.com'

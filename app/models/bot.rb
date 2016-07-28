@@ -2,7 +2,16 @@ class Bot < ActiveRecord::Base
   include WithUidUniqueness
 
   validates_presence_of  :name, :provider
-  validates_inclusion_of :provider, in: %w(slack kik facebook telegram)
+
+  PROVIDERS = {
+    'facebook' => true,
+    'slack' => true,
+    'kik' => false,
+    'telegram' => false,
+    'amazon' => false
+  }
+
+  validates_inclusion_of :provider, in: PROVIDERS.keys
   validates_format_of    :webhook_url, with: %r(\Ahttps://), if: ->(record) { record.webhook_url.present? }
 
   has_many :instances, class_name: 'BotInstance'

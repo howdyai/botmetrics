@@ -2,9 +2,6 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
       if resource.persisted?
-        bot = Bot.create!(name: 'My First Bot', provider: 'slack')
-        resource.bot_collaborators.create!(bot: bot, collaborator_type: 'owner', confirmed_at: Time.now)
-
         mixpanel_properties = @mixpanel_attributes.dup
         mixpanel_properties.delete('distinct_id')
 
@@ -36,6 +33,6 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(resource)
-    bot_path(resource.bots.first)
+    new_bot_path
   end
 end

@@ -7,6 +7,8 @@ class BotsController < ApplicationController
   def new
     @bot = current_user.bots.build
     TrackMixpanelEventJob.perform_async('Viewed New Bot Page', current_user.id)
+
+    render :new, layout: 'devise'
   end
 
   def index
@@ -15,7 +17,6 @@ class BotsController < ApplicationController
 
   def create
     @bot = Bot.new(bot_params)
-    @bot.provider = 'slack'
 
     if @bot.save
       bc = current_user.bot_collaborators.create(bot: @bot, collaborator_type: 'owner', confirmed_at: Time.now)
@@ -77,6 +78,6 @@ class BotsController < ApplicationController
   protected
 
   def bot_params
-    params.require(:bot).permit(:name, :webhook_url)
+    params.require(:bot).permit(:name, :webhook_url, :provider)
   end
 end

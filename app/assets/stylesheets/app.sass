@@ -305,6 +305,35 @@ body.edit_notification
   .scheduler-options
     margin-top: 20px
 
+body.bots.new
+  .content-container
+    padding-left: 0
+
+body.bots.new
+  form#new_bot
+    .providers
+      margin-top: 20px
+      img
+        width: 100px
+    label.bot-platform
+      display: none
+
+form#new_bot
+  .providers
+    text-align: center
+    padding: 10px 0
+    img
+      display: inline-block
+      opacity: 0.5
+      margin: 0 10px
+      cursor: pointer
+      width: 60px
+      &:hover
+        opacity: 1.0
+        box-shadow: 0 3px 8px #dae1e3
+      &.active
+        opacity: 1.0
+        box-shadow: 0 3px 8px #dae1e3
 body.bots.edit
   .add-teammember
     display: none
