@@ -16,3 +16,5 @@
 .env
 
 *.rdb
+
+.DS_Store
