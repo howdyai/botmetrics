@@ -6,6 +6,11 @@ body.static.privacy
       font-size: 16px
 
 body.static.index
+  .navbar
+    background-image: url('homepage-banner.png')
+    background-position: center bottom
+    background-size: cover
+
   #signup-modal
     text-align: left
     input, label
@@ -23,16 +28,17 @@ body.static.index
           color: #fff
           font-size: 24px !important
           font-weight: 300
-          border-bottom: 1px solid #3bafda
           &:hover
-            border-bottom: 1px solid #fff
+            text-shadow: 0px 1px 10px #000
     .jumbotron
-      background-color: #3bafda !important
+      background-color: transparent
       padding-left: 0
       padding-right: 0
       padding-bottom: 0
       .tagline
         text-align: center
+        p
+          text-shadow: 0px 1px 10px #000
         .signup
           a#get-started
             margin: 0 0 2px 0
@@ -113,8 +119,8 @@ body.static.index
           &.code
             background: url('homepage/code.png') no-repeat left
 
-  .features-container
-    .features-header
+  .benefits-container
+    .benefits-header
       h1
         font-size: 48px
         line-height: 48px
@@ -122,15 +128,42 @@ body.static.index
         font-weight: 300
         font-family: myriad-pro
         padding-top: 20px
-    .features-content
+    .benefits-content
+      padding-top: 20px
       ul
         padding: 20px 0 40px 0
         li
-          margin-left: 40px
           font-size: 24px
           font-weight: 300
           line-height: 42px
-
+      .benefit
+        padding: 40px 55px
+        img, pre
+          box-shadow: 0 10px 40px #ccc
+        h2
+          margin-top: 0
+          font-size: 36px
+          line-height: 36px
+          color: #434a54
+          font-weight: 600
+          font-family: myriad-pro
+          margin-bottom: 30px
+        p, ul li
+          font-size: 24px
+          line-height: 40px
+        .hljs
+          min-height: 300px
+          font-size: 20px
+        .btn
+          margin: 20px 0 20px 0
+          height: 46px
+          padding: 10px 16px
+          font-size: 18px
+          line-height: 1.3333333
+          border-radius: 6px
+          i
+            display: inline-block
+            margin-left: 5px
   .footer-container
     background-color: #2c3138
     ul.links

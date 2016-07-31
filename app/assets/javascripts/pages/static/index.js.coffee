@@ -11,6 +11,7 @@ class App.StaticIndex extends App.AppBase
   run: ->
     $(document).ready ->
       mixpanel.track 'Viewed Home Page'
+      hljs.initHighlightingOnLoad()
 
       $('#signup-modal').on 'shown.bs.modal', (e) ->
         $('#user_email').val($('.signup-email').val())
@@ -19,7 +20,7 @@ class App.StaticIndex extends App.AppBase
         else
           $('#user_password').focus()
 
-      $(document).on 'click', 'a[href^="#"]', (e) ->
+      $(document).on 'click', 'a[href^="#benefits"]', (e) ->
         # target element id
         id = $(@).attr('href')
         # target element

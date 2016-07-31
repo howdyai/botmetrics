@@ -13,6 +13,7 @@
 #= require jsUri/Uri
 #= require cocoon
 #= require local_time
+#= require highlight.js-9.5.0/highlight.pack
 
 #= require utils
 #= require pages/base

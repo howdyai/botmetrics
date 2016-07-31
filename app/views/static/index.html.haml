@@ -11,28 +11,18 @@
         botmetrics
     .collapse.navbar-collapse#header-links
       %ul.nav.navbar-nav.navbar-right
-        %li= link_to 'Features', '#features'
+        %li= link_to 'Benefits', '#benefits'
         %li= link_to 'Sign In', new_user_session_path
         %li= link_to 'Sign Up', new_user_registration_path
     .jumbotron
       .row
         .col-md-12
           .row.tagline
-            %p Collect &amp; Analyze Metrics From Your
-            -#%p.source
-              -#%span.slack
-                -#Slack
-              -#%span.messenger
-                -#Messenger
-              -#%span.kik
-                -#Kik
-              -#%span.telegram
-                -#Telegram
             %p
-              &nbsp;Bot
+              Create Engaged Audiences for your Chat Bot
             .row
               %p.small-print
-                Track Usage, Engagement &amp; Make Informed Product Decisions
+                Gain Insight From Your Bot &middot; Send Personalized Messages &middot; Create Engaged Audiences
             .row.signup
               %input.signup-email.form-control.input-lg{type:"email", placeholder:"Your Email: alice@example.com"}
               %a.btn.btn-lg.btn-success#get-started{'data-toggle' => 'modal', 'data-target' => '#signup-modal'}
@@ -49,30 +39,83 @@
       .modal-body
         = render partial: 'devise/registrations/sign_up_form'
 
-.container-fluid.features-container#features
-  .row.features-header.text-center
+.container-fluid.benefits-container#benefits
+  .row.benefits-header.text-center
     %h1 Why should I use botmetrics?
-  .row.features-content
-    .col-md-6.col-md-offset-3
-      %ul
-        %li
-          Learn
-          %strong how often
-          your bot is being used
-        %li
-          Learn what
-          %strong times of day
-          your bot is being used
-        %li
-          Learn about the
-          %strong teams
-          using your bot
-        %li
-          Send Notifications to Keep your
-          %strong Users Engaged
-        %li
-          It's
-          %strong FREE!
+  .row.benefits-content
+    .benefit.clearfix
+      .col-md-6.col-xs-12
+        %h2 Send Personalized Messages to Users
+        %p
+          Send personalized messages to users who haven't completed the activation process.
+          Find out why it happened &amp; ensure you've remedied the situation.
+        %p
+          %a.btn.btn-lg.btn-success#get-started-personalized-messages{'data-toggle' => 'modal', 'data-target' => '#signup-modal'}
+            Get Started
+            %i.fa.fa-arrow-right
+      .col-md-6.text-center.col-xs-12
+        = image_tag 'homepage/notifications.png', width: '700px', class: 'img img-responsive img-feature img-thumbnail img-rounded'
+    .benefit.clearfix
+      .col-md-6.col-xs-12.col-md-push-6
+        %h2 Know your Users Intimately
+        %p
+          Find out how your users are using your bot today, what part of the world they belong to, demographic information across multiple messenger platforms: Facebook Messenger, Kik and Slack.
+        %p
+          %a.btn.btn-lg.btn-success#get-started-know-users{'data-toggle' => 'modal', 'data-target' => '#signup-modal'}
+            Get Started
+            %i.fa.fa-arrow-right
+      .col-md-6.text-center.col-xs-12.col-md-pull-6
+        = image_tag 'homepage/analyze.png', width: '700px', class: 'img img-responsive img-feature img-thumbnail img-rounded'
+    .benefit.clearfix
+      .col-md-6.col-xs-12
+        %h2 A Single Line of Code
+        %p
+          Your engineering team can integrate Botmetrics with a
+          = link_to 'single line of code', 'http://code.getbotmetrics.com'
+          \. SDK's available in Node.JS, Ruby, Go and HTTP.
+        %p
+          %a.btn.btn-lg.btn-success#get-started-single-line{'data-toggle' => 'modal', 'data-target' => '#signup-modal'}
+            Get Started
+            %i.fa.fa-arrow-right
+      .col-md-6.col-xs-12
+        %ul.nav.nav-pills{role: 'tablist'}
+          %li.active{role: 'presentation'}
+            %a{href: '#nodejs', data: { toggle: 'pill' }, role: 'tab'} node.js
+          %li{role: 'presentation'}
+            %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
+          %li{role: 'presentation'}
+            %a{href: '#go', data: { toggle: 'pill' }, role: 'tab'} go
+          %li{role: 'presentation'}
+            %a{href: '#curl', data: { toggle: 'pill' }, role: 'tab'} cUrl
+        .tab-content
+          .tab-pane.active#nodejs{role: 'tabpanel'}
+            %pre
+              %code.hljs.javascript
+                :preserve
+                  // Set up the API Key and Bot ID as env vars
+                  BotMetrics.registerBot('token', function(err, status) {
+                    // Handle the registration of the bot here
+                  });
+          .tab-pane#ruby{role: 'tabpanel'}
+            %pre
+              %code.hljs.ruby
+                :preserve
+                  # Set up the API Key and Bot ID as env vars
+                  BotMetrics::Client.new.register_bot!('token')
+          .tab-pane#go{role: 'tabpanel'}
+            %pre#go
+              %code.hljs.go
+                :preserve
+                  botmetrics.NewBotmetricsClient("key", "bot-id").
+                             RegisterBot('token', 0)
+          .tab-pane#curl{role: 'tabpanel'}
+            %pre#curl
+              %code.hljs.bash
+                :preserve
+                  curl -X POST \
+                  -H "Authorization: key" \
+                  https://www.getbotmetrics.com/bots/id/instances \
+                  -d "format=json&instance[token]=token"
 
 .container-fluid.footer-container
   .row
