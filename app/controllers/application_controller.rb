@@ -8,12 +8,11 @@ class ApplicationController < ActionController::Base
   include Mixpanelable
 
   protected
+  def record_not_found
+    head :not_found
+  end
 
-    def record_not_found
-      head :not_found
-    end
-
-    def find_bot
-      @bot = current_user.bots.find_by!(uid: params[:bot_id] || params[:id])
-    end
+  def find_bot
+    @bot = current_user.bots.find_by!(uid: params[:bot_id] || params[:id])
+  end
 end

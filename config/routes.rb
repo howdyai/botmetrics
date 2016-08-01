@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: :registrations, invitations: :invitations }
 
   resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
+    resources :events, only: [:create]
+
     resources :dashboards, only: [] do
       collection do
         get :new_bots
