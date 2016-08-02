@@ -55,6 +55,8 @@ gem 'json-stream',              '~> 0.2.1', require: 'json/stream'
 # Cron
 gem 'clockwork'
 
+gem 'font_assets',              '~> 0.1.12'
+
 group :development do
   gem 'dotenv',                   '~> 2.1.1'
   gem 'foreman',                  '~> 0.82.0'
