@@ -275,4 +275,22 @@ RSpec.describe BotInstance do
       end
     end
   end
+
+  describe '#bot_team_name' do
+    context 'provider is slack' do
+      let(:bi) { create(:bot_instance, :with_attributes) }
+
+      it 'Team name should be T123' do
+        expect(bi.bot_team_name).to eql('T123')
+      end
+    end
+
+    context 'provider is facebook' do
+      let(:bi) { create(:bot_instance, :with_attributes_facebook, provider: :facebook) }
+
+      it 'Name should be N123' do
+        expect(bi.bot_team_name).to eql('N123')
+      end
+    end
+  end
 end

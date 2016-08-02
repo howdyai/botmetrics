@@ -13,5 +13,11 @@ FactoryGirl.define do
         }
       end
     end
+
+    trait :with_attributes_facebook do
+      instance_attributes do
+        { 'name' => 'N123' }
+      end
+    end
   end
 end

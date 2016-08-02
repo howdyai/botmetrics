@@ -13,4 +13,12 @@ class Bot < ActiveRecord::Base
 
   has_many :notifications
   has_many :webhook_events
+
+  def build_instance(params)
+    fb_instance = instances.find_by(provider: :facebook)
+    if fb_instance.present? && fb_instance.provider == provider
+      return fb_instance.assign_attributes(params) || fb_instance
+    end
+    instances.build(params)
+  end
 end

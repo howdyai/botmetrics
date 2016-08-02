@@ -6,7 +6,7 @@ RSpec.describe AlertsMailer do
       id: 1,
       bot: bot,
       collaborators: collaborators,
-      team_name: 'T123', team_url: 'T123.slack.com',
+      bot_team_name: 'T321', team_name: 'T123', team_url: 'T123.slack.com',
       users: [double(:user), double(:user)]
     )
   end

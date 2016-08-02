@@ -58,7 +58,6 @@ gem 'clockwork'
 gem 'font_assets',              '~> 0.1.12'
 
 group :development do
-  gem 'dotenv',                   '~> 2.1.1'
   gem 'foreman',                  '~> 0.82.0'
   gem 'quiet_assets',             '~> 1.1.0'
   gem 'git',                      '~> 1.3.0'
@@ -68,6 +67,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'dotenv',                   '~> 2.1.1'
   gem 'rspec-rails',              '~> 3.4.2'
   gem 'rspec-its',                '~> 1.2.0'
   gem 'byebug',                   '~> 2.0.0'

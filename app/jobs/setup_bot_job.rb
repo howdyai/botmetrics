@@ -3,9 +3,7 @@ class SetupBotJob < Job
     @instance = BotInstance.find(bot_instance_id)
     @user = User.find(user_id)
 
-    case @instance.provider
-    when 'slack' then setup_slack_bot!
-    end
+    send("setup_#{@instance.provider}_bot!")
   end
 
   private
@@ -52,6 +50,37 @@ class SetupBotJob < Job
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: auth_info['error'])
+    end
+  end
+
+  def setup_facebook_bot!
+    facebook = Facebook.new(@instance.token)
+    auth_info = facebook.call('me', :get)
+
+    if auth_info['status'] == Facebook::OK
+      @instance.update_attributes!(
+        uid: auth_info['id'],
+        state: 'enabled',
+        token: @instance.token,
+        instance_attributes: {
+          name: auth_info['name']
+        }
+      )
+
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
+
+      Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
+      NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", team: @instance.name, bot: @instance.bot.name, members: @instance.users.count)
+    else
+      error_msg = auth_info.dig('error', 'message')
+      if error_msg =~ Regexp.new(Facebook::DELETED)
+        @instance.update_attribute(:state, 'disabled')
+        # @instance.events.create!(event_type: 'bot_disabled', provider: @instance.provider)
+      end
+      sleep(1)
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: error_msg}.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: error_msg)
     end
   end
 end

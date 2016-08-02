@@ -131,6 +131,9 @@ RSpec.configure do |config|
 
   # Allow for --only-failures option
   config.example_status_persistence_file_path = 'tmp/rspec-failures.txt'
+
+  # load env variables
+  Dotenv.load
 end
 
 Shoulda::Matchers.configure do |config|

@@ -10,7 +10,7 @@ class BotInstancesController < ApplicationController
   end
 
   def create
-    @instance = @bot.instances.build(instance_params)
+    @instance = @bot.build_instance(instance_params)
     @instance.provider = @bot.provider
     if (created_at = params[:instance][:created_at])
       @instance.created_at = Time.at(created_at.to_i)

@@ -20,7 +20,7 @@ class BotInstance < ActiveRecord::Base
   delegate :owners, to: :bot
   delegate :collaborators, to: :bot
 
-  store_accessor :instance_attributes, :team_id, :team_name, :team_url
+  store_accessor :instance_attributes, :team_id, :team_name, :team_url, :name
 
   def self.find_by_bot_and_team!(bot, team_id)
     bot_instance = BotInstance.where(bot_id: bot.id).where("instance_attributes->>'team_id' = ?", team_id).first
@@ -151,5 +151,14 @@ class BotInstance < ActiveRecord::Base
     u.user_attributes['timezone_offset'] = user['tz_offset'].to_i
     u.membership_type = BotInstance.membership_type_from_hash(user)
     u.save!
+  end
+
+  def bot_team_name
+    case provider
+    when 'facebook'
+      name
+    when 'slack'
+      team_name
+    end
   end
 end

@@ -1,11 +1,13 @@
 RSpec.describe SetupBotJob do
-  let(:api) { ENV['SLACK_API_URL'] }
+  let(:slack_api) { ENV['SLACK_API_URL'] }
+  let(:facebook_api) { ENV['FACEBOOK_API_URL'] }
 
-  let!(:bi)   { create :bot_instance, token: 'token' }
   let!(:user) { create :user }
 
   describe '#perform' do
     context 'slack' do
+      let!(:bi)   { create :bot_instance, token: 'token' }
+
       before do
         allow_any_instance_of(Object).to receive(:sleep)
         bi.update_attribute(:provider, 'slack')
@@ -77,9 +79,9 @@ RSpec.describe SetupBotJob do
 
         before do
           allow(Relax::Bot).to receive(:start!)
-          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{slack_api}/auth.test?token=#{bi.token}").
             to_return(status: 200, body: auth_test_response)
-          stub_request(:get, "#{api}/users.list?token=#{bi.token}").
+          stub_request(:get, "#{slack_api}/users.list?token=#{bi.token}").
             to_return(status: 200, body: users_list_response)
 
           allow(PusherJob).to receive(:perform_async)
@@ -101,9 +103,9 @@ RSpec.describe SetupBotJob do
           let!(:existing_bi) { create :bot_instance, bot: bi.bot, uid: 'U12345', state: 'enabled', token: 'old-token', instance_attributes: { team_id: 'T12345', team_name: 'My Team', team_url: 'https://myteam.slack.com' } }
 
           before do
-            stub_request(:get, "#{api}/auth.test?token=#{existing_bi.token}").
+            stub_request(:get, "#{slack_api}/auth.test?token=#{existing_bi.token}").
               to_return(status: 200, body: auth_test_response)
-            stub_request(:get, "#{api}/users.list?token=#{existing_bi.token}").
+            stub_request(:get, "#{slack_api}/users.list?token=#{existing_bi.token}").
               to_return(status: 200, body: users_list_response)
           end
 
@@ -248,7 +250,7 @@ RSpec.describe SetupBotJob do
 
       context 'when token is invalid' do
         before do
-          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{slack_api}/auth.test?token=#{bi.token}").
                     to_return(status: 200, body: { ok: false, error: "invalid_token" }.to_json)
           allow(PusherJob).to receive(:perform_async)
         end
@@ -274,7 +276,7 @@ RSpec.describe SetupBotJob do
 
       context 'when token is for a disabled bot' do
         before do
-          stub_request(:get, "#{api}/auth.test?token=#{bi.token}").
+          stub_request(:get, "#{slack_api}/auth.test?token=#{bi.token}").
                     to_return(status: 200, body: { ok: false, error: "account_inactive" }.to_json)
           allow(PusherJob).to receive(:perform_async)
         end
@@ -306,6 +308,113 @@ RSpec.describe SetupBotJob do
         it 'should track the event on Mixpanel' do
           SetupBotJob.new.perform(bi.id, user.id)
           expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'account_inactive')
+        end
+      end
+    end
+
+    context 'facebook' do
+      let!(:bi_facebook)   { create :bot_instance, token: 'token', provider: 'facebook' }
+
+      before do
+        allow_any_instance_of(Object).to receive(:sleep)
+        allow(TrackMixpanelEventJob).to receive(:perform_async)
+      end
+
+      context 'when token is valid' do
+        let!(:auth_test_response) do
+          { name: "My Team", id: "T12345", status: 200 }.to_json
+        end
+
+        before do
+          stub_request(:get, "#{facebook_api}/me?access_token=#{bi_facebook.token}").
+            with(:headers => {'Host'=>'graph.facebook.com', 'User-Agent'=>'excon/0.49.0'}).
+            to_return(status: 200, body: auth_test_response)
+
+          allow(PusherJob).to receive(:perform_async)
+          allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
+          allow(NotifyAdminOnSlackJob).to receive(:perform_async)
+        end
+
+        it 'should enable the bot and setup name' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          bi_facebook.reload
+          expect(bi_facebook.state).to eql 'enabled'
+          expect(bi_facebook.uid).to eql 'T12345'
+          expect(bi_facebook.instance_attributes['name']).to eql 'My Team'
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook.id}", "{\"ok\":true}")
+        end
+
+        it 'should send an alert' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(bi_facebook.id, user.id)
+        end
+
+        it 'should notify admins' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: "New Team Signed Up for #{bi_facebook.bot.name}", team: 'My Team', bot: bi_facebook.bot.name, members: 0)
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'enabled')
+        end
+      end
+
+      context 'when token is invalid' do
+        before do
+          stub_request(:get, "#{facebook_api}/me?access_token=#{bi_facebook.token}").
+                    to_return(status: 400, body: { error: { message: 'Invalid OAuth access token.' } }.to_json)
+          allow(PusherJob).to receive(:perform_async)
+        end
+
+        it 'should keep the bot in pending state' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          bi_facebook.reload
+          expect(bi_facebook.state).to eql 'pending'
+          expect(bi_facebook.uid).to be_nil
+          expect(bi_facebook.instance_attributes).to eql({})
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook.id}", "{\"ok\":false,\"error\":\"Invalid OAuth access token.\"}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'Invalid OAuth access token.')
+        end
+      end
+
+      context 'when token is for a disabled bot' do
+        before do
+          stub_request(:get, "#{facebook_api}/me?access_token=#{bi_facebook.token}").
+                    to_return(status: 400, body: { ok: false, error: {
+                                                   message: 'This Page access token belongs to a Page that has been deleted.',
+                                                 } }.to_json)
+          allow(PusherJob).to receive(:perform_async)
+        end
+
+        it 'should disable the bot' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          bi_facebook.reload
+          expect(bi_facebook.state).to eql 'disabled'
+          expect(bi_facebook.uid).to be_nil
+          expect(bi_facebook.instance_attributes).to eql({})
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook.id}", "{\"ok\":false,\"error\":\"This Page access token belongs to a Page that has been deleted.\"}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'This Page access token belongs to a Page that has been deleted.')
         end
       end
     end
