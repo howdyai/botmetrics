@@ -1,20 +1,18 @@
 .secondary-menu.row
   .col-md-12
-    - if @bot.instances.legit.count == 0
-      %h2 Let's setup the first instance of your bot
-    - else
-      %h2 Setup Another Instance of your Bot
+    %h2= new_instance_header(@bot)
 
 .row
-  .col-md-6
+  .col-md-5
     = simple_form_for [@bot, @instance], url: bot_instances_path, as: :instance, method: :post do |f|
-      = f.input :token, label: "Your Bot's Token", required: true
-      %p.disclaimer
-        Support for Kik, Facebook, Telegram and Skype Bots are coming soon! Ping us at
-        = link_to 'hello@getbotmetrics.com', 'mailto:hello@getbotmetrics.com'
-        for more info.
-      = f.submit 'Start Collecting Metrics'
-    %hr
-    .api-instructions
-      Or you can use the API with curl, Ruby or Node.JS:
-      = render partial: 'bots/api'
+      = f.input :token, label: new_instance_token_label(@bot), required: true
+      %p.disclaimer= new_instance_disclaimer(@bot)
+      = f.submit new_instance_submit_text(@bot)
+
+    - if @bot.provider == 'slack'
+      %hr
+      .api-instructions
+        Or you can use the API with curl, Ruby or Node.JS:
+        = render partial: 'bots/api'
+  .col-md-7.onboarding-help
+    = new_instance_onboarding_image(@bot)
