@@ -37,7 +37,10 @@
 
     %h2.api API
     %hr
-    = render partial: 'api'
+    - if @bot.provider == 'slack'
+      = render partial: 'api_slack'
+    - else
+      = render partial: 'api_others'
 
 - content_for :page_scripts do
   :javascript

@@ -1,23 +1,32 @@
 .row
-  .col-md-4.col-md-offset-4
-    %h3.text-center
-      Setting Up an Instance of #{@bot.name}
-    %p.intro
-      We are setting up metrics collection for your bot:
+  .col-md-6.col-md-offset-3
+    %h3.text-center= setting_up_header(@bot)
+    %p.intro= setting_up_intro(@bot)
     .progress.progress-striped.active
       .progress-bar.progress-bar-success{role:"progressbar", 'aria-valuenow' => "50", 'aria-valuemin' => "0", 'aria-valuemax' => "100", style: "width: 50%"}
 
     .setup-done
-      %p.status
-        We've setup metrics collection for your bot. You can go to your dashboard to start analyzing how your bot is doing.
-      %p.api
-        You can use the API with curl, Ruby or Node.JS:
-      = render partial: 'bots/api'
+      - if @bot.provider == 'slack'
+        %p.status
+          We've setup metrics collection for your bot. You can go to your dashboard to start analyzing how your bot is doing.
+        %p.api
+          You can use the API with curl, Ruby or Node.JS:
+        = render partial: 'bots/api_slack'
+      - else
+        %p.status
+          %strong Next:
+          Set up tracking in your bot application by adding this snippet of code:
+
+        = render partial: 'bots/api_others'
 
       .go-to-dashboard.text-center
-        = link_to 'Go To Your Bot Dashboard', bot_path(@bot), class: 'btn btn-lg btn-success'
-      .create-new-instance.text-center
-        = link_to 'Create another instance', new_bot_instance_path(@bot), class: 'btn btn-lg btn-success'
+        = link_to bot_path(@bot), class: 'btn btn-lg btn-success' do
+          Go To your Bot Dashboard
+          %i.fa.fa-arrow-right
+
+      - if @bot.provider == 'slack'
+        .create-new-instance.text-center
+          = link_to 'Create another instance', new_bot_instance_path(@bot), class: 'btn btn-lg btn-success'
 
 - content_for :page_scripts do
   :javascript

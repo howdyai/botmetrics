@@ -39,4 +39,22 @@ module BotInstancesHelper
       image_tag('onboarding/facebook', class: 'img img-responsive img-thumbnail')
     end
   end
+
+  def setting_up_header(bot)
+    case bot.provider
+    when 'slack'
+      "Setting Up an Instance of #{bot.name}"
+    when 'facebook'
+      "Setting Up #{bot.name}"
+    end
+  end
+
+  def setting_up_intro(bot)
+    case bot.provider
+    when 'slack'
+      "We are setting up metrics collection for your bot..."
+    when 'facebook'
+      "We are setting up your bot..."
+    end
+  end
 end
