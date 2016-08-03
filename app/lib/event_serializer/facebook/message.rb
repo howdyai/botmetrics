@@ -4,7 +4,8 @@ class EventSerializer::Facebook::Message
   end
 
   def serialize
-    @data.dig(:message, :is_echo) ? echo : message
+    serialized = @data.dig(:message, :is_echo) ? echo : message
+    { data: serialized, recip_info: recip_info }
   end
 
 private
@@ -14,10 +15,20 @@ private
   end
 
   def message
-    base_event_attributes.merge(event_type: 'message', quick_reply: quick_reply)
+    base_event_attributes.merge(event_type: 'message')
   end
 
   def base_event_attributes
+    {
+      is_for_bot: true,
+      is_im: true,
+      text: text,
+      provider: 'facebook',
+      event_attributes: event_attributes
+    }
+  end
+
+  def event_attributes
     {
       attachments: attachments,
       delivered: false,
@@ -46,5 +57,12 @@ private
     else
       true
     end
+  end
+
+  def recip_info
+    {
+      sender_id: @data.dig(:sender, :id),
+      recipient_id: @data.dig(:recipient, :id)
+    }
   end
 end

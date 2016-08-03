@@ -8,11 +8,7 @@ class EventSerializer::Facebook
   end
 
   def serialize
-    if @data.is_a?(Hash)
-      serializer(@data).serialize
-    else
-      @data.map { |data| serializer(data).serialize }
-    end
+    serializer(@data).serialize
   end
 
 private
