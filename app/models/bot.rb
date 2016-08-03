@@ -30,4 +30,8 @@ class Bot < ActiveRecord::Base
     end
     instances.build(params)
   end
+
+  def events
+    Event.where(bot_instance_id: self.instances.select(:id))
+  end
 end

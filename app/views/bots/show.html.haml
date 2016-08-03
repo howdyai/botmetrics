@@ -8,21 +8,30 @@
       = link_to 'This Month', bot_path(@bot, group_by: 'this-month'), class: (@group_by == 'this-month' ? 'btn active' : 'btn')
       = link_to 'All Time', bot_path(@bot, group_by: 'all-time'), class: (@group_by == 'all-time' ? 'btn active' : 'btn')
 
+- if @bot.events.count == 0
+  .row.integrate-cta.alert-danger
+    %p
+      It looks like we haven't received any events from your bot yet.
+      Integrate the
+      = link_to 'Botmetrics SDK', edit_bot_path(@bot), target: '_blank'
+      in your codebase &ndash; it takes less than 5 minutes to get set up!
+
 .stats.row
-  = link_to new_bots_bot_dashboards_path(@bot) do
-    .stat.col-sm-6.col-md-3
-      %h3 Bots Installed
-      = formatted_growth(@dashboarder.new_bots_growth)
-      %p.number= number_with_delimiter(@dashboarder.new_bots_count)
-      - if @show_trends
-        = line_chart @dashboarder.new_bots, dashboard_chartjs_opts
-  = link_to disabled_bots_bot_dashboards_path(@bot) do
-    .stat.col-sm-6.col-md-3
-      %h3 Bots Uninstalled
-      = formatted_growth(@dashboarder.disabled_bots_growth)
-      %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
-      - if @show_trends
-        = line_chart @dashboarder.disabled_bots, dashboard_chartjs_opts
+  - if @bot.provider == 'slack'
+    = link_to new_bots_bot_dashboards_path(@bot) do
+      .stat.col-sm-6.col-md-3
+        %h3 Bots Installed
+        = formatted_growth(@dashboarder.new_bots_growth)
+        %p.number= number_with_delimiter(@dashboarder.new_bots_count)
+        - if @show_trends
+          = line_chart @dashboarder.new_bots, dashboard_chartjs_opts
+    = link_to disabled_bots_bot_dashboards_path(@bot) do
+      .stat.col-sm-6.col-md-3
+        %h3 Bots Uninstalled
+        = formatted_growth(@dashboarder.disabled_bots_growth)
+        %p.number= number_with_delimiter(@dashboarder.disabled_bots_count)
+        - if @show_trends
+          = line_chart @dashboarder.disabled_bots, dashboard_chartjs_opts
   = link_to users_bot_dashboards_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 New Users
@@ -30,13 +39,14 @@
       %p.number= number_with_delimiter(@dashboarder.new_users_count)
       - if @show_trends
         = line_chart @dashboarder.new_users, dashboard_chartjs_opts
-  = link_to all_messages_bot_dashboards_path(@bot) do
-    .stat.col-sm-6.col-md-3
-      %h3 Messages
-      = formatted_growth(@dashboarder.messages_growth)
-      %p.number= number_with_delimiter(@dashboarder.messages_count)
-      - if @show_trends
-        = line_chart @dashboarder.messages, dashboard_chartjs_opts
+  - if @bot.provider == 'slack'
+    = link_to all_messages_bot_dashboards_path(@bot) do
+      .stat.col-sm-6.col-md-3
+        %h3 Messages
+        = formatted_growth(@dashboarder.messages_growth)
+        %p.number= number_with_delimiter(@dashboarder.messages_count)
+        - if @show_trends
+          = line_chart @dashboarder.messages, dashboard_chartjs_opts
   = link_to messages_to_bot_bot_dashboards_path(@bot) do
     .stat.col-sm-6.col-md-3
       %h3 Messages To Bot
