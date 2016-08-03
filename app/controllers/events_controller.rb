@@ -5,4 +5,10 @@ class EventsController < ApplicationController
   def create
     render nothing: true, status: :accepted
   end
+
+private
+
+  def events_service
+    events_service ||= EventsService.new
+  end
 end
