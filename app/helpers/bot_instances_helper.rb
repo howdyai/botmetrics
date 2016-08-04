@@ -36,7 +36,7 @@ module BotInstancesHelper
   def new_instance_onboarding_image(bot)
     case bot.provider
     when 'facebook'
-      image_tag('onboarding/facebook', class: 'img img-responsive img-thumbnail')
+      image_tag('onboarding/facebook.png', class: 'img img-responsive img-thumbnail')
     end
   end
 
