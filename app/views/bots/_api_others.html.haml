@@ -1,56 +1,57 @@
-%ul.nav.nav-pills.nav-code{role: 'tablist'}
-  %li.active{role: 'presentation'}
-    %a{href: '#nodejs', data: { toggle: 'pill' }, role: 'tab'} node.js
-  %li{role: 'presentation'}
-    %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
-  %li{role: 'presentation'}
-    %a{href: '#go', data: { toggle: 'pill' }, role: 'tab'} go
-.tab-content.track-code-samples
-  .tab-pane.active#nodejs{role: 'tabpanel'}
-    %pre
-      %code.hljs.javascript
-        :preserve
-          // Remember to run `npm install --save botmetrics` in your app.
-          //
-          // If you are using an Express-based app get the 'webhook' parameter
-          // from the post data and pass it as argument to Botmetrics
-          // for example:
+.api
+  %ul.nav.nav-pills.nav-code{role: 'tablist'}
+    %li.active{role: 'presentation'}
+      %a{href: '#nodejs', data: { toggle: 'pill' }, role: 'tab'} node.js
+    %li{role: 'presentation'}
+      %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
+    %li{role: 'presentation'}
+      %a{href: '#go', data: { toggle: 'pill' }, role: 'tab'} go
+  .tab-content.track-code-samples
+    .tab-pane.active#nodejs{role: 'tabpanel'}
+      %pre
+        %code.hljs.javascript
+          :preserve
+            // Remember to run `npm install --save botmetrics` in your app.
+            //
+            // If you are using an Express-based app get the 'webhook' parameter
+            // from the post data and pass it as argument to Botmetrics
+            // for example:
 
-          app.post('/webhooks', function(req, res) {
-            BotMetrics.track(req.webhook, {
+            app.post('/webhooks', function(req, res) {
+              BotMetrics.track(req.webhook, {
+                api_key: "#{current_user.api_key}",
+                bot_id: "#{@bot.uid}"
+              });
+            });
+    .tab-pane#ruby{role: 'tabpanel'}
+      %pre
+        %code.hljs.ruby
+          :preserve
+            # Remember to run `gem install botmetrics-rb`
+            # or add `botmetrics-rb` to your Gemfile.
+            #
+            # Send the 'webhook' parameter to Botmetrics using the 'track' API:
+            # for e.g. in Rails/Sinatra:
+
+            BotMetrics::Client.new(
               api_key: "#{current_user.api_key}",
               bot_id: "#{@bot.uid}"
-            });
-          });
-  .tab-pane#ruby{role: 'tabpanel'}
-    %pre
-      %code.hljs.ruby
-        :preserve
-          # Remember to run `gem install botmetrics-rb`
-          # or add `botmetrics-rb` to your Gemfile.
-          #
-          # Send the 'webhook' parameter to Botmetrics using the 'track' API:
-          # for e.g. in Rails/Sinatra:
+            ).track(params[:webhook])
+    .tab-pane#go{role: 'tabpanel'}
+      %pre#go
+        %code.hljs.go
+          :preserve
+            // In your Go Request handler, make a call to client.Track
+            // with the post form value for the key "webhook"
+            import "github.com/botmetrics/go-botmetrics"
 
-          BotMetrics::Client.new(
-            api_key: "#{current_user.api_key}",
-            bot_id: "#{@bot.uid}"
-          ).track(params[:webhook])
-  .tab-pane#go{role: 'tabpanel'}
-    %pre#go
-      %code.hljs.go
-        :preserve
-          // In your Go Request handler, make a call to client.Track
-          // with the post form value for the key "webhook"
-          import "github.com/botmetrics/go-botmetrics"
-
-          http.HandleFunc("/webhooks", func(w http.ResponseWriter, r *http.Request) {
-            client, err := botmetrics.NewBotMetricsClient(
-              "#{current_user.api_key}",
-              "#{@bot.uid}"
-            )
-            if err != nil {
-              client.Track(r.PostFormValue("webhook"))
-            }
-          })
+            http.HandleFunc("/webhooks", func(w http.ResponseWriter, r *http.Request) {
+              client, err := botmetrics.NewBotMetricsClient(
+                "#{current_user.api_key}",
+                "#{@bot.uid}"
+              )
+              if err != nil {
+                client.Track(r.PostFormValue("webhook"))
+              }
+            })
 

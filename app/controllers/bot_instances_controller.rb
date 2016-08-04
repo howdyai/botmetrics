@@ -32,8 +32,37 @@ class BotInstancesController < ApplicationController
     end
   end
 
+  def edit
+    if @bot.provider != 'facebook'
+      redirect_to(bot_path(@bot)) && return
+    end
+
+    @instance = @bot.instances.find(params[:id])
+    TrackMixpanelEventJob.perform_async('Viewed Edit Bot Instance Page', current_user.id)
+  end
+
+  def update
+    if @bot.provider != 'facebook'
+      redirect_to(bot_path(@bot)) && return
+    end
+
+    @instance = @bot.instances.find(params[:id])
+
+    if @instance.update_attributes(update_instance_params)
+      TrackMixpanelEventJob.perform_async('Started Bot Instance Update', current_user.id)
+      SetupBotJob.perform_async(@instance.id, current_user.id)
+
+      respond_to do |format|
+        format.html { redirect_to setting_up_bot_instance_path(@bot, @instance) }
+      end
+    else
+      respond_to do |format|
+        format.html { render :edit }
+      end
+    end
+  end
+
   def show
-    puts "params[:id] -> #{params[:id]}"
     @instance = @bot.instances.find(params[:id])
     render json: { state: @instance.state }
   end
@@ -43,8 +72,11 @@ class BotInstancesController < ApplicationController
   end
 
   protected
-
   def instance_params
     params.require(:instance).permit(:token, :created_at)
+  end
+
+  def update_instance_params
+    params.require(:instance).permit(:token)
   end
 end

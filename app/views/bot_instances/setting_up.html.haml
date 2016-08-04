@@ -27,6 +27,9 @@
       - if @bot.provider == 'slack'
         .create-new-instance.text-center
           = link_to 'Create another instance', new_bot_instance_path(@bot), class: 'btn btn-lg btn-success'
+      - elsif @bot.provider == 'facebook'
+        .update-instance.text-center
+          = link_to 'Update Page Access Token', edit_bot_instance_path(@bot, @instance), class: 'btn btn-lg btn-success'
 
 - content_for :page_scripts do
   :javascript

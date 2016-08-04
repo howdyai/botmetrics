@@ -1,0 +1,15 @@
+.row
+  .col-md-5
+    = simple_form_for [@bot, @instance], url: bot_instances_path, as: :instance, method: :post do |f|
+      = f.input :token, label: new_instance_token_label(@bot), required: true
+      %p.disclaimer= new_instance_disclaimer(@bot)
+      = f.submit new_instance_submit_text(@bot)
+
+    - if @bot.provider == 'slack'
+      %hr
+      .api-instructions
+        Or you can use the API with curl, Ruby or Node.JS:
+        = render partial: 'bots/api'
+  .col-md-7.onboarding-help
+    = new_instance_onboarding_image(@bot)
+
