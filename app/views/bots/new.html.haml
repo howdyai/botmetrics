@@ -1,6 +1,5 @@
 .row
   .col-md-6.col-md-offset-3
-    - if current_user.bots.count == 0
-      %h3
-        Let's create your first bot. What platform is it on?
+    %h3.text-center
+      = "#{current_user.bots.count == 0 ? "Let's create your first bot. " : ""}What platform is it on?"
     = render partial: 'new_bot_form'
