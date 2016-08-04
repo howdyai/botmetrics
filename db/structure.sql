@@ -23,20 +23,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
---
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
-
-
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -91,7 +77,8 @@ CREATE TABLE bot_instances (
     provider character varying NOT NULL,
     state character varying DEFAULT 'pending'::character varying NOT NULL,
     instance_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
-    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
+    CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
+    CONSTRAINT validate_attributes_name CHECK ((((((((instance_attributes ->> 'name'::text) IS NOT NULL) AND (length((instance_attributes ->> 'name'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((state)::text <> 'pending'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL))) OR ((provider)::text <> 'facebook'::text)))
 );
 
 
@@ -209,9 +196,9 @@ CREATE TABLE events (
     text text,
     CONSTRAINT valid_event_type_on_events CHECK (((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL))) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
-    CONSTRAINT validate_attributes_channel CHECK (((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL)))),
-    CONSTRAINT validate_attributes_reaction CHECK (((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)))),
-    CONSTRAINT validate_attributes_timestamp CHECK (((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message'::text)) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))))
+    CONSTRAINT validate_attributes_channel CHECK (((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND (((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text))) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text)) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_reaction CHECK (((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND (((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text))) AND ((event_type)::text = 'message_reaction'::text)) OR (((((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text)) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)))),
+    CONSTRAINT validate_attributes_timestamp CHECK (((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND (((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text))) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text)) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))))
 );
 
 
@@ -897,10 +884,6 @@ SET search_path TO "$user",public;
 
 INSERT INTO schema_migrations (version) VALUES ('20160421235326');
 
-INSERT INTO schema_migrations (version) VALUES ('20160422181209');
-
-INSERT INTO schema_migrations (version) VALUES ('20160422182306');
-
 INSERT INTO schema_migrations (version) VALUES ('20160422202903');
 
 INSERT INTO schema_migrations (version) VALUES ('20160422204548');
@@ -1046,3 +1029,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160630202830');
 INSERT INTO schema_migrations (version) VALUES ('20160706164507');
 
 INSERT INTO schema_migrations (version) VALUES ('20160706193135');
+
+INSERT INTO schema_migrations (version) VALUES ('20160802121411');
+
+INSERT INTO schema_migrations (version) VALUES ('20160802123303');
+
