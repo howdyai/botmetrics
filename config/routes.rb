@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     get :verifying_webhook
     get :webhook_events, on: :member
 
-    resources :instances, only: [:new, :create], controller: :bot_instances do
+    resources :instances, only: [:new, :create, :show], controller: :bot_instances do
       member do
         get :setting_up
       end

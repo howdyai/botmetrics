@@ -32,6 +32,12 @@ class BotInstancesController < ApplicationController
     end
   end
 
+  def show
+    puts "params[:id] -> #{params[:id]}"
+    @instance = @bot.instances.find(params[:id])
+    render json: { state: @instance.state }
+  end
+
   def setting_up
     @instance = @bot.instances.find(params[:id])
   end

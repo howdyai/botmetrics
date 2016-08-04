@@ -35,11 +35,13 @@
           = f.input :bot_id, required: true, input_html: { value: @bot.uid }, as: :hidden
           = f.submit 'Invite Team Member'
 
-    %h2.api API
+    %h2.api How To Integrate
     %hr
     - if @bot.provider == 'slack'
       = render partial: 'api_slack'
     - else
+      %p.status
+        Set up tracking in your bot application by adding this snippet of code:
       = render partial: 'api_others'
 
 - content_for :page_scripts do

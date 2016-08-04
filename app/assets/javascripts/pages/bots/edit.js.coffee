@@ -9,6 +9,8 @@ class App.BotsEdit extends App.AppBase
   run: ->
     self = @
     $(document).ready ->
+      hljs.initHighlightingOnLoad()
+
       $('.invite-teammember').click (e) ->
         $('.add-teammember').show()
         $('.invite-teammember').hide()

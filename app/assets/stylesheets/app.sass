@@ -15,11 +15,15 @@ body.analytics
     p
       margin: 0px
 
-  .nav-pills
+  .nav-code
     padding: 12px 0
-    li.active
-      a
-        background-color: #3bafda
+    li
+      &.active
+        border: 1px solid #3bafda
+        border-radius: 5px
+        a
+          background-color: transparent !important
+          color: #337ab7 !important
   .track-code-samples
     .hljs
       min-height: 290px

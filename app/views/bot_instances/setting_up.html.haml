@@ -30,5 +30,5 @@
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.BotInstancesSetup(#{@instance.id.to_json}, #{Settings.pusher_api_key.to_json});
+    App.page = new App.BotInstancesSetup(#{@bot.uid.to_json}, #{@instance.id.to_json}, #{@bot.provider.to_json}, #{Settings.pusher_api_key.to_json});
     App.page.run();

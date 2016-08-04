@@ -10,6 +10,8 @@
     %pre
       %code.hljs.javascript
         :preserve
+          // Remember to run `npm install --save botmetrics` in your app.
+          //
           // If you are using an Express-based app get the 'webhook' parameter
           // from the post data and pass it as argument to Botmetrics
           // for example:
@@ -20,29 +22,20 @@
               bot_id: "#{@bot.uid}"
             });
           });
-    %p
-      Remember to run
-      %code
-        npm install --save botmetrics
-      in your app.
   .tab-pane#ruby{role: 'tabpanel'}
     %pre
       %code.hljs.ruby
         :preserve
+          # Remember to run `gem install botmetrics-rb`
+          # or add `botmetrics-rb` to your Gemfile.
+          #
           # Send the 'webhook' parameter to Botmetrics using the 'track' API:
           # for e.g. in Rails/Sinatra:
+
           BotMetrics::Client.new(
             api_key: "#{current_user.api_key}",
             bot_id: "#{@bot.uid}"
           ).track(params[:webhook])
-    %p
-      Remember to run
-      %code
-        gem install botmetrics-rb
-      or add
-      %code
-        botmetrics-rb
-      to your Gemfile.
   .tab-pane#go{role: 'tabpanel'}
     %pre#go
       %code.hljs.go

@@ -11,10 +11,10 @@
 - if @bot.events.count == 0
   .row.integrate-cta.alert-danger
     %p
-      It looks like we haven't received any events from your bot yet.
-      Integrate the
+      We haven't received any events from your bot yet.
+      Add the
       = link_to 'Botmetrics SDK', edit_bot_path(@bot), target: '_blank'
-      in your codebase &ndash; it takes less than 5 minutes to get set up!
+      to your codebase in less than 5 minutes!
 
 .stats.row
   - if @bot.provider == 'slack'

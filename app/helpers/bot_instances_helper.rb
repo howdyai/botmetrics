@@ -29,7 +29,7 @@ module BotInstancesHelper
   def new_instance_disclaimer(bot)
     case bot.provider
     when 'facebook'
-      "Your bot's page access token is available in the 'Products' > 'Messenger' section in your bot app's dashboard."
+      "The page access token is available in 'Products' > 'Messenger' in your <a href='https://developers.facebook.com/' target='_blank'>app's dashboard</a>.".html_safe
     end
   end
 
@@ -43,9 +43,9 @@ module BotInstancesHelper
   def setting_up_header(bot)
     case bot.provider
     when 'slack'
-      "Setting Up an Instance of #{bot.name}"
+      "Setting Up an Instance of '#{bot.name}'"
     when 'facebook'
-      "Setting Up #{bot.name}"
+      "Setting Up '#{bot.name}'"
     end
   end
 
