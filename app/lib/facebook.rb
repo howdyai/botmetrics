@@ -4,6 +4,7 @@ class Facebook
   API_URL = ENV['FACEBOOK_API_URL']
   OK = 200
   DELETED = 'deleted'
+  INVALID_OAUTH_TOKEN = 'Invalid OAuth Access Token'
 
   def initialize(token)
     @token = token

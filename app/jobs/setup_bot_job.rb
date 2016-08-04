@@ -74,7 +74,9 @@ class SetupBotJob < Job
       NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", team: @instance.name, bot: @instance.bot.name, members: @instance.users.count)
     else
       error_msg = auth_info.dig('error', 'message')
-      if error_msg =~ Regexp.new(Facebook::DELETED)
+
+      if error_msg =~ Regexp.new(Facebook::DELETED, Regexp::IGNORECASE) ||
+        error_msg =~ Regexp.new(Facebook::INVALID_OAUTH_TOKEN, Regexp::IGNORECASE)
         @instance.update_attribute(:state, 'disabled')
         # @instance.events.create!(event_type: 'bot_disabled', provider: @instance.provider)
       end

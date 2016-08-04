@@ -371,10 +371,10 @@ RSpec.describe SetupBotJob do
           allow(PusherJob).to receive(:perform_async)
         end
 
-        it 'should keep the bot in pending state' do
+        it 'should keep the bot in disabled state' do
           SetupBotJob.new.perform(bi_facebook.id, user.id)
           bi_facebook.reload
-          expect(bi_facebook.state).to eql 'pending'
+          expect(bi_facebook.state).to eql 'disabled'
           expect(bi_facebook.uid).to be_nil
           expect(bi_facebook.instance_attributes).to eql({})
         end
