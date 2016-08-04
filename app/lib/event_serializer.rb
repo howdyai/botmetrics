@@ -1,6 +1,6 @@
 class EventSerializer
   def initialize(provider, data)
-    @provider = "EventSerializer::#{provider.to_s.camelize}".constantize.new(data)
+    @provider = EventSerializer.const_get(provider.to_s.camelize).new(data)
   end
 
   def serialize

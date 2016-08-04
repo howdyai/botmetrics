@@ -1,36 +1,40 @@
 class FacebookEventsService
   AVAILABLE_FIELDS = %w(first_name last_name profile_pic locale timezone gender)
+  AVAILABLE_OPTIONS = %i(bot_id raw_data)
 
-  def initialize(provider, raw_data, bot_id)
-    @provider = provider
-    @raw_data = raw_data
-    @bot_id = bot_id
+  def initialize(options = {})
+    options.each do |key, val|
+      instance_variable_set("@#{key.to_s}", val)
+    end
+    sanitize_options(options)
   end
 
   def create_event
     if @raw_data.is_a?(Hash)
-      process(@raw_data)
+      @data = @raw_data
+      process
     elsif @raw_data.is_a?(Array)
       @raw_data.each do |raw_data|
-        process(raw_data)
+        @data = raw_data
+        process
       end
     end
   end
 
   private
-  attr_accessor :provider, :raw_data, :data, :bot_id
+  attr_accessor :raw_data, :data, :bot_id
 
-  def process(data)
-    @data = data
+  def process
     @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
     @bot_user.assign_attributes(bot_user_params)
-    if @bot_user.save
-      @bot_user.events.create(event_params[:data].merge(bot_instance_id: bot_instance.id))
+    ActiveRecord::Base.transaction do
+      @bot_user.save!
+      @bot_user.events.create!(event_params[:data].merge(bot_instance_id: bot_instance.id))
     end
   end
 
   def fetch_user
-    facebook.call(bot_user_uid, :get,
+    facebook_client.call(bot_user_uid, :get,
       {
         fields: 'first_name,last_name,locale,timezone,gender'
       }
@@ -47,10 +51,10 @@ class FacebookEventsService
   end
 
   def event_params
-    EventSerializer.new(provider, data).serialize
+    EventSerializer.new(:facebook, data).serialize
   end
 
-  def facebook
+  def facebook_client
     Facebook.new(bot_instance.token)
   end
 
@@ -63,6 +67,13 @@ class FacebookEventsService
       event_params.dig(:recip_info, :recipient_id)
     else
       event_params.dig(:recip_info, :sender_id)
+    end
+  end
+
+  def sanitize_options(options)
+    options.slice!(*AVAILABLE_OPTIONS)
+    AVAILABLE_OPTIONS.each do |option|
+      raise "NoOptionSupplied: #{option}" unless options.keys.include?(option)
     end
   end
 end

@@ -1,4 +1,4 @@
-class EventSerializer::Facebook::Message
+class EventSerializer::Facebook::MessageEchoes
   def initialize(data)
     @data = data
   end
@@ -11,10 +11,10 @@ private
 
   def message
     {
-      event_type: 'message',
+      event_type: 'message_echoes',
       is_for_bot: true,
       is_im: true,
-      text: text,
+      text: @data.dig(:message, :text),
       provider: 'facebook',
       event_attributes: event_attributes
     }
@@ -27,28 +27,12 @@ private
       mid: @data.dig(:message, :mid),
       seq: @data.dig(:message, :seq)
     }
-    event_attributes.merge(attachments: attachments) if attachments.any?
-  end
-
-  def text
-    text = @data.dig(:message, :text)
-    if text.present?
-      text
-    else
-      @data.dig(:message, :quick_reply, :payload)
-    end
+    event_attributes.merge(attachments: attachments) if attachments&.any?
+    event_attributes
   end
 
   def attachments
     @data.dig(:message, :attachments)
-  end
-
-  def quick_reply
-    if @data.dig(:message, :text)
-      @data.dig(:message, :quick_reply, :payload)
-    else
-      true
-    end
   end
 
   def recip_info
