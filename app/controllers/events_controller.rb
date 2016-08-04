@@ -3,6 +3,6 @@ class EventsController < ApplicationController
   before_action :find_bot
 
   def create
-    render nothing: true, status: :created
+    render nothing: true, status: :accepted
   end
 end

@@ -14,7 +14,7 @@ RSpec.describe EventsController, type: :controller do
 
     it 'should respond with 201 created' do
       do_request
-      expect(response).to have_http_status(:created)
+      expect(response).to have_http_status(:accepted)
     end
   end
 end
