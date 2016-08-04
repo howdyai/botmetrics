@@ -4,7 +4,7 @@ class CreateBots < ActiveRecord::Migration
       t.string :name, null: false
       t.string :uid, null: false
       t.string :provider, null: false
-      t.references :team, null: false, foreign_key: true
+      t.references :team, null: false
 
       t.timestamps null: false
     end
