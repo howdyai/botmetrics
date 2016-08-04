@@ -4,5 +4,5 @@
     What platform is your bot on?
   .providers
     - Bot::PROVIDERS.each do |p, enabled|
-      = image_tag "providers/#{p}com.png", data: { provider: p , enabled: enabled }, class: "bot-provider img img-rounded #{p == 'facebook' ? 'active' : ''} #{enabled ? 'enabled' : 'disabled'}", width: '60px'
+      = image_tag "providers/#{p}com.png", data: { provider: p , enabled: enabled }, class: "bot-provider img img-rounded #{enabled ? 'enabled' : 'disabled'}", width: '60px'
   = f.input :provider, as: :hidden, input_html: { value: 'facebook' }
