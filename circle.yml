@@ -42,7 +42,7 @@ dependencies:
 
 database:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rake db:create;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rake db:create db:migrate;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create db:migrate;; esac:
         parallel: true
 
 test:

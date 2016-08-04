@@ -391,8 +391,10 @@ RSpec.describe SetupBotJob do
       end
 
       context 'when token is for a disabled bot' do
+        let!(:bi_facebook_with_attrs)   { create :bot_instance, :with_attributes_facebook, provider: 'facebook' }
+
         before do
-          stub_request(:get, "#{facebook_api}/me?access_token=#{bi_facebook.token}").
+          stub_request(:get, "#{facebook_api}/me?access_token=#{bi_facebook_with_attrs.token}").
                     to_return(status: 400, body: { ok: false, error: {
                                                    message: 'This Page access token belongs to a Page that has been deleted.',
                                                  } }.to_json)
@@ -400,20 +402,20 @@ RSpec.describe SetupBotJob do
         end
 
         it 'should disable the bot' do
-          SetupBotJob.new.perform(bi_facebook.id, user.id)
-          bi_facebook.reload
-          expect(bi_facebook.state).to eql 'disabled'
-          expect(bi_facebook.uid).to be_nil
-          expect(bi_facebook.instance_attributes).to eql({})
+          SetupBotJob.new.perform(bi_facebook_with_attrs.id, user.id)
+          bi_facebook_with_attrs.reload
+          expect(bi_facebook_with_attrs.state).to eql 'disabled'
+          expect(bi_facebook_with_attrs.uid).to be_nil
+          expect(bi_facebook_with_attrs.instance_attributes).to eql({ 'name' => 'N123' })
         end
 
         it 'should send a message to Pusher' do
-          SetupBotJob.new.perform(bi_facebook.id, user.id)
-          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook.id}", "{\"ok\":false,\"error\":\"This Page access token belongs to a Page that has been deleted.\"}")
+          SetupBotJob.new.perform(bi_facebook_with_attrs.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook_with_attrs.id}", "{\"ok\":false,\"error\":\"This Page access token belongs to a Page that has been deleted.\"}")
         end
 
         it 'should track the event on Mixpanel' do
-          SetupBotJob.new.perform(bi_facebook.id, user.id)
+          SetupBotJob.new.perform(bi_facebook_with_attrs.id, user.id)
           expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'This Page access token belongs to a Page that has been deleted.')
         end
       end
