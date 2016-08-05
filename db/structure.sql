@@ -23,6 +23,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -194,7 +208,7 @@ CREATE TABLE events (
     is_im boolean DEFAULT false NOT NULL,
     is_from_bot boolean DEFAULT false NOT NULL,
     text text,
-    CONSTRAINT valid_event_type_on_events CHECK (((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR (((event_type)::text = 'message'::text) AND (bot_user_id IS NOT NULL))) OR (((event_type)::text = 'message_reaction'::text) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_event_type_on_events CHECK (((((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR ((event_type)::text = 'message'::text)) OR ((event_type)::text = 'message_reaction'::text)) AND ((provider)::text = 'slack'::text)) OR (((((((event_type)::text = 'message'::text) OR ((event_type)::text = 'messaging_postbacks'::text)) OR ((event_type)::text = 'messaging_optins'::text)) OR ((event_type)::text = 'account_linking'::text)) AND ((provider)::text = 'facebook'::text)) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT validate_attributes_channel CHECK ((((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'facebook'::text))),
     CONSTRAINT validate_attributes_reaction CHECK ((((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'facebook'::text))),
@@ -1033,3 +1047,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160706193135');
 INSERT INTO schema_migrations (version) VALUES ('20160802121411');
 
 INSERT INTO schema_migrations (version) VALUES ('20160802123303');
+
+INSERT INTO schema_migrations (version) VALUES ('20160804152603');
+
+INSERT INTO schema_migrations (version) VALUES ('20160805225619');
+
