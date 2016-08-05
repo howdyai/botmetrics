@@ -1,5 +1,6 @@
 class EventSerializer::Facebook::Message
   def initialize(data)
+    raise 'SuppliedOptionIsNil' if data.nil?
     @data = data
   end
 
@@ -14,6 +15,7 @@ private
       event_type: 'message',
       is_for_bot: true,
       is_im: true,
+      is_from_bot: false,
       text: text,
       provider: 'facebook',
       event_attributes: event_attributes
@@ -27,7 +29,9 @@ private
       mid: @data.dig(:message, :mid),
       seq: @data.dig(:message, :seq)
     }
-    event_attributes.merge(attachments: attachments) if attachments.any?
+    event_attributes.merge!(attachments: attachments) if attachments&.any?
+    event_attributes.merge!(quick_reply: quick_reply) if quick_reply.present?
+    event_attributes
   end
 
   def text

@@ -1,6 +1,7 @@
 class EventSerializer
   def initialize(provider, data)
-    @provider = EventSerializer.const_get(provider.to_s.camelize).new(data)
+    raise 'NoOptionSupplied' if provider.nil? || data.nil?
+    @provider = "EventSerializer::#{provider.to_s.camelize}".constantize.new(data)
   end
 
   def serialize

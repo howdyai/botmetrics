@@ -1,5 +1,6 @@
 class EventSerializer::Facebook::MessageEchoes
   def initialize(data)
+    raise 'SuppliedOptionIsNil' if data.nil?
     @data = data
   end
 
@@ -11,9 +12,10 @@ private
 
   def message
     {
-      event_type: 'message_echoes',
-      is_for_bot: true,
-      is_im: true,
+      event_type: 'message',
+      is_for_bot: false,
+      is_im: false,
+      is_from_bot: true,
       text: @data.dig(:message, :text),
       provider: 'facebook',
       event_attributes: event_attributes
@@ -27,7 +29,7 @@ private
       mid: @data.dig(:message, :mid),
       seq: @data.dig(:message, :seq)
     }
-    event_attributes.merge(attachments: attachments) if attachments&.any?
+    event_attributes.merge!(attachments: attachments) if attachments&.any?
     event_attributes
   end
 

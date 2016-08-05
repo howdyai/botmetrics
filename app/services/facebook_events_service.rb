@@ -10,27 +10,25 @@ class FacebookEventsService
   end
 
   def create_event
-    if @raw_data.is_a?(Hash)
-      @data = @raw_data
-      process
-    elsif @raw_data.is_a?(Array)
-      @raw_data.each do |raw_data|
-        @data = raw_data
-        process
+    @events = []
+    serialized_params.each do |params|
+      @params = params
+      @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
+      @bot_user.assign_attributes(bot_user_params)
+      ActiveRecord::Base.transaction do
+        @bot_user.save!
+        event = @bot_user.events.create!(params[:data].merge(bot_instance_id: bot_instance.id))
+        @events << event if event.present?
       end
     end
+    @events
   end
 
   private
-  attr_accessor :raw_data, :data, :bot_id
+  attr_accessor :raw_data, :bot_id, :params
 
-  def process
-    @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
-    @bot_user.assign_attributes(bot_user_params)
-    ActiveRecord::Base.transaction do
-      @bot_user.save!
-      @bot_user.events.create!(event_params[:data].merge(bot_instance_id: bot_instance.id))
-    end
+  def serialized_params
+    EventSerializer.new(:facebook, raw_data).serialize
   end
 
   def fetch_user
@@ -50,30 +48,30 @@ class FacebookEventsService
     }
   end
 
-  def event_params
-    EventSerializer.new(:facebook, data).serialize
-  end
-
   def facebook_client
     Facebook.new(bot_instance.token)
   end
 
   def bot_instance
-    @bot_instance ||= BotInstance.find_by(bot_id: bot_id)
+    @bot_instance ||= BotInstance.find_by(bot_id: bot.id)
   end
 
   def bot_user_uid
-    if event_params.dig(:data, :event_type) == 'message_echoes'
-      event_params.dig(:recip_info, :recipient_id)
+    if params.dig(:data, :event_type) == 'message_echoes'
+      params.dig(:recip_info, :recipient_id)
     else
-      event_params.dig(:recip_info, :sender_id)
+      params.dig(:recip_info, :sender_id)
     end
+  end
+
+  def bot
+    Bot.find_by(uid: bot_id)
   end
 
   def sanitize_options(options)
     options.slice!(*AVAILABLE_OPTIONS)
     AVAILABLE_OPTIONS.each do |option|
-      raise "NoOptionSupplied: #{option}" unless options.keys.include?(option)
+      raise "NoOptionSupplied: #{option}" unless options.keys.include?(option) && options[option].present?
     end
   end
 end
