@@ -313,7 +313,7 @@ RSpec.describe SetupBotJob do
     end
 
     context 'facebook' do
-      let!(:bi_facebook)   { create :bot_instance, token: 'token', provider: 'facebook' }
+      let!(:bi_facebook)   { create :bot_instance, :with_attributes_facebook, token: 'token', provider: 'facebook' }
 
       before do
         allow_any_instance_of(Object).to receive(:sleep)
@@ -376,7 +376,7 @@ RSpec.describe SetupBotJob do
           bi_facebook.reload
           expect(bi_facebook.state).to eql 'disabled'
           expect(bi_facebook.uid).to be_nil
-          expect(bi_facebook.instance_attributes).to eql({})
+          expect(bi_facebook.instance_attributes).to eql({ 'name' => 'N123' })
         end
 
         it 'should send a message to Pusher' do

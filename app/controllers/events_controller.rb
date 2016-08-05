@@ -10,6 +10,6 @@ class EventsController < ApplicationController
 private
 
   def facebook_events_job
-    @facebook_events_job ||= FacebookEventsJob.perform_async(params['bot_id'], JSON.parse(params['event']))
+    @facebook_events_job ||= FacebookEventsJob.perform_async(params['bot_id'], params['event'])
   end
 end
