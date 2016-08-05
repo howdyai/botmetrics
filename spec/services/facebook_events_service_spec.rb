@@ -7,7 +7,7 @@ RSpec.describe FacebookEventsService do
     end
   end
 
-  describe '#create_event' do
+  describe '#create_events!' do
     let(:raw_data) {
       {
         "entry": [{
@@ -59,19 +59,19 @@ RSpec.describe FacebookEventsService do
     end
 
     context 'create with raw data' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_event }
+      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
 
       it { expect(subject.count).to eql 1 }
     end
 
     context 'new bot user' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_event }
+      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
 
       it { expect { subject }.to change { BotUser.count }.by 1 }
     end
 
     context 'existing bot user' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_event }
+      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
 
       let!(:bot_user) { create(:bot_user, :with_attributes) }
 

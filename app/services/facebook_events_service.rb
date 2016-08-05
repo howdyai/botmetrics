@@ -9,18 +9,20 @@ class FacebookEventsService
     sanitize_options(options)
   end
 
-  def create_event
+  def create_events!
     @events = []
     serialized_params.each do |params|
       @params = params
       @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
       @bot_user.assign_attributes(bot_user_params)
+
       ActiveRecord::Base.transaction do
         @bot_user.save!
         event = @bot_user.events.create!(params[:data].merge(bot_instance_id: bot_instance.id))
         @events << event if event.present?
       end
     end
+
     @events
   end
 
