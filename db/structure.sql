@@ -665,6 +665,13 @@ CREATE UNIQUE INDEX events_channel_timestamp_message_slack ON events USING btree
 
 
 --
+-- Name: events_mid_seq_facebook; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX events_mid_seq_facebook ON events USING btree (((event_attributes -> 'mid'::text)), ((event_attributes -> 'seq'::text))) WHERE (((provider)::text = 'facebook'::text) AND ((event_type)::text = 'message'::text));
+
+
+--
 -- Name: index_bot_collaborators_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -1051,4 +1058,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160802123303');
 INSERT INTO schema_migrations (version) VALUES ('20160804152603');
 
 INSERT INTO schema_migrations (version) VALUES ('20160805225619');
+
+INSERT INTO schema_migrations (version) VALUES ('20160805231130');
 
