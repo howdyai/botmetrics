@@ -26,56 +26,78 @@ RSpec.describe Event do
       it { should_not allow_value('test').for(:event_type) }
     end
 
-    context 'reaction is not null' do
+    context 'facebook' do
       let!(:user)  { create :bot_user }
-      let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
+      let!(:event) { build :event, event_type: 'message', user: user, event_attributes: {}, provider: 'facebook' }
 
-      it "should be invalid if event_type = 'message_reaction' and reaction is NULL" do
-        event.event_type = 'message_reaction'
-        event.event_attributes[:channel] = 'CDEAD1'
-        event.event_attributes[:timestamp] = '123456789.0'
+      it "should be invalid if event_type = 'message' and mid is NULL" do
+        event.event_type = 'message'
+        event.event_attributes['seq'] = '123456789.0'
         expect(event).to_not be_valid
-        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        expect(event.errors[:event_attributes]).to eql ["mid can't be blank"]
       end
 
-      it "should be valid if event_type = 'message_reaction' and reaction is NOT NULL" do
-        event.event_type = 'message_reaction'
-        event.event_attributes[:channel] = 'CDEAD1'
-        event.event_attributes[:reaction] = ':+1:'
-        event.event_attributes[:timestamp] = '123456789.0'
+      it "should be invalid if event_type = 'message' and seq is NULL" do
+        event.event_type = 'message'
+        event.event_attributes['mid'] = '123456789.0'
         expect(event).to_not be_valid
-        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        expect(event.errors[:event_attributes]).to eql ["seq can't be blank"]
       end
     end
 
-    context 'channel is not null' do
-      let!(:user)  { create :bot_user }
-      let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
+    context 'slack' do
+      context 'reaction is not null' do
+        let!(:user)  { create :bot_user }
+        let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
 
-      it "should be invalid if event_type = 'message' and channel IS NULL" do
-        event.event_type = 'message'
-        expect(event).to_not be_valid
-        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        it "should be invalid if event_type = 'message_reaction' and reaction is NULL" do
+          event.event_type = 'message_reaction'
+          event.event_attributes[:channel] = 'CDEAD1'
+          event.event_attributes[:timestamp] = '123456789.0'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        end
+
+        it "should be valid if event_type = 'message_reaction' and reaction is NOT NULL" do
+          event.event_type = 'message_reaction'
+          event.event_attributes[:channel] = 'CDEAD1'
+          event.event_attributes[:reaction] = ':+1:'
+          event.event_attributes[:timestamp] = '123456789.0'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        end
       end
 
-      it "should be invalid if event_type = 'message_reaction' and channel IS NULL" do
-        event.event_type = 'message'
-        expect(event).to_not be_valid
-        expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
-      end
+      context 'channel is not null' do
+        let!(:user)  { create :bot_user }
+        let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
 
-      it "should be valid if event_type = 'message' and channel IS NOT NULL" do
-        event.event_type = 'message'
-        event.event_attributes['channel'] = 'CABCDEAD1'
-        expect(event).to be_valid
-      end
+        it "should be invalid if event_type = 'message' and channel IS NULL" do
+          event.event_type = 'message'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        end
 
-      it "should be valid if event_type = 'message_reaction' and channel IS NOT NULL" do
-        event.event_type = 'message_reaction'
-        event.event_attributes['channel'] = 'CABCDEAD1'
-        expect(event).to be_valid
+        it "should be invalid if event_type = 'message_reaction' and channel IS NULL" do
+          event.event_type = 'message'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["channel can't be blank"]
+        end
+
+        it "should be valid if event_type = 'message' and channel IS NOT NULL" do
+          event.event_type = 'message'
+          event.event_attributes['channel'] = 'CABCDEAD1'
+          expect(event).to be_valid
+        end
+
+        it "should be valid if event_type = 'message_reaction' and channel IS NOT NULL" do
+          event.event_type = 'message_reaction'
+          event.event_attributes['channel'] = 'CABCDEAD1'
+          expect(event).to be_valid
+        end
       end
     end
+
   end
 
   context 'scope' do
