@@ -1,7 +1,13 @@
 class EventSerializer::Facebook
-  AVAILABLE_TYPES = { message: 'Message', postback: 'MessagingPostbacks',
-                      optin: 'MessagingOptins', account_linking: 'AccountLinking',
-                      delivery: 'MessageDeliveries', read: 'MessageReads',  echo: 'MessageEchoes' }
+  AVAILABLE_TYPES = {
+                      message: 'Message',
+                      echo: 'MessageEchoes'
+                      #postback: 'MessagingPostbacks',
+                      #optin: 'MessagingOptins',
+                      #account_linking: 'AccountLinking',
+                      #delivery: 'MessageDeliveries',
+                      #read: 'MessageReads'
+                    }
 
   def initialize(data)
     raise 'SuppliedOptionIsNil' if data.nil?
