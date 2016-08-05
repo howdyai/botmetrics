@@ -1,13 +1,20 @@
 class AddInstanceAttributesConstraintsOnBotInstances < ActiveRecord::Migration
   def up
     execute "ALTER TABLE bot_instances ADD CONSTRAINT validate_attributes_name
-                   CHECK (((instance_attributes->>'name') IS NOT NULL
-                       AND length(instance_attributes->>'name') > 0
-                       AND provider = 'facebook'
-                       AND state <> 'pending')
-                        OR (state = 'pending'
-                       AND instance_attributes IS NOT NULL)
-                        OR provider <> 'facebook')"
+                   CHECK (
+                          (
+                            (instance_attributes->>'name') IS NOT NULL
+                            AND length(instance_attributes->>'name') > 0
+                            AND provider = 'facebook'
+                            AND state <> 'pending'
+                          )
+                          OR
+                          (
+                            state = 'pending'
+                            AND instance_attributes IS NOT NULL
+                          )
+                          OR provider <> 'facebook'
+                         )"
   end
 
   def down
