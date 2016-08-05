@@ -1,14 +1,14 @@
 RSpec.describe FacebookEventsService do
   describe '.new' do
     context 'incorrect params' do
-      let(:incorrect_options) { { bot_id: nil, raw_data: 'raw_data' } }
+      let(:incorrect_options) { { bot_id: nil, events_json: 'events_json' } }
 
       it { expect { FacebookEventsService.new(incorrect_options) }.to raise_error("NoOptionSupplied: bot_id") }
     end
   end
 
   describe '#create_events!' do
-    let(:raw_data) {
+    let(:events_json) {
       {
         "entry": [{
           "id": "268855423495782", "time": 1470403317713, "messaging": [{
@@ -59,19 +59,19 @@ RSpec.describe FacebookEventsService do
     end
 
     context 'create with raw data' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
+      subject { FacebookEventsService.new(bot_id: bot.uid, events_json: events_json).create_events! }
 
       it { expect(subject.count).to eql 1 }
     end
 
     context 'new bot user' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
+      subject { FacebookEventsService.new(bot_id: bot.uid, events_json: events_json).create_events! }
 
       it { expect { subject }.to change { BotUser.count }.by 1 }
     end
 
     context 'existing bot user' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, raw_data: raw_data).create_events! }
+      subject { FacebookEventsService.new(bot_id: bot.uid, events_json: events_json).create_events! }
 
       let!(:bot_user) { create(:bot_user, :with_attributes) }
 
