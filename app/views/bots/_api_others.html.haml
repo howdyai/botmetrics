@@ -55,16 +55,22 @@
         %code.hljs.go
           :preserve
             // In your Go Request handler, make a call to client.Track
-            // with the post form value for the key "webhook"
+            // with the request body
             import "github.com/botmetrics/go-botmetrics"
 
             http.HandleFunc("/webhooks", func(w http.ResponseWriter, r *http.Request) {
+              postBody, err := ioutil.ReadAll(r.Body)
+
+              if err != nil {
+                panic(err)
+              }
+
               client, err := botmetrics.NewBotMetricsClient(
                 "#{current_user.api_key}",
                 "#{@bot.uid}"
               )
-              if err != nil {
-                client.Track(r.PostFormValue("webhook"))
+              if err == nil {
+                client.Track(postBody)
               }
             })
 
