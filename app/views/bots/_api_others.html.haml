@@ -31,13 +31,13 @@
             # or add the following line to your Gemfile:
             # gem 'botmetrics-rb', require: 'botmetrics'
             #
-            # Send the 'webhook' parameter to Botmetrics using the 'track' API:
+            # Send the params to Botmetrics using the 'track' API:
             # for e.g. in Rails/Sinatra:
 
             BotMetrics::Client.new(
               api_key: "#{current_user.api_key}",
               bot_id: "#{@bot.uid}"
-            ).track(params[:webhook])
+            ).track(params)
     .tab-pane#go{role: 'tabpanel'}
       %pre#go
         %code.hljs.go
