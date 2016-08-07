@@ -13,15 +13,21 @@
           :preserve
             // Remember to run `npm install --save botmetrics` in your app.
             //
-            // If you are using an Express-based app get the 'webhook' parameter
-            // from the post data and pass it as argument to Botmetrics
+            // If you are using an Express-based app, parse the request body
+            // and pass along req.body as an argument to Botmetrics
             // for example:
+            var express = require('express');
+            var app = express();
+            var bodyParser = require('body-parser');
+
+            app.use(bodyParser.json()); // for parsing application/json
 
             app.post('/webhooks', function(req, res) {
-              BotMetrics.track(req.webhook, {
+              BotMetrics.track(req.body, {
                 api_key: "#{current_user.api_key}",
                 bot_id: "#{@bot.uid}"
               });
+              res.status(200).send("");
             });
     .tab-pane#ruby{role: 'tabpanel'}
       %pre
