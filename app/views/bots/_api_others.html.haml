@@ -25,8 +25,8 @@
 
             app.post('/webhooks', function(req, res) {
               Botmetrics.track(req.body, {
-                api_key: "#{current_user.api_key}",
-                bot_id: "#{@bot.uid}"
+                apiKey: "#{current_user.api_key}",
+                botId: "#{@bot.uid}"
               });
               res.status(200).send("");
             });
