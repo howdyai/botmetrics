@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   def create
     case @bot.provider
     when 'facebook'
-      FacebookEventsCollectorJob.perform_async(params['bot_id'], params['event'])
+      FacebookEventsCollectorJob.perform_async(@bot.uid, params[:event])
     end
 
     render nothing: true, status: :accepted

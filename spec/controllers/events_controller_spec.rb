@@ -3,10 +3,11 @@ require 'rails_helper'
 RSpec.describe EventsController, type: :controller do
   describe 'POST create' do
     let!(:user) { create :user }
-    let!(:bot)  { create :bot  }
+    let!(:bot)  { create :bot, provider: 'facebook'  }
     let!(:bc)   { create :bot_collaborator, bot: bot, user: user }
     let!(:bi)   { create :bot_instance, bot: bot }
-    let(:raw_data) {
+
+    let(:event_json) do
       {
         "entry": [{
           "id": "268855423495782", "time": 1470403317713, "messaging": [{
@@ -27,21 +28,26 @@ RSpec.describe EventsController, type: :controller do
             }
           }]
         }]
-      }
-    }
+      }.to_json
+    end
 
     def do_request(params = {})
-      post :create, bot_id: bot.uid, event: raw_data
+      post :create, bot_id: bot.uid, event: event_json
     end
 
     before do
-      allow_any_instance_of(Facebook).to receive(:call).and_return({ first_name: 'Vlad' })
+      allow(FacebookEventsCollectorJob).to receive(:perform_async).with(bot.uid, event_json)
       sign_in user
     end
 
     it 'should respond with 202 accepted' do
       do_request
       expect(response).to have_http_status(:accepted)
+    end
+
+    it 'should call FacebookEventsCollectorJob' do
+      do_request
+      expect(FacebookEventsCollectorJob).to have_received(:perform_async).with(bot.uid, event_json)
     end
   end
 end
