@@ -1,6 +1,8 @@
 class FacebookEventsService
   AVAILABLE_FIELDS = %w(first_name last_name profile_pic locale timezone gender)
   AVAILABLE_OPTIONS = %i(bot_id events)
+  AVAILABLE_OPTIONS = %i(bot_id events_json)
+  LAZY_EVENTS = { message_deliveries: :delivered, message_reads: :read }
 
   def initialize(options = {})
     options.each do |key, val|
@@ -14,10 +16,10 @@ class FacebookEventsService
       @params = params
       @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
       @bot_user.assign_attributes(bot_user_params)
-
-      ActiveRecord::Base.transaction do
-        @bot_user.save!
-        @bot_user.events.create!(params[:data].merge(bot_instance_id: bot_instance.id))
+      if LAZY_EVENTS.keys.include?(params.dig(:data, :event_type).to_sym)
+        update_message_event
+      else
+        create_new_event
       end
     end
   end
@@ -25,8 +27,26 @@ class FacebookEventsService
   private
   attr_accessor :events, :bot_id, :params
 
+  def update_message_event
+    events = Event.where("event_type = 'message' AND created_at < ?", params.dig(:data, :watermark))
+    if events.any?
+      events.each { |event| event.update("#{LAZY_EVENTS[params.dig(:data, :event_type).to_sym]}": true) }
+    end
+  end
+
+  def create_new_event
+    ActiveRecord::Base.transaction do
+      @bot_user.save!
+      @bot_user.events.create!(event_params)
+    end
+  end
+
   def serialized_params
     EventSerializer.new(:facebook, events).serialize
+  end
+
+  def event_params
+    params.dig(:data).merge(bot_instance_id: bot_instance.id)
   end
 
   def fetch_user

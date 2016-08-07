@@ -1,10 +1,21 @@
 FactoryGirl.define do
-  sequence(:event_attributes) { Hash(channel: SecureRandom.hex(8), timestamp: Time.current.to_i) }
+  sequence(:event_attributes) {
+    Hash(
+      channel: SecureRandom.hex(8),
+      timestamp: Time.current.to_i, delivered: false,
+      mid: 'mid',
+      seq: 74
+    )
+  }
 
   factory :event do
     bot_instance
     event_type 'user_added'
     provider   'slack'
+
+    trait :facebook do
+      provider 'facebook'
+    end
   end
 
   factory :new_bot_event, parent: :event do

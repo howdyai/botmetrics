@@ -1,4 +1,4 @@
-RSpec.describe EventSerializer::Facebook::MessageEchoes do
+RSpec.describe EventSerializer::Facebook::MessagingOptins do
   TIMESTAMP ||= 1458692752478
 
   describe '.new' do
@@ -8,7 +8,7 @@ RSpec.describe EventSerializer::Facebook::MessageEchoes do
   end
 
   describe '#serialize' do
-    subject { EventSerializer::Facebook::MessageEchoes.new(data).serialize }
+    subject { EventSerializer::Facebook::MessagingOptins.new(data).serialize }
 
     let(:data) {
       {
@@ -19,29 +19,23 @@ RSpec.describe EventSerializer::Facebook::MessageEchoes do
           "id":"PAGE_ID"
         },
         "timestamp":TIMESTAMP,
-        "message":{
-          "is_echo":true,
-          "mid":"mid.1457764197618:41d102a3e1ae206a38",
-          "seq":73,
-          "text":"hello, world!"
+        "optin":{
+          "ref":"PASS_THROUGH_PARAM"
         }
       }
     }
     let(:serialized) {
       {
         data:  {
-          event_type: "message",
-          is_for_bot: false,
-          is_im: false,
-          is_from_bot: true,
-          text: "hello, world!",
+          event_type: "messaging_optins",
+          is_for_bot: true,
+          is_im: true,
+          is_from_bot: false,
           provider: "facebook",
           created_at: Time.at(TIMESTAMP.to_f / 1000),
           event_attributes: {
-            delivered: false,
-            read: false,
-            mid: "mid.1457764197618:41d102a3e1ae206a38",
-            seq: 73 }},
+            optin: { ref: "PASS_THROUGH_PARAM" }
+          }},
         recip_info: {
           sender_id: "USER_ID", recipient_id: "PAGE_ID"
         }

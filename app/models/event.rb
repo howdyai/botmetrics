@@ -9,7 +9,7 @@ class Event < ActiveRecord::Base
 
   validates_with EventAttributesValidator
 
-  store_accessor :event_attributes, :mid, :seq
+  store_accessor :event_attributes, :mid, :seq, :delivered, :read
 
   def self.with_disabled_bots(instances, start_time, end_time)
     where(bot_instance_id: instances.select(:id),

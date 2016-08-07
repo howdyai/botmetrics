@@ -1,4 +1,6 @@
 RSpec.describe EventSerializer do
+  TIMESTAMP ||= 1458692752478
+
   let(:data) {
     {
       "entry": [{
@@ -9,7 +11,7 @@ RSpec.describe EventSerializer do
           "recipient":{
             "id":"PAGE_ID"
           },
-          "timestamp":1458692752478,
+          "timestamp":TIMESTAMP,
           "message":{
             "mid":"mid.1457764197618:41d102a3e1ae206a38",
             "seq":73,
@@ -31,6 +33,7 @@ RSpec.describe EventSerializer do
         is_from_bot: false,
         text: "hello, world!",
         provider: "facebook",
+        created_at: Time.at(TIMESTAMP.to_f / 1000),
         event_attributes: {
           delivered: false,
           read: false,

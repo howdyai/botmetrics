@@ -1,4 +1,6 @@
 RSpec.describe EventSerializer::Facebook::Message do
+  TIMESTAMP ||= 1458692752478
+
   describe '.new' do
     context 'invalid params' do
       it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('SuppliedOptionIsNil') }
@@ -16,7 +18,7 @@ RSpec.describe EventSerializer::Facebook::Message do
         "recipient":{
           "id":"PAGE_ID"
         },
-        "timestamp":1458692752478,
+        "timestamp":TIMESTAMP,
         "message":{
           "mid":"mid.1457764197618:41d102a3e1ae206a38",
           "seq":73,
@@ -36,6 +38,7 @@ RSpec.describe EventSerializer::Facebook::Message do
           is_from_bot: false,
           text: "hello, world!",
           provider: "facebook",
+          created_at: Time.at(TIMESTAMP.to_f / 1000),
           event_attributes: {
             delivered: false,
             read: false,

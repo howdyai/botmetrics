@@ -1,18 +1,18 @@
-class EventSerializer::Facebook::MessageDeliveries
+class EventSerializer::Facebook::MessageReads
   def initialize(data)
     raise 'SuppliedOptionIsNil' if data.nil?
     @data = data
   end
 
   def serialize
-    { data: message_delivery, recip_info: recip_info }
+    { data: message_read, recip_info: recip_info }
   end
 
 private
 
-  def message_delivery
+  def message_read
     {
-      event_type: 'message_deliveries',
+      event_type: 'message_reads',
       watermark: watermark
     }
   end
@@ -25,7 +25,7 @@ private
   end
 
   def watermark
-    watermark = @data.dig(:delivery, :watermark).to_s
+    watermark = @data.dig(:read, :watermark).to_s
     if watermark.split('').count == 13
       Time.at(watermark.to_f / 1000)
     elsif watermark.split('').count == 10

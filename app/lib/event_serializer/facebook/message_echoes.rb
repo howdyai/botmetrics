@@ -18,6 +18,7 @@ private
       is_from_bot: true,
       text: @data.dig(:message, :text),
       provider: 'facebook',
+      created_at: timestamp,
       event_attributes: event_attributes
     }
   end
@@ -42,5 +43,14 @@ private
       sender_id: @data.dig(:sender, :id),
       recipient_id: @data.dig(:recipient, :id)
     }
+  end
+
+  def timestamp
+    timestamp = @data[:timestamp].to_s
+    if timestamp.split('').count == 13
+      Time.at(timestamp.to_f / 1000)
+    elsif timestamp.split('').count == 10
+      Time.at(timestamp.to_f)
+    end
   end
 end

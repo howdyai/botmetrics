@@ -1,4 +1,6 @@
 RSpec.describe FacebookEventsService do
+  TIMESTAMP ||= 1458692752478
+
   describe '.new' do
     context 'incorrect params' do
       let(:incorrect_options) { { bot_id: nil, events: 'events' } }
@@ -18,7 +20,7 @@ RSpec.describe FacebookEventsService do
             "recipient":{
               "id":"PAGE_ID"
             },
-            "timestamp":1458692752478,
+            "timestamp":TIMESTAMP,
             "message":{
               "mid":"mid.1457764197618:41d102a3e1ae206a38",
               "seq":73,
@@ -40,6 +42,7 @@ RSpec.describe FacebookEventsService do
           is_from_bot: false,
           text: "hello, world!",
           provider: "facebook",
+          created_at: Time.at(TIMESTAMP.to_f / 1000),
           event_attributes: {
             delivered: false,
             read: false,
@@ -76,6 +79,37 @@ RSpec.describe FacebookEventsService do
       let!(:bot_user) { create(:bot_user, :with_attributes) }
 
       it { expect { subject }.to change { BotUser.count }.by 0 }
+    end
+
+    context 'update timestamp' do
+      subject { FacebookEventsService.new(bot_id: bot.uid, events_json: delivery_json) }
+
+      let(:bot_user) { create(:bot_user) }
+      let!(:message_event) { create(:messages_to_bot_event, :facebook, bot_instance_id: bot_instance.id, bot_user_id: bot_user.id) }
+      let(:delivery_json) {
+        {
+          "entry": [{
+            "id": "268855423495782", "time": 1470403317713, "messaging": [{
+              "sender":{
+                "id":"USER_ID"
+              },
+              "recipient":{
+                "id":"PAGE_ID"
+              },
+              "timestamp":TIMESTAMP,
+              "delivery":{
+                "watermark": (message_event.created_at + 1.day).to_i * 1000
+              }
+            }]
+          }]
+        }
+      }
+
+      it do
+        FacebookEventsService.new(bot_id: bot.uid, events_json: delivery_json).create_events!
+        message_event.reload
+        expect(message_event.delivered).to be(true)
+      end
     end
   end
 end
