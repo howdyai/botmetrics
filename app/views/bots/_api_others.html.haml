@@ -19,11 +19,12 @@
             var express = require('express');
             var app = express();
             var bodyParser = require('body-parser');
+            var Botmetrics = require('botmetrics');
 
             app.use(bodyParser.json()); // for parsing application/json
 
             app.post('/webhooks', function(req, res) {
-              BotMetrics.track(req.body, {
+              Botmetrics.track(req.body, {
                 api_key: "#{current_user.api_key}",
                 bot_id: "#{@bot.uid}"
               });
