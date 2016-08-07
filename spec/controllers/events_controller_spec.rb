@@ -40,14 +40,48 @@ RSpec.describe EventsController, type: :controller do
       sign_in user
     end
 
-    it 'should respond with 202 accepted' do
-      do_request
-      expect(response).to have_http_status(:accepted)
+    context "valid event JSON" do
+      it 'should respond with 202 accepted' do
+        do_request
+        expect(response).to have_http_status(:accepted)
+      end
+
+      it 'should call FacebookEventsCollectorJob' do
+        do_request
+        expect(FacebookEventsCollectorJob).to have_received(:perform_async).with(bot.uid, event_json)
+      end
     end
 
-    it 'should call FacebookEventsCollectorJob' do
-      do_request
-      expect(FacebookEventsCollectorJob).to have_received(:perform_async).with(bot.uid, event_json)
+    context "invalid JSON" do
+      let(:event_json) { "abc def" }
+
+      it 'should respond with 400 bad request' do
+        do_request
+        expect(response).to have_http_status(:bad_request)
+        body = JSON.parse(response.body)
+        expect(body['error']).to eql "Event parameter is not valid JSON"
+      end
+
+      it "should not call FacebookEventsCollectorJob" do
+        do_request
+        expect(FacebookEventsCollectorJob).to_not have_received(:perform_async)
+      end
+    end
+
+    context "valid JSON but not valid Facebook data" do
+      let(:event_json) { { data: 'test', abc: 'def' }.to_json }
+
+      it 'should respond with 400 bad request' do
+        do_request
+        expect(response).to have_http_status(:bad_request)
+        body = JSON.parse(response.body)
+        expect(body['error']).to eql "Invalid Facebook Event Data"
+      end
+
+      it "should not call FacebookEventsCollectorJob" do
+        do_request
+        expect(FacebookEventsCollectorJob).to_not have_received(:perform_async)
+      end
     end
   end
 end
