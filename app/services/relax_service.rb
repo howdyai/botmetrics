@@ -35,7 +35,9 @@ class RelaxService
         text: is_for_bot?(event) || event.relax_bot_uid == event.user_uid ? event.text : nil,
         provider: bi.provider,
         event_type: 'message',
-        created_at: Time.at(event.timestamp.to_f)
+        created_at: Time.at(event.timestamp.to_f),
+        has_been_read: true,
+        has_been_delivered: true
       )
 
       if e.persisted? && e.is_for_bot?
@@ -58,7 +60,9 @@ class RelaxService
         is_from_bot: event.relax_bot_uid == event.user_uid,
         provider: bi.provider,
         event_type: 'message_reaction',
-        created_at: Time.at(event.timestamp.to_f)
+        created_at: Time.at(event.timestamp.to_f),
+        has_been_read: true,
+        has_been_delivered: true
       )
 
       if !e.persisted?
