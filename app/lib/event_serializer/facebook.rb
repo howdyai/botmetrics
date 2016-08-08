@@ -39,7 +39,10 @@ class EventSerializer::Facebook
   end
 
   def symbolized_data(data)
-    data.symbolize_keys! unless data.is_a? Array
+    return unless data.is_a?(Hash)
+
+    data.symbolize_keys!
+
     data.each do |_key, v|
       if v.is_a? Hash
         symbolized_data(v) if v.is_a? Hash

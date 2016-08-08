@@ -15,8 +15,6 @@ class EventSerializer::Facebook::MessageEchoes < EventSerializer::Facebook::Base
 
   def event_attributes
     event_attributes = {
-      delivered: false,
-      read: false,
       mid: @data.dig(:message, :mid),
       seq: @data.dig(:message, :seq)
     }

@@ -1,6 +1,5 @@
 class FacebookEventsService
   AVAILABLE_USER_FIELDS = %w(first_name last_name profile_pic locale timezone gender)
-  AVAILABLE_OPTIONS     = %i(bot_id events)
   UPDATE_EVENTS         = { message_deliveries: :delivered, message_reads: :read }
 
   def initialize(bot_id:, events:)
@@ -21,13 +20,14 @@ class FacebookEventsService
   def create_events!
     serialized_params.each do |p|
       @params = p
-      @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
-      @bot_user.assign_attributes(bot_user_params) if @bot_user.new_record?
       @event_type = params.dig(:data, :event_type).to_sym
 
       if UPDATE_EVENTS.has_key?(@event_type)
         update_message_events!
       else
+        @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
+        @bot_user.assign_attributes(bot_user_params) if @bot_user.new_record?
+
         create_message_events!
       end
     end
@@ -41,13 +41,9 @@ class FacebookEventsService
 
     case @event_type
     when :message_deliveries
-      bot.events.where("event_type = ? AND (event_attributes->>'delivered' IS NULL OR event_attributes->>'delivered' = ?) AND created_at < ?", *query_params).each do |event|
-        event.update(delivered: true)
-      end
+      bot.events.where("event_type = ? AND has_been_delivered = ? AND created_at <= ?", *query_params).update_all(has_been_delivered: true)
     when :message_reads
-      bot.events.where("event_type = ? AND (event_attributes->>'read' IS NULL OR (event_attributes->>'read')::boolean = ?) AND created_at < ?", *query_params).each do |event|
-        event.update(read: true)
-      end
+      bot.events.where("event_type = ? AND has_been_read = ? AND created_at <= ?", *query_params).update_all(has_been_read: true)
     end
   end
 
