@@ -216,10 +216,10 @@ RSpec.describe FacebookEventsService do
           time: 1470403317713,
           messaging: [{
             sender:{
-              id: fb_user_id
+              id: bot_user_id
             },
             recipient:{
-              id: bot_user_id
+              id: fb_user_id
             },
             timestamp: timestamp,
             message: {
