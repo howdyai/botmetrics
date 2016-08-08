@@ -1,16 +1,6 @@
-class EventSerializer::Facebook::Message
-  def initialize(data)
-    raise 'SuppliedOptionIsNil' if data.nil?
-    @data = data
-  end
-
-  def serialize
-    { data: message, recip_info: recip_info }
-  end
-
-private
-
-  def message
+class EventSerializer::Facebook::Message < EventSerializer::Facebook::Base
+  private
+  def data
     {
       event_type: 'message',
       is_for_bot: true,
@@ -53,22 +43,6 @@ private
       @data.dig(:message, :quick_reply, :payload)
     else
       true
-    end
-  end
-
-  def recip_info
-    {
-      sender_id: @data.dig(:sender, :id),
-      recipient_id: @data.dig(:recipient, :id)
-    }
-  end
-
-  def timestamp
-    timestamp = @data[:timestamp].to_s
-    if timestamp.split('').count == 13
-      Time.at(timestamp.to_f / 1000)
-    elsif timestamp.split('').count == 10
-      Time.at(timestamp.to_f)
     end
   end
 end
