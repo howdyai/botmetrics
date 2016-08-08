@@ -7,6 +7,11 @@ class NotificationsController < ApplicationController
   layout 'app'
 
   def index
+    if @bot.provider == 'facebook'
+      flash[:info] = "Notifications for Facebook is coming soon!"
+      redirect_to(bot_path(@bot)) && return
+    end
+
     @notifications = @bot.notifications.order(id: :desc).page(params[:page])
     redirect_to(step_1_bot_new_notification_index_path(@bot)) && return if @notifications.blank?
 
@@ -14,6 +19,11 @@ class NotificationsController < ApplicationController
   end
 
   def show
+    if @bot.provider == 'facebook'
+      flash[:info] = "Notifications for Facebook is coming soon!"
+      redirect_to(bot_path(@bot)) && return
+    end
+
     @send_count = FilterBotUsersService.new(@notification.query_set).scope.size
 
     TrackMixpanelEventJob.perform_async('Viewed Notifications Show Page', current_user.id)
