@@ -1,6 +1,6 @@
 class FacebookEventsService
   AVAILABLE_FIELDS = %w(first_name last_name profile_pic locale timezone gender)
-  AVAILABLE_OPTIONS = %i(bot_id events_json)
+  AVAILABLE_OPTIONS = %i(bot_id events)
 
   def initialize(options = {})
     options.each do |key, val|
@@ -23,10 +23,10 @@ class FacebookEventsService
   end
 
   private
-  attr_accessor :events_json, :bot_id, :params
+  attr_accessor :events, :bot_id, :params
 
   def serialized_params
-    EventSerializer.new(:facebook, events_json).serialize
+    EventSerializer.new(:facebook, events).serialize
   end
 
   def fetch_user
