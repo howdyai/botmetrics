@@ -36,7 +36,25 @@ module BotInstancesHelper
   def new_instance_onboarding_image(bot)
     case bot.provider
     when 'facebook'
-      image_tag('onboarding/facebook.png', class: 'img img-responsive img-thumbnail')
+      image_tag('onboarding/facebook.png', class: 'img img-responsive img-onboarding img-thumbnail')
+    end
+  end
+
+  def new_instance_tips(bot)
+    case bot.provider
+    when 'facebook'
+      "<div class='onboarding-tips'>" +
+        "<h4>Make sure you have the following options selected when setting up your webhook</h4>" +
+        "<ul>" +
+          "<li>message_deliveries</li>" +
+          "<li>message_echoes</li>" +
+          "<li>message_reads</li>" +
+          "<li>messages</li>" +
+          "<li>messaging_account_linking</li>" +
+          "<li>messaging_optins</li>" +
+          "<li>messaging_postbacks</li>" +
+        "</ul>" +
+      "</div>"
     end
   end
 
