@@ -1,5 +1,5 @@
 RSpec.describe EventSerializer::Facebook::MessageEchoes do
-  TIMESTAMP ||= 1458692752478
+  let(:timestamp) { Time.now.to_i * 1000 }
 
   describe '.new' do
     context 'invalid params' do

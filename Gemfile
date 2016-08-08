@@ -73,6 +73,7 @@ group :development, :test do
   gem 'byebug',                   '~> 2.0.0'
   gem 'timecop',                  '~> 0.7.4'
   gem 'factory_girl_rails',       '~> 4.5.0'
+  gem 'faker',                    '~> 1.6.6'
   gem 'pry-rails'
 end
 

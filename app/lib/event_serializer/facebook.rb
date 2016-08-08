@@ -10,8 +10,8 @@ class EventSerializer::Facebook
                     }
 
   def initialize(data)
-    raise 'SuppliedOptionIsNil' if data.nil?
-    raise 'InvalidDataSupplied' unless data.is_a?(Hash) && symbolized_data(data)[:entry].present?
+    raise 'Supplied Option Is Nil' if data.nil?
+    raise 'Invalid Data Supplied' unless data.is_a?(Hash) && symbolized_data(data)[:entry].present?
     @data = data[:entry]
   end
 
@@ -27,8 +27,7 @@ class EventSerializer::Facebook
     @events
   end
 
-private
-
+  private
   def prepare_event(entry)
     if entry[:messaging].is_a?(Hash)
       @events << serializer(symbolized_data(entry[:messaging])).serialize
@@ -52,7 +51,7 @@ private
 
   def event_type(data)
     type = data.select { |type| AVAILABLE_TYPES.keys.include? type }.keys.first
-    raise 'IncorrectEventType' if type.nil?
+    raise 'Incorrect Event Type' if type.nil?
 
     return :echo if type == :message && data.dig(:message, :is_echo)
     type

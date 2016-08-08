@@ -4,7 +4,7 @@ class EventSerializer::Facebook::MessageEchoes < EventSerializer::Facebook::Base
     {
       event_type: 'message',
       is_for_bot: false,
-      is_im: false,
+      is_im: true,
       is_from_bot: true,
       text: @data.dig(:message, :text),
       provider: 'facebook',
