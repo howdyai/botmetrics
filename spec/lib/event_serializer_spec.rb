@@ -26,7 +26,7 @@ RSpec.describe EventSerializer do
   }
   let(:serialized) {
     [{
-      data:  {
+      data: {
         event_type: "message",
         is_for_bot: true,
         is_im: true,
@@ -35,11 +35,11 @@ RSpec.describe EventSerializer do
         provider: "facebook",
         created_at: Time.at(TIMESTAMP.to_f / 1000),
         event_attributes: {
-          delivered: false,
-          read: false,
           mid: "mid.1457764197618:41d102a3e1ae206a38",
           seq: 73,
-          quick_reply: "DEVELOPER_DEFINED_PAYLOAD"}},
+          quick_reply: "DEVELOPER_DEFINED_PAYLOAD"
+        }
+      },
       recip_info: {
         sender_id: "USER_ID", recipient_id: "PAGE_ID"
       }

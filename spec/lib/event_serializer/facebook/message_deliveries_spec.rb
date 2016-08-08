@@ -4,7 +4,7 @@ RSpec.describe EventSerializer::Facebook::MessageDeliveries do
 
   describe '.new' do
     context 'invalid params' do
-      it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('SuppliedOptionIsNil') }
+      it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('Supplied Option Is Nil') }
     end
   end
 

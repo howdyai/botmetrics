@@ -3,7 +3,7 @@ RSpec.describe EventSerializer::Facebook do
 
   describe '.new' do
     context 'invalid params' do
-      it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('SuppliedOptionIsNil') }
+      it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('Supplied Option Is Nil') }
     end
   end
 
@@ -44,8 +44,6 @@ RSpec.describe EventSerializer::Facebook do
           provider: "facebook",
           created_at: Time.at(TIMESTAMP.to_f / 1000),
           event_attributes: {
-            delivered: false,
-            read: false,
             mid: "mid.1457764197618:41d102a3e1ae206a38",
             seq: 73,
             quick_reply: "DEVELOPER_DEFINED_PAYLOAD"}},
@@ -58,7 +56,7 @@ RSpec.describe EventSerializer::Facebook do
     context 'incorrect event type' do
       let(:event_type) { 'incorrect' }
 
-      it { expect { EventSerializer::Facebook.new(data).serialize }.to raise_error('IncorrectEventType') }
+      it { expect { EventSerializer::Facebook.new(data).serialize }.to raise_error('Incorrect Event Type') }
     end
 
     context 'correct event type' do
