@@ -63,6 +63,29 @@ RSpec.describe FacebookEventsService do
       expect(user.provider).to eql 'facebook'
       expect(user.membership_type).to eql 'user'
     end
+
+    it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
+      subject
+      user = bot_instance.users.last
+
+      if is_for_bot
+        expect(user.bot_interaction_count).to eql 1
+      else
+        expect(user.bot_interaction_count).to eql 0
+      end
+    end
+
+    it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
+      subject
+      user = bot_instance.users.last
+      event = bot_instance.events.last
+
+      if is_for_bot
+        expect(user.last_interacted_with_bot_at).to eql event.created_at
+      else
+        expect(user.last_interacted_with_bot_at).to be_nil
+      end
+    end
   end
 
   shared_examples "should create an event but not create any bot users" do
@@ -92,6 +115,36 @@ RSpec.describe FacebookEventsService do
         subject
         bot_instance.reload
       }.to_not change(bot_instance.users, :count)
+    end
+
+    it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
+      if is_for_bot
+        expect {
+          subject
+          user.reload
+        }.to change(user, :bot_interaction_count).from(0).to(1)
+      else
+        expect {
+          subject
+          user.reload
+        }.to_not change(user, :bot_interaction_count)
+      end
+    end
+
+    it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
+      if is_for_bot
+        expect {
+          subject
+          user.reload
+        }.to change(user, :last_interacted_with_bot_at)
+
+        expect(user.last_interacted_with_bot_at).to eql bot_instance.events.last.created_at
+      else
+        expect {
+          subject
+          user.reload
+        }.to_not change(user, :last_interacted_with_bot_at)
+      end
     end
   end
 

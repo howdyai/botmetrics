@@ -50,7 +50,12 @@ class FacebookEventsService
   def create_message_events!
     ActiveRecord::Base.transaction do
       @bot_user.save!
-      @bot_user.events.create!(event_params)
+      event = @bot_user.events.create!(event_params)
+
+      if event.is_for_bot?
+        @bot_user.increment!(:bot_interaction_count)
+        @bot_user.update_attribute(:last_interacted_with_bot_at, event.created_at)
+      end
     end
   end
 
