@@ -82,7 +82,7 @@ RSpec.describe FacebookEventsService do
     end
 
     context 'update timestamp' do
-      subject { FacebookEventsService.new(bot_id: bot.uid, events_json: delivery_json) }
+      subject { FacebookEventsService.new(bot_id: bot.uid, events: delivery_json) }
 
       let(:bot_user) { create(:bot_user) }
       let!(:message_event) { create(:messages_to_bot_event, :facebook, bot_instance_id: bot_instance.id, bot_user_id: bot_user.id) }
@@ -106,7 +106,7 @@ RSpec.describe FacebookEventsService do
       }
 
       it do
-        FacebookEventsService.new(bot_id: bot.uid, events_json: delivery_json).create_events!
+        FacebookEventsService.new(bot_id: bot.uid, events: delivery_json).create_events!
         message_event.reload
         expect(message_event.delivered).to be(true)
       end

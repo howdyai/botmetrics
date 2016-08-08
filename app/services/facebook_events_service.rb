@@ -1,7 +1,6 @@
 class FacebookEventsService
   AVAILABLE_FIELDS = %w(first_name last_name profile_pic locale timezone gender)
   AVAILABLE_OPTIONS = %i(bot_id events)
-  AVAILABLE_OPTIONS = %i(bot_id events_json)
   LAZY_EVENTS = { message_deliveries: :delivered, message_reads: :read }
 
   def initialize(options = {})
