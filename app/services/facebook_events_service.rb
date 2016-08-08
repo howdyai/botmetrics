@@ -11,14 +11,14 @@ class FacebookEventsService
   end
 
   def create_events!
-    serialized_params.each do |params|
-      @params = params
+    serialized_params.each do |p|
+      @params = p
       @bot_user = BotUser.first_or_initialize(uid: bot_user_uid)
       @bot_user.assign_attributes(bot_user_params)
       if LAZY_EVENTS.keys.include?(params.dig(:data, :event_type).to_sym)
-        update_message_event
+        update_message_events!
       else
-        create_new_event
+        create_message_events!
       end
     end
   end
@@ -26,14 +26,13 @@ class FacebookEventsService
   private
   attr_accessor :events, :bot_id, :params
 
-  def update_message_event
-    events = Event.where("event_type = 'message' AND created_at < ?", params.dig(:data, :watermark))
-    if events.any?
-      events.each { |event| event.update("#{LAZY_EVENTS[params.dig(:data, :event_type).to_sym]}": true) }
+  def update_message_events!
+    Event.where("event_type = 'message' AND created_at < ?", params.dig(:data, :watermark)).each do |event|
+      event.update("#{LAZY_EVENTS[params.dig(:data, :event_type).to_sym]}": true)
     end
   end
 
-  def create_new_event
+  def create_message_events!
     ActiveRecord::Base.transaction do
       @bot_user.save!
       @bot_user.events.create!(event_params)
@@ -61,7 +60,7 @@ class FacebookEventsService
       user_attributes: fetch_user.slice(*AVAILABLE_FIELDS),
       bot_instance_id: bot_instance.id,
       provider: 'facebook',
-      membership_type: 'mem_type'
+      membership_type: 'user'
     }
   end
 
