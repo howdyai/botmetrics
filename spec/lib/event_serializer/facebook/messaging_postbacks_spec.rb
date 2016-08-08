@@ -1,5 +1,5 @@
 RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
-  TIMESTAMP ||= 1458692752478
+  let!(:timestamp)    { Time.now.to_i * 1000 }
 
   describe '.new' do
     context 'invalid params' do
@@ -18,7 +18,7 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
         "recipient":{
           "id":"PAGE_ID"
         },
-        "timestamp":TIMESTAMP,
+        "timestamp":timestamp,
         "postback":{
           "payload":"USER_DEFINED_PAYLOAD"
         }
@@ -32,7 +32,7 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
           is_im: true,
           is_from_bot: false,
           provider: "facebook",
-          created_at: Time.at(TIMESTAMP.to_f / 1000),
+          created_at: Time.at(timestamp.to_f / 1000),
           event_attributes: {
             payload: "USER_DEFINED_PAYLOAD"
           }},

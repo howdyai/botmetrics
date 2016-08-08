@@ -1,6 +1,7 @@
 RSpec.describe EventSerializer::Facebook::MessageDeliveries do
-  TIMESTAMP ||= 1458692752478
-  WATERMARK ||= 1458792752478
+  let!(:timestamp)    { Time.now.to_i * 1000 }
+  let!(:watermark)    { 1.day.since.to_i * 1000 }
+
 
   describe '.new' do
     context 'invalid params' do
@@ -23,7 +24,7 @@ RSpec.describe EventSerializer::Facebook::MessageDeliveries do
           "mids":[
              "mid.1458668856218:ed81099e15d3f4f233"
           ],
-          "watermark":WATERMARK,
+          "watermark":watermark,
           "seq":37
         }
       }
@@ -32,7 +33,7 @@ RSpec.describe EventSerializer::Facebook::MessageDeliveries do
       {
         data:  {
           event_type: "message_deliveries",
-          watermark: Time.at(WATERMARK.to_f / 1000)
+          watermark: Time.at(watermark.to_f / 1000)
         },
         recip_info: {
           sender_id: "USER_ID", recipient_id: "PAGE_ID"

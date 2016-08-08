@@ -1,6 +1,6 @@
 RSpec.describe EventSerializer::Facebook::MessageReads do
-  TIMESTAMP ||= 1458692752478
-  WATERMARK ||= 1458792752478
+  let!(:timestamp)    { Time.now.to_i * 1000 }
+  let!(:watermark)    { 1.day.since.to_i * 1000 }
 
   describe '.new' do
     context 'invalid params' do
@@ -19,9 +19,9 @@ RSpec.describe EventSerializer::Facebook::MessageReads do
         "recipient":{
           "id":"PAGE_ID"
         },
-        "timestamp":TIMESTAMP,
+        "timestamp":timestamp,
         "read":{
-           "watermark":WATERMARK,
+           "watermark":watermark,
            "seq":38
         }
       }
@@ -30,7 +30,7 @@ RSpec.describe EventSerializer::Facebook::MessageReads do
       {
         data:  {
           event_type: "message_reads",
-          watermark: Time.at(WATERMARK.to_f / 1000)
+          watermark: Time.at(watermark.to_f / 1000)
         },
         recip_info: {
           sender_id: "USER_ID", recipient_id: "PAGE_ID"

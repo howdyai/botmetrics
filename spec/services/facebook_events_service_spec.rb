@@ -35,11 +35,10 @@ RSpec.describe FacebookEventsService do
 
       event = bot_instance.events.last
 
-      expect(event.event_type).to eql 'message'
+      expect(event.event_type).to eql event_type
       expect(event.provider).to eql 'facebook'
       expect(event.user).to eql BotUser.find_by(uid: fb_user_id)
-      expect(event.event_attributes['mid']).to eql mid
-      expect(event.event_attributes['seq']).to eql seq
+      expect(event.event_attributes.slice(*required_event_attributes.keys)).to eql required_event_attributes
       expect(event.text).to eql text
       expect(event.created_at.to_i).to eql timestamp / 1000
       expect(event.is_from_bot).to be is_from_bot
@@ -80,8 +79,7 @@ RSpec.describe FacebookEventsService do
       expect(event.event_type).to eql event_type
       expect(event.provider).to eql 'facebook'
       expect(event.user).to eql user
-      expect(event.event_attributes['mid']).to eql mid
-      expect(event.event_attributes['seq']).to eql seq
+      expect(event.event_attributes.slice(*required_event_attributes.keys)).to eql required_event_attributes
       expect(event.text).to eql text
       expect(event.created_at.to_i).to eql timestamp / 1000
       expect(event.is_from_bot).to be is_from_bot
@@ -107,6 +105,9 @@ RSpec.describe FacebookEventsService do
     let(:is_from_bot)   { false }
     let(:is_for_bot)    { true  }
     let(:is_im)         { true  }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", "seq-1"]
+    }
 
     let(:events) do
       {
@@ -122,8 +123,8 @@ RSpec.describe FacebookEventsService do
             },
             "timestamp": timestamp,
             "message":{
-              "mid": mid,
-              "seq": seq,
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
               "text": text,
               "quick_reply": {
                 "payload": "DEVELOPER_DEFINED_PAYLOAD"
@@ -146,13 +147,14 @@ RSpec.describe FacebookEventsService do
   describe '"message_echoes" event' do
     let(:fb_user_id)    { "fb-user-id"  }
     let(:bot_user_id)   { bot.uid       }
-    let(:mid)           { "mid-1"       }
-    let(:seq)           { "seq-1"       }
     let(:text)          { "hello-world" }
     let(:event_type)    { 'message'     }
     let(:is_from_bot)   { true          }
     let(:is_for_bot)    { false         }
     let(:is_im)         { true          }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", "seq-1"]
+    }
 
     let(:events) do
       {
@@ -169,8 +171,8 @@ RSpec.describe FacebookEventsService do
             timestamp: timestamp,
             message: {
               is_echo: true,
-              mid: mid,
-              seq: seq,
+              mid: required_event_attributes['mid'],
+              seq: required_event_attributes['seq'],
               text: text,
               quick_reply: {
                 payload: "DEVELOPER_DEFINED_PAYLOAD"
@@ -302,6 +304,133 @@ RSpec.describe FacebookEventsService do
       expect(e2.reload.has_been_delivered).to be true
       expect(e3.reload.has_been_delivered).to be false
       expect(e4.reload.has_been_delivered).to be false
+    end
+  end
+
+  describe '"messaging_optins" event' do
+    let(:fb_user_id)    { "fb-user-id"       }
+    let(:bot_user_id)   { bot.uid            }
+    let(:text)          { nil                }
+    let(:event_type)    { 'messaging_optins' }
+    let(:is_from_bot)   { false }
+    let(:is_for_bot)    { true  }
+    let(:is_im)         { true  }
+    let(:required_event_attributes) {
+      Hash["optin"=> { "ref"=> "PASS_THROUGH_PARAM" }]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "optin":{
+              "ref": "PASS_THROUGH_PARAM"
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+    end
+  end
+
+  describe '"messaging_postbacks" event' do
+    let(:fb_user_id)    { "fb-user-id"          }
+    let(:bot_user_id)   { bot.uid               }
+    let(:text)          { nil                   }
+    let(:event_type)    { 'messaging_postbacks' }
+    let(:is_from_bot)   { false }
+    let(:is_for_bot)    { true  }
+    let(:is_im)         { true  }
+    let(:required_event_attributes) {
+      Hash["payload", "USER_DEFINED_PAYLOAD"]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "postback":{
+              "payload": "USER_DEFINED_PAYLOAD"
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+    end
+  end
+
+  describe '"account_linking" event' do
+    let(:fb_user_id)    { "fb-user-id"      }
+    let(:bot_user_id)   { bot.uid           }
+    let(:text)          { nil               }
+    let(:event_type)    { 'account_linking' }
+    let(:is_from_bot)   { false }
+    let(:is_for_bot)    { true  }
+    let(:is_im)         { true  }
+    let(:required_event_attributes) {
+      Hash["account_linking"=> { "status"=> "linked", "authorization_code"=> "PASS_THROUGH_AUTHORIZATION_CODE" }]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "account_linking":{
+              "status": "linked",
+              "authorization_code": "PASS_THROUGH_AUTHORIZATION_CODE"
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
     end
   end
 end

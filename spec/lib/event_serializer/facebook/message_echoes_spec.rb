@@ -18,7 +18,7 @@ RSpec.describe EventSerializer::Facebook::MessageEchoes do
         "recipient":{
           "id":"PAGE_ID"
         },
-        "timestamp":TIMESTAMP,
+        "timestamp":timestamp,
         "message":{
           "is_echo":true,
           "mid":"mid.1457764197618:41d102a3e1ae206a38",
@@ -36,7 +36,7 @@ RSpec.describe EventSerializer::Facebook::MessageEchoes do
           is_from_bot: true,
           text: "hello, world!",
           provider: "facebook",
-          created_at: Time.at(TIMESTAMP.to_f / 1000),
+          created_at: Time.at(timestamp.to_f / 1000),
           event_attributes: {
             mid: "mid.1457764197618:41d102a3e1ae206a38",
             seq: 73
