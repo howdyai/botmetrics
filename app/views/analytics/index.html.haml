@@ -13,7 +13,7 @@
           default_query: default_query,
           reset_url: bot_analytics_path
 
-  = render 'shared/filters/tableized', tableized: @tableized
+  = render 'shared/filters/tableized', tableized: @tableized, provider: @bot.provider
 
 - content_for :page_scripts do
   :javascript

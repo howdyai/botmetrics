@@ -1,6 +1,5 @@
 .row.query
   = f.input :provider, as: :hidden
-
   .col-sm-3
     = f.input :field,  label: false, collection: f.object.fields.invert,  include_blank: false
   .col-sm-3

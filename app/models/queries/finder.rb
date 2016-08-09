@@ -4,6 +4,8 @@ module Queries
       case provider
         when 'slack'
           Queries::Slack.new
+        when 'facebook'
+          Queries::Facebook.new
         else
           Queries::Null.new
       end

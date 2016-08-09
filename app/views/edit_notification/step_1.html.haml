@@ -29,7 +29,7 @@
     Send to #{pluralize(@tableized.count, 'user')}
   %hr
 
-  = render 'shared/filters/tableized', tableized: @tableized
+  = render 'shared/filters/tableized', tableized: @tableized, provider: @bot.provider
 
 .steps-navigation
   = link_to 'Continue', step_2_bot_edit_notification_path(@bot, @notification), class: 'btn btn-lg btn-success'

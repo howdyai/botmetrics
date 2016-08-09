@@ -1,0 +1,21 @@
+.row
+  .col-xs-12
+    %table.table.table-striped.tableized
+      %thead
+        %tr
+          %th Full Name
+          %th Nickname
+          %th Email
+          %th Team
+          %th Signed Up
+          %th Last Interacted With Bot
+      %tbody
+        - tableized.each do |bot_user|
+          %tr{class: bot_user.id}
+            %td= bot_user.full_name
+            %td= bot_user.nickname
+            %td= bot_user.email
+            %td= bot_user.bot_instance.team_name
+            %td= "#{time_ago_in_words(bot_user.created_at)} ago"
+            %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
+    = will_paginate tableized, renderer: BootstrapPagination::Rails

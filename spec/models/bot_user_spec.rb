@@ -111,6 +111,9 @@ RSpec.describe BotUser do
       it { expect(subject).to respond_to :nickname }
       it { expect(subject).to respond_to :email }
       it { expect(subject).to respond_to :full_name }
+      it { expect(subject).to respond_to :first_name }
+      it { expect(subject).to respond_to :last_name }
+      it { expect(subject).to respond_to :gender }
     end
   end
 
