@@ -7,11 +7,6 @@ class AnalyticsController < ApplicationController
   helper_method :default_query
 
   def index
-    if @bot.provider == 'facebook'
-      flash[:info] = "Analysis for Facebook is coming soon!"
-      redirect_to(bot_path(@bot)) && return
-    end
-
     @query_set =
       QuerySetBuilder.new(
         bot: @bot,

@@ -11,11 +11,6 @@ class NewNotificationController < ApplicationController
   layout 'app'
 
   def step_1
-    if @bot.provider == 'facebook'
-      flash[:info] = "Notifications for Facebook is coming soon!"
-      redirect_to(bot_path(@bot)) && return
-    end
-
     @query_set =
       QuerySetBuilder.new(
         bot: @bot,
@@ -34,22 +29,12 @@ class NewNotificationController < ApplicationController
   end
 
   def step_2
-    if @bot.provider == 'facebook'
-      flash[:info] = "Notifications for Facebook is coming soon!"
-      redirect_to(bot_path(@bot)) && return
-    end
-
     @notification = @bot.notifications.build(model_params)
 
     mixpanel_track('View New Notification Step 2', model_params)
   end
 
   def step_3
-    if @bot.provider == 'facebook'
-      flash[:info] = "Notifications for Facebook is coming soon!"
-      redirect_to(bot_path(@bot)) && return
-    end
-
     @notification = @bot.notifications.build(model_params)
 
     mixpanel_track('View New Notification Step 3', model_params)
