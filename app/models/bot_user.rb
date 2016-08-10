@@ -65,7 +65,7 @@ class BotUser < ActiveRecord::Base
     where(created_at: min..max)
   end
 
-  store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender
+  store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender, :timezone
 
   def self.with_bot_instances(instances, start_time, end_time)
     where(bot_instance_id: instances.select(:id)).joins(:bot_instance).
