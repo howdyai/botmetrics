@@ -65,7 +65,12 @@ class DashboardsController < ApplicationController
   def messages_to_bot
     @messages = Event.with_messages_to_bot(@instances, @start.utc, @end.utc)
 
-    @tableized = @instances.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
+    @tableized = case @bot.provider
+                 when 'slack'
+                   @instances.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
+                 when 'facebook'
+                   BotUser.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
+                 end
 
     @messages = GetResourcesCountByUnit.new(
                   @group_by,
@@ -79,7 +84,12 @@ class DashboardsController < ApplicationController
   def messages_from_bot
     @messages = Event.with_messages_from_bot(@instances, @start.utc, @end.utc)
 
-    @tableized = @instances.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
+    @tableized = case @bot.provider
+                 when 'slack'
+                   @instances.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
+                 when 'facebook'
+                   BotUser.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
+                 end
 
     @messages = GetResourcesCountByUnit.new(
                   @group_by,
