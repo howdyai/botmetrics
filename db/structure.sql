@@ -92,7 +92,7 @@ CREATE TABLE bot_instances (
     state character varying DEFAULT 'pending'::character varying NOT NULL,
     instance_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT valid_provider_on_bot_instances CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
-    CONSTRAINT validate_attributes_name CHECK ((((((((instance_attributes ->> 'name'::text) IS NOT NULL) AND (length((instance_attributes ->> 'name'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((state)::text <> 'pending'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL))) OR ((provider)::text <> 'facebook'::text)))
+    CONSTRAINT validate_attributes_name CHECK ((((((((instance_attributes ->> 'name'::text) IS NOT NULL) AND (length((instance_attributes ->> 'name'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((state)::text = 'enabled'::text)) OR (((state)::text = 'pending'::text) AND (instance_attributes IS NOT NULL))) OR ((provider)::text <> 'facebook'::text)))
 );
 
 
@@ -1068,4 +1068,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160805231130');
 INSERT INTO schema_migrations (version) VALUES ('20160805231725');
 
 INSERT INTO schema_migrations (version) VALUES ('20160808061328');
+
+INSERT INTO schema_migrations (version) VALUES ('20160811171418');
 
