@@ -3,31 +3,34 @@ class ReportsMailer < ApplicationMailer
     @user = User.find(user_id)
     return if @user.bots.count == 0
 
-    if monday_in_time_zone?(@user.timezone)
-      @weekly_dashboarders = {}
+    User.with_advisory_lock("reports-mailer-daily-summary-#{@user.id}") do
+      if monday_in_time_zone?(@user.timezone)
+        @weekly_dashboarders = {}
+        @user.bots.each do |bot|
+          dashboarder = Dashboarder.new(bot.instances.legit, 'this-week', @user.timezone, false)
+          dashboarder.init!
+
+          @weekly_dashboarders[bot.name] = dashboarder
+        end
+      end
+
+      @daily_dashboarders = {}
       @user.bots.each do |bot|
-        dashboarder = Dashboarder.new(bot.instances.legit, 'this-week', @user.timezone, false)
+        dashboarder = Dashboarder.new(bot.instances.legit, 'today', @user.timezone, false)
         dashboarder.init!
 
-        @weekly_dashboarders[bot.name] = dashboarder
+        @daily_dashboarders[bot.name] = dashboarder
       end
+
+      opts = {
+        to: @user.email,
+        subject: "Your botmetrics Daily Summary for #{yesterday_in_words(@user)}"
+      }
+
+      mail(opts)
+
+      @user.log_daily_summary_sent
     end
-
-    @daily_dashboarders = {}
-    @user.bots.each do |bot|
-      dashboarder = Dashboarder.new(bot.instances.legit, 'today', @user.timezone, false)
-      dashboarder.init!
-
-      @daily_dashboarders[bot.name] = dashboarder
-    end
-
-    mail(
-      to: @user.email,
-      bcc: 'admins@getbotmetrics.com',
-      subject: "Your botmetrics Daily Summary for #{yesterday_in_words(@user)}"
-    )
-
-    @user.log_daily_summary_sent
   end
 
   private
