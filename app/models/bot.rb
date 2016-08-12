@@ -6,7 +6,7 @@ class Bot < ActiveRecord::Base
   PROVIDERS = {
     'facebook' => true,
     'slack' => true,
-    'kik' => false,
+    'kik' => true,
     'telegram' => false,
     'amazon' => false
   }
@@ -24,9 +24,9 @@ class Bot < ActiveRecord::Base
   has_many :webhook_events
 
   def build_instance(params)
-    fb_instance = instances.find_by(provider: :facebook)
-    if fb_instance.present? && fb_instance.provider == provider
-      return fb_instance.assign_attributes(params) || fb_instance
+    instance = instances.find_by(provider: provider)
+    if instance.present? && instance.provider != 'slack'
+      return instance.assign_attributes(params) || instance
     end
     instances.build(params)
   end

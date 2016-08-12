@@ -11,10 +11,8 @@ class Kik
 
   def call(facebook_api, method, params = {}, &block)
     params = params.select { |k,v| v.present? }
-    params.merge!(access_token: @token)
     encoded_params = URI.encode_www_form(params)
-    auth_token = Base64.encode64("#{@username}:#{@token}").chop
-
+    auth_token = Base64.urlsafe_encode64("#{@username}:#{@token}")
     opts = {
       omit_default_port: true,
       idempotent: true,

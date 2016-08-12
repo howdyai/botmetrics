@@ -84,4 +84,32 @@ class SetupBotJob < Job
       TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: error_msg)
     end
   end
+
+  def setup_kik_bot!
+    kik = Kik.new(@instance.token, @instance.uid)
+    auth_info = kik.call('config', :get)
+
+    if auth_info['status'] == Kik::OK
+      Rails.logger.info(auth_info)
+      @instance.update_attributes!(
+        uid: @instance.uid,
+        state: 'enabled',
+        token: @instance.token,
+        instance_attributes: auth_info.except('status')
+      )
+
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", { ok: true }.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
+
+      Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
+      NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", bot: @instance.bot.name, members: @instance.users.count)
+    else
+      error_msg = auth_info['error']
+      @instance.update_attributes!(state: 'disabled', uid: nil)
+      # @instance.events.create!(event_type: 'bot_disabled', provider: @instance.provider)
+      sleep(1)
+      PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", { ok: false, error: error_msg }.to_json)
+      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: error_msg)
+    end
+  end
 end

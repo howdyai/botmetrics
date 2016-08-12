@@ -19,5 +19,20 @@ FactoryGirl.define do
         { 'name' => 'N123' }
       end
     end
+
+    trait :with_attributes_kik do
+      uid 'U12345'
+      instance_attributes do
+        {
+          'webhook' => 'webhook',
+          'features' => {
+            'receiveReadReceipts' => false,
+            'receiveIsTyping' => false,
+            'manuallySendReadReceipts' => false,
+            'receiveDeliveryReceipts' => false
+          }
+        }
+      end
+    end
   end
 end

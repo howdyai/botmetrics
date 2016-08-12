@@ -73,7 +73,7 @@ class BotInstancesController < ApplicationController
 
   protected
   def instance_params
-    params.require(:instance).permit(:token, :username, :created_at)
+    params.require(:instance).permit(:token, :uid, :created_at)
   end
 
   def update_instance_params

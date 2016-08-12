@@ -1,6 +1,7 @@
 RSpec.describe SetupBotJob do
   let(:slack_api) { ENV['SLACK_API_URL'] }
   let(:facebook_api) { ENV['FACEBOOK_API_URL'] }
+  let(:kik_api) { ENV['KIK_API_URL'] }
 
   let!(:user) { create :user }
 
@@ -411,6 +412,94 @@ RSpec.describe SetupBotJob do
         it 'should track the event on Mixpanel' do
           SetupBotJob.new.perform(bi_facebook_with_attrs.id, user.id)
           expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'This Page access token belongs to a Page that has been deleted.')
+        end
+      end
+    end
+
+    context 'kik' do
+      let!(:bi_kik)    { create :bot_instance, :with_attributes_kik, token: 'token', provider: 'kik' }
+      let(:auth_token) { Base64.encode64("#{bi_kik.uid}:#{bi_kik.token}").chop }
+
+      before do
+        allow_any_instance_of(Object).to receive(:sleep)
+        allow(TrackMixpanelEventJob).to receive(:perform_async)
+      end
+
+      context 'when token is valid' do
+        let!(:auth_test_response) do
+          {
+            'webhook' => 'webhook',
+            'features' => {
+              'receiveReadReceipts' => false,
+              'receiveIsTyping' => false,
+              'manuallySendReadReceipts' => false,
+              'receiveDeliveryReceipts' => false
+            }
+          }
+        end
+
+        before do
+          stub_request(:get, "#{kik_api}/config").
+            with(:headers => {'Authorization'=>"Basic #{auth_token}", 'Host'=>'api.kik.com'}).
+            to_return(status: 200, body: auth_test_response.to_json)
+
+          allow(PusherJob).to receive(:perform_async)
+          allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
+          allow(NotifyAdminOnSlackJob).to receive(:perform_async)
+        end
+
+        it 'should enable the bot and setup name' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          bi_kik.reload
+          expect(bi_kik.state).to eql 'enabled'
+          expect(bi_kik.uid).to eql 'U12345'
+          expect(bi_kik.instance_attributes).to eql auth_test_response
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_kik.id}", "{\"ok\":true}")
+        end
+
+        it 'should send an alert' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(bi_kik.id, user.id)
+        end
+
+        it 'should notify admins' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: "New Team Signed Up for #{bi_kik.bot.name}", bot: bi_kik.bot.name, members: 0)
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'enabled')
+        end
+      end
+
+      context 'when token is invalid' do
+        before do
+          stub_request(:get, "#{kik_api}/config").
+                    to_return(status: 400, body: { error: 'Invalid OAuth access token.' }.to_json)
+          allow(PusherJob).to receive(:perform_async)
+        end
+
+        it 'should keep the bot in disabled state' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          bi_kik.reload
+          expect(bi_kik.state).to eql 'disabled'
+          expect(bi_kik.uid).to be_nil
+          expect(bi_kik.instance_attributes).to be_present
+        end
+
+        it 'should send a message to Pusher' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_kik.id}", "{\"ok\":false,\"error\":\"Invalid OAuth access token.\"}")
+        end
+
+        it 'should track the event on Mixpanel' do
+          SetupBotJob.new.perform(bi_kik.id, user.id)
+          expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Completed Bot Instance Creation', user.id, state: 'Invalid OAuth access token.')
         end
       end
     end

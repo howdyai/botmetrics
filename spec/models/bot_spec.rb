@@ -36,6 +36,18 @@ RSpec.describe Bot do
       end
     end
 
+    context 'instance with kik provider exists' do
+      let(:bot) { create(:bot, provider: :kik) }
+      let!(:bi_kik) { create(:bot_instance, provider: :kik, bot: bot) }
+      let(:bot_instance_params) { { token: 'new_token', provider: 'kik' } }
+
+      it 'should assign new attributes and update instance record' do
+        bot_instance = bot.build_instance(bot_instance_params)
+        expect(bot_instance.id).to eql(bi_kik.id)
+        expect(bot_instance.token).to eql('new_token')
+      end
+    end
+
     context 'instance doesn`t exist' do
       let(:bot) { create(:bot) }
       let(:bot_instance_params) { { token: 'token', provider: 'slack' } }
