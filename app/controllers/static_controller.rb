@@ -3,7 +3,13 @@ class StaticController < ApplicationController
 
   def index
     if current_user.present?
-      redirect_to(bot_path(current_user.bots.first)) && return
+      if(bot = current_user.bots.first).present?
+        redirect_to bot_path(current_user.bots.first)
+      else
+        redirect_to new_bot_path
+      end
+    else
+      render :index
     end
   end
 

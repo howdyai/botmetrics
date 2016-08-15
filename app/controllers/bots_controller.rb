@@ -12,7 +12,12 @@ class BotsController < ApplicationController
   end
 
   def index
-    redirect_to bot_path(current_user.bots.first)
+    if(bot = current_user.bots.first).present?
+      redirect_to bot_path(current_user.bots.first)
+    else
+      flash[:info] = "You need to create a bot first!"
+      redirect_to new_bot_path
+    end
   end
 
   def create
