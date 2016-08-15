@@ -9,7 +9,7 @@ class Kik
     @username = username
   end
 
-  def call(facebook_api, method, params = {}, &block)
+  def call(kik_api, method, params = {}, &block)
     params = params.select { |k,v| v.present? }
     encoded_params = URI.encode_www_form(params)
     auth_token = Base64.urlsafe_encode64("#{@username}:#{@token}")
@@ -22,7 +22,7 @@ class Kik
       headers: { 'Authorization': "Basic #{auth_token}" }
     }
 
-    url = "#{API_URL}/#{facebook_api}"
+    url = "#{API_URL}/#{kik_api}"
 
     if method.to_s.downcase == 'get'
       url = "#{url}?#{encoded_params}"
