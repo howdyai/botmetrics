@@ -4,8 +4,12 @@
     = (Time.current.in_time_zone(@user.timezone) - 7.days).strftime('%b %d, %Y')
     (Last Week)
 
-  - @weekly_dashboarders.each do |bot_name, dashboarder|
-    = render 'dashboarder_stats', bot_name: bot_name, dashboarder: dashboarder
+  - @weekly_dashboarders.each do |bot, dashboarder|
+    %h3= bot.name
+    - if bot.provider == 'slack'
+      = render 'dashboarder_stats_slack', bot: bot, dashboarder: dashboarder
+    - else
+      = render 'dashboarder_stats_other', bot: bot, dashboarder: dashboarder
 
     %hr
 
@@ -16,8 +20,12 @@
   = (Time.current.in_time_zone(@user.timezone) - 1.day).strftime('%b %d, %Y')
   (Yesterday)
 
-- @daily_dashboarders.each do |bot_name, dashboarder|
-  = render 'dashboarder_stats', bot_name: bot_name, dashboarder: dashboarder
+- @daily_dashboarders.each do |bot, dashboarder|
+  %h3= bot.name
+  - if bot.provider == 'slack'
+    = render 'dashboarder_stats_slack', bot: bot, dashboarder: dashboarder
+  - else
+    = render 'dashboarder_stats_other', bot: bot, dashboarder: dashboarder
 
   %hr
 

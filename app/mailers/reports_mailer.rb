@@ -10,7 +10,7 @@ class ReportsMailer < ApplicationMailer
           dashboarder = Dashboarder.new(bot.instances.legit, 'this-week', @user.timezone, false)
           dashboarder.init!
 
-          @weekly_dashboarders[bot.name] = dashboarder
+          @weekly_dashboarders[bot] = dashboarder
         end
       end
 
@@ -19,7 +19,7 @@ class ReportsMailer < ApplicationMailer
         dashboarder = Dashboarder.new(bot.instances.legit, 'today', @user.timezone, false)
         dashboarder.init!
 
-        @daily_dashboarders[bot.name] = dashboarder
+        @daily_dashboarders[bot] = dashboarder
       end
 
       opts = {
