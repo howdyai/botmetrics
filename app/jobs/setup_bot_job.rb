@@ -90,7 +90,6 @@ class SetupBotJob < Job
     auth_info = kik.call('config', :get)
 
     if auth_info['status'] == Kik::OK
-      Rails.logger.info(auth_info)
       @instance.update_attributes!(
         uid: @instance.uid,
         state: 'enabled',

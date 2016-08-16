@@ -31,7 +31,6 @@ class Kik
       opts[:headers].merge("Content-Type": "application/x-www-form-urlencoded")
     end
 
-
     if !block_given?
       connection = Excon.new(url, opts)
       response = connection.request(method: method)

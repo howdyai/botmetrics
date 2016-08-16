@@ -1,13 +1,13 @@
 class KikEventsService
   AVAILABLE_USER_FIELDS = %w(first_name last_name profile_pic_url profile_pic_last_modified)
-  UPDATE_EVENTS         = { message_deliveries: :delivered, message_reads: :read }
+  UPDATE_EVENTS         = { deliver: 'delivery-receipt', read: 'read-receipt' }
 
   def initialize(bot_id:, events:)
     @bot_id = bot_id
     @events = events
   end
 
-  # We are using find_by here, because in Facebook's case
+  # We are using find_by here, because in Kik's case
   # only one instance of BotInstance will ever exist
   def bot_instance
     @bot_instance ||= BotInstance.find_by(bot_id: bot.id)
@@ -20,9 +20,8 @@ class KikEventsService
   def create_events!
     serialized_params.each do |p|
       @params = p
-      @event_type = params.dig(:data, :event_attributes, :sub_type).to_sym
-
-      if UPDATE_EVENTS.has_key?(@event_type)
+      @event_type = params.dig(:data, :event_attributes, :sub_type)
+      if UPDATE_EVENTS.has_value?(@event_type)
         update_message_events!
       else
         @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
@@ -37,13 +36,12 @@ class KikEventsService
   attr_accessor :events, :bot_id, :params
 
   def update_message_events!
-    query_params = ['message', false, params.dig(:data, :watermark)]
-
-    case @event_type
-    when :message_deliveries
-      bot.events.where("event_type = ? AND has_been_delivered = ? AND created_at <= ?", *query_params).update_all(has_been_delivered: true)
-    when :message_reads
-      bot.events.where("event_type = ? AND has_been_read = ? AND created_at <= ?", *query_params).update_all(has_been_read: true)
+    query_params = [params.dig(:data, :event_attributes, :message_ids), false]
+      case @event_type
+    when UPDATE_EVENTS[:deliver]
+      bot.events.where("event_attributes->>'id' IN (?) AND has_been_delivered = ?", *query_params).update_all(has_been_delivered: true)
+    when UPDATE_EVENTS[:read]
+      bot.events.where("event_attributes->>'id' IN (?) AND has_been_read = ?", *query_params).update_all(has_been_read: true)
     end
   end
 
@@ -64,7 +62,11 @@ class KikEventsService
   end
 
   def event_params
-    params.dig(:data).merge(bot_instance_id: bot_instance.id)
+    params.dig(:data).merge(bot_instance_id: bot_instance.id, is_im: is_im)
+  end
+
+  def is_im
+    params.dig(:data, :event_attributes, :participants)&.include?(bot_instance.uid)
   end
 
   def fetch_user

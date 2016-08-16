@@ -11,6 +11,8 @@ class EventsController < ApplicationController
     when 'facebook'
       validate_event!
       FacebookEventsCollectorJob.perform_async(@bot.uid, params[:event])
+    when 'kik'
+      KikEventsCollectorJob.perform_async(@bot.uid, params[:event])
     end
 
     render nothing: true, status: :accepted

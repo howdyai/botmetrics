@@ -26,6 +26,38 @@ RSpec.describe Event do
       it { should_not allow_value('test').for(:event_type) }
     end
 
+    context 'kik' do
+      let!(:user)  { create :bot_user }
+      let!(:event) { build :event, event_type: 'message', user: user, event_attributes: {}, provider: 'kik' }
+
+      context 'event_attributes' do
+        it "should be invalid if event_type = 'message' and mid is NULL" do
+          event.event_type = 'message'
+          event.event_attributes['id'] = 'id-1'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["chat_id can't be blank"]
+        end
+
+        it "should be invalid if event_type = 'message' and seq is NULL" do
+          event.event_type = 'message'
+          event.event_attributes['chat_id'] = 'chat_id-1'
+          expect(event).to_not be_valid
+          expect(event.errors[:event_attributes]).to eql ["id can't be blank"]
+        end
+      end
+
+      context 'bot_user_id' do
+        it "should be invalid if bot_user_id is nil" do
+          event.event_type = 'message'
+          event.event_attributes['id'] = 'id-1'
+          event.event_attributes['chat_id'] = 'chat_id-1'
+          event.bot_user_id = nil
+          expect(event).to_not be_valid
+          expect(event.errors[:bot_user_id]).to eql ["can't be blank"]
+        end
+      end
+    end
+
     context 'facebook' do
       let!(:user)  { create :bot_user }
       let!(:event) { build :event, event_type: 'message', user: user, event_attributes: {}, provider: 'facebook' }

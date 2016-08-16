@@ -4,8 +4,7 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
     {
       event_type: 'message',
       is_for_bot: @data[:mention].present?,
-      is_im: @data[:participants].present? && @data[:participants].count > 1,
-      is_from_bot: !@data[:mention].present?,
+      is_from_bot: false,
       text: @data[:body],
       provider: 'kik',
       created_at: timestamp,
@@ -24,6 +23,9 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
   end
 
   def secondary_attributes
-    @data.except(:chatId, :id, :type, :body, :timestamp, :mention)
+    data = {}
+    @data.except!(:chatId, :id, :type, :body, :timestamp, :mention)
+    @data.each { |k, v| data[k&.to_s&.underscore&.to_sym] = v }
+    data
   end
 end

@@ -14,6 +14,13 @@ class EventAttributesValidator < ActiveModel::Validator
       if record.event_attributes['seq'].blank?
         record.errors[:event_attributes] << "seq can't be blank"
       end
+    elsif (record.event_type == 'message') && record.provider == 'kik'
+      if record.event_attributes['id'].blank?
+        record.errors[:event_attributes] << "id can't be blank"
+      end
+      if record.event_attributes['chat_id'].blank?
+        record.errors[:event_attributes] << "chat_id can't be blank"
+      end
     end
   end
 end

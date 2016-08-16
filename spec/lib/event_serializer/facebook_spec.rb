@@ -8,7 +8,7 @@ RSpec.describe EventSerializer::Facebook do
   end
 
   describe '#serialize' do
-    subject { EventSerializer.new(:facebook, data).serialize }
+    subject { EventSerializer::Facebook.new(data).serialize }
 
     let(:data) {
       {
