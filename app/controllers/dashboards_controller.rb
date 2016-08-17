@@ -67,7 +67,7 @@ class DashboardsController < ApplicationController
     @tableized = case @bot.provider
                  when 'slack'
                    @instances.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
-                 when 'facebook'
+                 when 'facebook', 'kik'
                    BotUser.with_messages_to_bot(@messages.select(:bot_instance_id)).page(params[:page])
                  end
 
@@ -86,7 +86,7 @@ class DashboardsController < ApplicationController
     @tableized = case @bot.provider
                  when 'slack'
                    @instances.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
-                 when 'facebook'
+                 when 'facebook', 'kik'
                    BotUser.with_messages_from_bot(@messages.select(:bot_instance_id)).page(params[:page])
                  end
 
