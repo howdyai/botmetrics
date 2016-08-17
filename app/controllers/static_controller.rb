@@ -3,8 +3,9 @@ class StaticController < ApplicationController
 
   def index
     if current_user.present?
-      if(bot = current_user.bots.first).present?
-        redirect_to bot_path(current_user.bots.first)
+      if current_user.bots.count > 0
+        bot = session[:bot_id] ? Bot.find_by(uid: session[:bot_id]) : current_user.bots.first
+        redirect_to bot_path(bot)
       else
         redirect_to new_bot_path
       end

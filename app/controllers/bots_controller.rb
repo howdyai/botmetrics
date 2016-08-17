@@ -59,6 +59,7 @@ class BotsController < ApplicationController
   end
 
   def show
+    session[:bot_id] = @bot.uid
     @group_by = params[:group_by].presence || 'today'
 
     if (@instances = @bot.instances.legit).count == 0
