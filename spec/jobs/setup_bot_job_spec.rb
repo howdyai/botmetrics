@@ -331,7 +331,6 @@ RSpec.describe SetupBotJob do
             to_return(status: 200, body: auth_test_response)
 
           allow(PusherJob).to receive(:perform_async)
-          allow(Alerts::CreatedBotInstanceJob).to receive(:perform_async)
           allow(NotifyAdminOnSlackJob).to receive(:perform_async)
         end
 
@@ -346,11 +345,6 @@ RSpec.describe SetupBotJob do
         it 'should send a message to Pusher' do
           SetupBotJob.new.perform(bi_facebook.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi_facebook.id}", "{\"ok\":true}")
-        end
-
-        it 'should send an alert' do
-          SetupBotJob.new.perform(bi_facebook.id, user.id)
-          expect(Alerts::CreatedBotInstanceJob).to have_received(:perform_async).with(bi_facebook.id, user.id)
         end
 
         it 'should notify admins' do
