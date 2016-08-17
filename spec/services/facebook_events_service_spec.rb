@@ -157,14 +157,14 @@ RSpec.describe FacebookEventsService do
     let(:fb_user_id)    { "fb-user-id"  }
     let(:bot_user_id)   { bot.uid       }
     let(:mid)           { "mid-1"       }
-    let(:seq)           { "seq-1"       }
+    let(:seq)           { 8888          }
     let(:text)          { "hello-world" }
     let(:event_type)    { 'message'     }
     let(:is_from_bot)   { false }
     let(:is_for_bot)    { true  }
     let(:is_im)         { true  }
     let(:required_event_attributes) {
-      Hash["mid", "mid-1", "seq", "seq-1"]
+      Hash["mid", "mid-1", "seq", 8888]
     }
 
     let(:events) do

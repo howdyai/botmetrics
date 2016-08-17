@@ -53,7 +53,7 @@ class FacebookEventsService
       mid, seq = params.dig(:event_attributes, :mid), params.dig(:event_attributes, :seq)
 
       if mid && seq && @bot_instance.events.where("event_attributes->>'mid' = ? AND " +
-                                                  "event_attributes->>'seq' = ?", mid, seq).count > 0
+                                                  "event_attributes->>'seq' = CAST(? as TEXT)", mid, seq).count > 0
         return
       end
 
