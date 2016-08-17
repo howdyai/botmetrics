@@ -2,34 +2,36 @@ RSpec.describe FacebookEventsService do
   let!(:timestamp)    { Time.now.to_i * 1000 }
   let!(:bot)          { create :bot, provider: 'facebook' }
   let!(:bot_instance) { create :bot_instance, provider: 'facebook', bot: bot }
+  let!(:first_name)  { Faker::Name.first_name }
+  let!(:last_name)   { Faker::Name.last_name  }
+  let!(:profile_pic) { Faker::Avatar.image("my-own-slug") }
+  let!(:locale)      { 'en-US' }
+  let!(:timezone)    { 3 }
+  let!(:gender)      { "female" }
+  let!(:fb_client)   { double(Facebook) }
 
-  subject { FacebookEventsService.new(bot_id: bot.uid, events: events).create_events! }
+  def do_request
+    FacebookEventsService.new(bot_id: bot.uid, events: events).create_events!
+  end
+
+
+  before do
+    allow(Facebook).to receive(:new).with(bot_instance.token).and_return(fb_client)
+
+    allow(fb_client).to receive(:call).
+                     with(fb_user_id, :get, fields: 'first_name,last_name,profile_pic,locale,timezone,gender' ).
+                     and_return(first_name: first_name,
+                                last_name: last_name,
+                                profile_pic: profile_pic,
+                                locale: locale,
+                                timezone: timezone,
+                                gender: gender)
+  end
 
   shared_examples "should create an event as well as create the bot users" do
-    let!(:fb_client)   { double(Facebook) }
-    let!(:first_name)  { Faker::Name.first_name }
-    let!(:last_name)   { Faker::Name.last_name  }
-    let!(:profile_pic) { Faker::Avatar.image("my-own-slug") }
-    let!(:locale)      { 'en-US' }
-    let!(:timezone)    { 3 }
-    let!(:gender)      { "female" }
-
-    before do
-      allow(Facebook).to receive(:new).with(bot_instance.token).and_return(fb_client)
-
-      allow(fb_client).to receive(:call).
-                       with(fb_user_id, :get, fields: 'first_name,last_name,profile_pic,locale,timezone,gender' ).
-                       and_return(first_name: first_name,
-                                  last_name: last_name,
-                                  profile_pic: profile_pic,
-                                  locale: locale,
-                                  timezone: timezone,
-                                  gender: gender)
-    end
-
     it "should create an event" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.events, :count).by(1)
 
@@ -48,7 +50,7 @@ RSpec.describe FacebookEventsService do
 
     it "should create a new BotUser" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.users, :count).by(1)
 
@@ -64,8 +66,9 @@ RSpec.describe FacebookEventsService do
       expect(user.membership_type).to eql 'user'
     end
 
+
     it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
-      subject
+      do_request
       user = bot_instance.users.last
 
       if is_for_bot
@@ -76,7 +79,7 @@ RSpec.describe FacebookEventsService do
     end
 
     it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
-      subject
+      do_request
       user = bot_instance.users.last
       event = bot_instance.events.last
 
@@ -93,7 +96,7 @@ RSpec.describe FacebookEventsService do
 
     it "should create an event" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.events, :count).by(1)
 
@@ -112,20 +115,22 @@ RSpec.describe FacebookEventsService do
 
     it "should NOT create new BotUsers" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to_not change(bot_instance.users, :count)
+
+      expect(fb_client).to_not have_received(:call)
     end
 
     it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
       if is_for_bot
         expect {
-          subject
+          do_request
           user.reload
         }.to change(user, :bot_interaction_count).from(0).to(1)
       else
         expect {
-          subject
+          do_request
           user.reload
         }.to_not change(user, :bot_interaction_count)
       end
@@ -134,14 +139,14 @@ RSpec.describe FacebookEventsService do
     it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
       if is_for_bot
         expect {
-          subject
+          do_request
           user.reload
         }.to change(user, :last_interacted_with_bot_at)
 
         expect(user.last_interacted_with_bot_at).to eql bot_instance.events.last.created_at
       else
         expect {
-          subject
+          do_request
           user.reload
         }.to_not change(user, :last_interacted_with_bot_at)
       end
@@ -190,10 +195,26 @@ RSpec.describe FacebookEventsService do
 
     context "bot user exists" do
       it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
     end
 
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
     end
   end
 
@@ -238,10 +259,26 @@ RSpec.describe FacebookEventsService do
 
     context "bot user exists" do
       it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
     end
 
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
     end
   end
 
@@ -293,7 +330,7 @@ RSpec.describe FacebookEventsService do
     end
 
     it "should update the 'has_been_read' value for all of the events that belong to the bot_instance to 'true'" do
-      subject
+      do_request
       expect(e1.reload.has_been_read).to be true
       expect(e2.reload.has_been_read).to be true
       expect(e3.reload.has_been_read).to be false
@@ -352,7 +389,7 @@ RSpec.describe FacebookEventsService do
     end
 
     it "should update the 'has_been_delivered' value for all of the events that belong to the bot_instance to 'true'" do
-      subject
+      do_request
       expect(e1.reload.has_been_delivered).to be true
       expect(e2.reload.has_been_delivered).to be true
       expect(e3.reload.has_been_delivered).to be false

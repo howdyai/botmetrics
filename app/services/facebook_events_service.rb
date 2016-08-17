@@ -27,7 +27,6 @@ class FacebookEventsService
       else
         @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
         @bot_user.assign_attributes(bot_user_params) if @bot_user.new_record?
-
         create_message_events!
       end
     end
@@ -50,7 +49,15 @@ class FacebookEventsService
   def create_message_events!
     ActiveRecord::Base.transaction do
       @bot_user.save!
-      event = @bot_user.events.create!(event_params)
+      params = event_params
+      mid, seq = params.dig(:event_attributes, :mid), params.dig(:event_attributes, :seq)
+
+      if mid && seq && @bot_instance.events.where("event_attributes->>'mid' = ? AND " +
+                                                  "event_attributes->>'seq' = ?", mid, seq).count > 0
+        return
+      end
+
+      event = @bot_user.events.create!(params)
 
       if event.is_for_bot?
         @bot_user.increment!(:bot_interaction_count)
