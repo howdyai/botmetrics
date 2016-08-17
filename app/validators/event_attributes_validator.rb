@@ -21,6 +21,11 @@ class EventAttributesValidator < ActiveModel::Validator
       if record.event_attributes['chat_id'].blank?
         record.errors[:event_attributes] << "chat_id can't be blank"
       end
+
+      available_sub_types = %w(text link picture video start-chatting scan-data sticker is-typing friend-picker)
+      if !available_sub_types.include?(record.event_attributes['sub_type'])
+        record.errors[:event_attributes] << "incorrect sub_type"
+      end
     end
   end
 end

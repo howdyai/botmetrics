@@ -23,9 +23,13 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
   end
 
   def secondary_attributes
-    data = {}
     @data.except!(:chatId, :id, :type, :body, :timestamp, :mention)
-    @data.each { |k, v| data[k&.to_s&.underscore&.to_sym] = v }
+    snakecase_keys
+  end
+
+  def snakecase_keys
+    data = {}
+    @data.each { |k, v| data[k.to_s.underscore.to_sym] = v }
     data
   end
 end

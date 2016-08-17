@@ -7,9 +7,9 @@ class EventsController < ApplicationController
   rescue_from BadEventError, with: :bad_event
 
   def create
+    validate_event!
     case @bot.provider
     when 'facebook'
-      validate_event!
       FacebookEventsCollectorJob.perform_async(@bot.uid, params[:event])
     when 'kik'
       KikEventsCollectorJob.perform_async(@bot.uid, params[:event])
@@ -30,6 +30,11 @@ class EventsController < ApplicationController
     case @bot.provider
     when 'facebook'
       if event['entry'].blank?
+        @error = "Invalid Facebook Event Data"
+        raise BadEventError
+      end
+    when 'kik'
+      if !event.is_a?(Array)
         @error = "Invalid Facebook Event Data"
         raise BadEventError
       end

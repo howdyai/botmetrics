@@ -6,15 +6,15 @@ class EventTypeValidator < ActiveModel::Validator
   def validate(record)
     case record.provider
     when 'slack'
-      unless SLACK_EVENT_TYPES.include?(record.event_type)
+      if !SLACK_EVENT_TYPES.include?(record.event_type)
         record.errors[:event_type] << "invalid event type"
       end
     when 'facebook'
-      unless FACEBOOK_EVENT_TYPES.include?(record.event_type)
+      if !FACEBOOK_EVENT_TYPES.include?(record.event_type)
         record.errors[:event_type] << "invalid event type"
       end
     when 'kik'
-      unless KIK_EVENT_TYPES.include?(record.event_type)
+      if !KIK_EVENT_TYPES.include?(record.event_type)
         record.errors[:event_type] << "invalid event type"
       end
     end

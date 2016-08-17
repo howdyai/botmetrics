@@ -160,7 +160,7 @@ RSpec.describe KikEventsService do
           "chatId": required_event_attributes['chat_id'],
           "type": "text",
           "from": kik_user_id,
-          "participants": ["laura"],
+          "participants": [kik_user_id],
           "id": required_event_attributes['id'],
           "timestamp": timestamp,
           "body": text,
