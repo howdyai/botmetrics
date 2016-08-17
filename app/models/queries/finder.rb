@@ -6,6 +6,8 @@ module Queries
           Queries::Slack.new
         when 'facebook'
           Queries::Facebook.new
+        when 'kik'
+          Queries::Kik.new
         else
           Queries::Null.new
       end
