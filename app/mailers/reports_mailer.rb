@@ -1,4 +1,6 @@
 class ReportsMailer < ApplicationMailer
+  helper :mail
+
   def daily_summary(user_id)
     @user = User.find(user_id)
     return if @user.bots.count == 0

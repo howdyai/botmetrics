@@ -5,3 +5,5 @@
 
 %p
   You can update your email preferences on #{link_to 'your botmetrics profile page', user_url(:me)}.
+
+= mixpanel_event_tracking_pixel(@user, "Opened 'Disabled Bot Instance' Email")
