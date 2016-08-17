@@ -19,6 +19,7 @@ class AlertsMailer < ApplicationMailer
 
     to = recipient_emails(@bot_instance.collaborators, :disabled_bot_instance)
     return if to.blank?
+    @user = @bot_instance.collaborators.first
 
     mail(
       to: to,
