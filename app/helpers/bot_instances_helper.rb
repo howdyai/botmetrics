@@ -5,6 +5,8 @@ module BotInstancesHelper
       bot.instances.legit.count == 0 ? "Let's setup the first instance of your Slack Bot" : "Setup Another Instance of your Slack Bot"
     when 'facebook'
       "Let's Setup Your Facebook Bot"
+    when 'kik'
+      "Let's Setup Your Kik Bot"
     end
   end
 
@@ -14,6 +16,8 @@ module BotInstancesHelper
       "Your Slack Bot's Token"
     when 'facebook'
       "Your Bot's Page Access Token"
+    when 'kik'
+      "Your Bot's API Key"
     end
   end
 
@@ -23,6 +27,8 @@ module BotInstancesHelper
       "Start Collecting Metrics"
     when 'facebook'
       "Setup Bot"
+    when 'kik'
+      "Setup Bot"
     end
   end
 
@@ -30,6 +36,8 @@ module BotInstancesHelper
     case bot.provider
     when 'facebook'
       "The page access token is available in 'Products' > 'Messenger' in your <a href='https://developers.facebook.com/' target='_blank'>app's dashboard</a>.".html_safe
+    when 'kik'
+      "The API Key and Username are available in the 'Configuration' tab of your <a href='https://dev.kik.com/' target='_blank'>Bot Dashboard</a>.".html_safe
     end
   end
 
@@ -64,6 +72,8 @@ module BotInstancesHelper
       "Setting Up an Instance of '#{bot.name}'"
     when 'facebook'
       "Setting Up '#{bot.name}'"
+    when 'kik'
+      "Setting Up '#{bot.name}'"
     end
   end
 
@@ -72,6 +82,8 @@ module BotInstancesHelper
     when 'slack'
       "We are setting up metrics collection for your bot..."
     when 'facebook'
+      "We are setting up your bot..."
+    when 'kik'
       "We are setting up your bot..."
     end
   end
