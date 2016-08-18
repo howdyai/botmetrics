@@ -9,10 +9,11 @@ class EventSerializer::Facebook
                       read: 'MessageReads'
                     }
 
-  def initialize(data)
+  def initialize(data, bi_uid)
     raise 'Supplied Option Is Nil' if data.nil?
     raise 'Invalid Data Supplied' unless data.is_a?(Hash) && symbolized_data(data)[:entry].present?
     @data = data[:entry]
+    @bi_uid = bi_uid
   end
 
   def serialize

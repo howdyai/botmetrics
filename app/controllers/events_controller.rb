@@ -35,7 +35,7 @@ class EventsController < ApplicationController
       end
     when 'kik'
       if !event.is_a?(Array)
-        @error = "Invalid Facebook Event Data"
+        @error = "Invalid Kik Event Data"
         raise BadEventError
       end
     end

@@ -3,12 +3,12 @@ RSpec.describe EventSerializer::Facebook do
 
   describe '.new' do
     context 'invalid params' do
-      it { expect { EventSerializer::Facebook.new(nil) }.to raise_error('Supplied Option Is Nil') }
+      it { expect { EventSerializer::Facebook.new(nil, 'bi_uid') }.to raise_error('Supplied Option Is Nil') }
     end
   end
 
   describe '#serialize' do
-    subject { EventSerializer::Facebook.new(data).serialize }
+    subject { EventSerializer::Facebook.new(data, 'bi_uid').serialize }
 
     let(:data) {
       {
@@ -56,7 +56,7 @@ RSpec.describe EventSerializer::Facebook do
     context 'incorrect event type' do
       let(:event_type) { 'incorrect' }
 
-      it { expect { EventSerializer::Facebook.new(data).serialize }.to raise_error('Incorrect Event Type') }
+      it { expect { EventSerializer::Facebook.new(data, 'bi_uid').serialize }.to raise_error('Incorrect Event Type') }
     end
 
     context 'correct event type' do

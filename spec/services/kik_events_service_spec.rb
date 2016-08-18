@@ -142,39 +142,270 @@ RSpec.describe KikEventsService do
     end
   end
 
-  describe '"text" events' do
+  describe 'event sub_types' do
     let(:kik_user_id)   { "kik-user-id"  }
     let(:bot_user_id)   { bot.uid        }
-    let(:text)          { "hello-world"  }
+    let(:text)          { event_text     }
     let(:event_type)    { 'message'      }
     let(:is_from_bot)   { false }
-    let(:is_for_bot)    { false  }
+    let(:is_for_bot)    { true  }
     let(:is_im)         { false  }
     let(:required_event_attributes) {
       Hash["id", "id-1", "chat_id", "chat_id-1"]
     }
 
-    let(:events) {
-      [
-        {
-          "chatId": required_event_attributes['chat_id'],
-          "type": "text",
-          "from": kik_user_id,
-          "participants": [kik_user_id],
-          "id": required_event_attributes['id'],
-          "timestamp": timestamp,
-          "body": text,
-          "mention": nil
-        }
-      ]
-    }
+    context 'text sub_type' do
+      let(:event_text) { 'Hello' }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "text",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "body": text,
+            "mention": nil
+          }
+        ]
+      }
 
-    context "bot user exists" do
-      it_behaves_like "should create an event as well as create the bot users"
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
     end
 
-    context "bot user does not exist" do
-      it_behaves_like "should create an event but not create any bot users"
+    context 'link sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "link",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "url": Faker::Internet.url,
+            "attribution": {
+                "name": "name",
+                "iconUrl": Faker::Avatar.image("my-own-slug")
+            },
+            "noForward": true,
+            "readReceiptRequested": true,
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'picture sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "picture",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "picUrl": "http://example.kik.com/apicture.jpg",
+            "timestamp": timestamp,
+            "readReceiptRequested": true,
+            "attribution": {
+                "name": "A Title",
+                "iconUrl": "http://example.kik.com/anicon.png"
+            },
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'video sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "video",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "readReceiptRequested": true,
+            "videoUrl": "http://example.kik.com/video.mp4",
+            "attribution": {
+                "name": "A Title",
+                "iconUrl": "http://example.kik.com/anicon.png"
+            },
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'start-chatting sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "start-chatting",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "readReceiptRequested": false,
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'scan-data sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "scan-data",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "data": "{\"store_id\": \"2538\"}",
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'sticker sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "sticker",
+            "id": required_event_attributes['id'],
+            "timestamp": timestamp,
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "stickerPackId": "memes",
+            "stickerUrl": "http://cards-sticker-dev.herokuapp.com/stickers/memes/okay.png",
+            "readReceiptRequested": true,
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'is-typing sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "id": required_event_attributes['id'],
+            "type": "is-typing",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "timestamp": timestamp,
+            "isTyping": false,
+            "readReceiptRequested": false,
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+    end
+
+    context 'friend-picker sub_type' do
+      let(:event_text) { nil }
+      let(:events) {
+        [
+          {
+            "chatId": required_event_attributes['chat_id'],
+            "type": "friend-picker",
+            "from": kik_user_id,
+            "participants": [kik_user_id],
+            "id": required_event_attributes['id'],
+            "picked": ["aleem"],
+            "timestamp": timestamp,
+            "readReceiptRequested": true,
+            "mention": nil
+          }
+        ]
+      }
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
     end
   end
 

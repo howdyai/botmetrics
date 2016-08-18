@@ -37,7 +37,7 @@ class KikEventsService
 
   def update_message_events!
     query_params = [params.dig(:data, :event_attributes, :message_ids), false]
-      case @event_type
+    case @event_type
     when UPDATE_EVENTS[:deliver]
       bot.events.where("event_attributes->>'id' IN (?) AND has_been_delivered = ?", *query_params).update_all(has_been_delivered: true)
     when UPDATE_EVENTS[:read]
@@ -58,15 +58,11 @@ class KikEventsService
   end
 
   def serialized_params
-    EventSerializer.new(:kik, events).serialize
+    EventSerializer.new(:kik, events, bot_instance.uid).serialize
   end
 
   def event_params
-    params.dig(:data).merge(bot_instance_id: bot_instance.id, is_im: is_im)
-  end
-
-  def is_im
-    params.dig(:data, :event_attributes, :participants)&.include?(bot_instance.uid)
+    params.dig(:data).merge(bot_instance_id: bot_instance.id)
   end
 
   def fetch_user

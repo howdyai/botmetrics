@@ -17,23 +17,24 @@ RSpec.describe EventSerializer::Kik do
 
   describe '.new' do
     context 'invalid params' do
-      it { expect { EventSerializer::Kik.new(nil) }.to raise_error('Supplied Option Is Nil') }
+      it { expect { EventSerializer::Kik.new(nil, 'bi_uid') }.to raise_error('Supplied Option Is Nil') }
     end
 
     context 'invalid data' do
-      it { expect { EventSerializer::Kik.new(data: data) }.to raise_error('Invalid Data Supplied') }
+      it { expect { EventSerializer::Kik.new({ data: data }, 'bi_uid') }.to raise_error('Invalid Data Supplied') }
     end
   end
 
   describe '#serialize' do
-    subject { EventSerializer.new(:kik, data).serialize }
+    subject { EventSerializer.new(:kik, data, 'bi_uid').serialize }
 
     let(:serialized) {
       [{
         data:  {
           event_type: 'message',
-          is_for_bot: false,
+          is_for_bot: true,
           is_from_bot: false,
+          is_im: false,
           text: "Hi!",
           provider: "kik",
           created_at: Time.at(timestamp.to_f / 1000),

@@ -48,21 +48,21 @@ RSpec.describe EventSerializer do
 
   describe '.new' do
     context 'invalid params' do
-      it { expect { EventSerializer.new(nil, 'data') }.to raise_error('NoOptionSupplied') }
-      it { expect { EventSerializer.new(:facebook, nil) }.to raise_error('NoOptionSupplied') }
+      it { expect { EventSerializer.new(nil, 'data', 'bi_uid') }.to raise_error('NoOptionSupplied') }
+      it { expect { EventSerializer.new(:facebook, nil, 'bi_uid') }.to raise_error('NoOptionSupplied') }
     end
 
     context 'undefined constant' do
-      it { expect { EventSerializer.new(:undefined, 'data') }.to raise_error(NameError) }
+      it { expect { EventSerializer.new(:undefined, 'data', 'bi_uid') }.to raise_error(NameError) }
     end
 
     context 'defined constant' do
-      it { expect(EventSerializer.new(:facebook, data)).to be_a(EventSerializer) }
+      it { expect(EventSerializer.new(:facebook, data, 'bi_uid')).to be_a(EventSerializer) }
     end
   end
 
   describe '#serialize' do
-    subject { EventSerializer.new(:facebook, data).serialize }
+    subject { EventSerializer.new(:facebook, data, 'bi_uid').serialize }
 
     it { expect(subject).to eql serialized }
   end

@@ -1,8 +1,9 @@
 class EventSerializer::Kik
-  def initialize(data)
+  def initialize(data, bi_uid)
     raise 'Supplied Option Is Nil' if data.nil?
     raise 'Invalid Data Supplied' unless data.is_a?(Array)
     @data = symbolized_data(data)
+    @bi_uid = bi_uid
     @events = []
   end
 
@@ -14,6 +15,7 @@ class EventSerializer::Kik
   end
 
   private
+  attr_reader :bi_uid
 
   def symbolized_data(data)
     hashes = data.grep(Hash)
@@ -31,6 +33,6 @@ class EventSerializer::Kik
   end
 
   def serializer(data)
-    EventSerializer::Kik::Message.new(data)
+    EventSerializer::Kik::Message.new(data, bi_uid)
   end
 end

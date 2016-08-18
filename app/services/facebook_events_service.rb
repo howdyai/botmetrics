@@ -67,7 +67,7 @@ class FacebookEventsService
   end
 
   def serialized_params
-    EventSerializer.new(:facebook, events).serialize
+    EventSerializer.new(:facebook, events, bot_instance.uid).serialize
   end
 
   def event_params

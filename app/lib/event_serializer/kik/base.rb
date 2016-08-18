@@ -1,7 +1,8 @@
 class EventSerializer::Kik::Base
-  def initialize(data)
+  def initialize(data, bi_uid)
     raise 'Supplied Option Is Nil' if data.nil?
     @data = data
+    @bi_uid = bi_uid
   end
 
   def serialize
