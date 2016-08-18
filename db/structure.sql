@@ -205,7 +205,8 @@ CREATE TABLE dashboards (
     bot_id integer NOT NULL,
     user_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT valid_provider_on_dashboards CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
 
@@ -1169,4 +1170,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160808061328');
 INSERT INTO schema_migrations (version) VALUES ('20160811171418');
 
 INSERT INTO schema_migrations (version) VALUES ('20160818200451');
+
+INSERT INTO schema_migrations (version) VALUES ('20160818202212');
 
