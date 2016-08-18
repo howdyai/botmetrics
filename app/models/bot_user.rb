@@ -67,9 +67,11 @@ class BotUser < ActiveRecord::Base
 
   store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender, :timezone
 
-  def self.with_bot_instances(instances, start_time, end_time)
+  def self.with_bot_instances(instances, bot, start_time, end_time)
+    created_at = bot.provider == 'slack' ? "bot_instances.created_at" : "bot_users.created_at"
+
     where(bot_instance_id: instances.select(:id)).joins(:bot_instance).
-      where("bot_instances.created_at" => start_time..end_time)
+      where(created_at => start_time..end_time)
   end
 
   def self.with_messages_to_bot(associated_bot_instances_ids)

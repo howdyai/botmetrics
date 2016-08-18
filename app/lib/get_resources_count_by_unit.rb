@@ -17,15 +17,14 @@ class GetResourcesCountByUnit
   end
 
   private
+  attr_reader :unit, :resources, :group_table, :start_time, :end_time, :user_time_zone
 
-    attr_reader :unit, :resources, :group_table, :start_time, :end_time, :user_time_zone
+  def params
+    default_params.merge!(range: start_time..end_time) if start_time && end_time
+    default_params
+  end
 
-    def params
-      default_params.merge!(range: start_time..end_time) if start_time && end_time
-      default_params
-    end
-
-    def default_params
-      @_default_params ||= { time_zone: user_time_zone }
-    end
+  def default_params
+    @_default_params ||= { time_zone: user_time_zone }
+  end
 end

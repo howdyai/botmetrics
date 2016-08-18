@@ -15,21 +15,21 @@ class Dashboarder
     when 'today'
       @new_bots          = group_by_day new_bots_collection
       @disabled_bots     = group_by_day disabled_bots_collection
-      @new_users         = group_by_day new_users_collection, 'bot_instances.created_at'
+      @new_users         = group_by_day new_users_collection, 'bot_users.created_at'
       @messages          = group_by_day messages_collection
       @messages_for_bot  = group_by_day messages_for_bot_collection
       @messages_from_bot = group_by_day messages_from_bot_collection
     when 'this-week'
       @new_bots          = group_by_week new_bots_collection
       @disabled_bots     = group_by_week disabled_bots_collection
-      @new_users         = group_by_week new_users_collection, 'bot_instances.created_at'
+      @new_users         = group_by_week new_users_collection, 'bot_users.created_at'
       @messages          = group_by_week messages_collection
       @messages_for_bot  = group_by_week messages_for_bot_collection
       @messages_from_bot = group_by_week messages_from_bot_collection
     when 'this-month'
       @new_bots          = group_by_month new_bots_collection
       @disabled_bots     = group_by_month disabled_bots_collection
-      @new_users         = group_by_month new_users_collection, 'bot_instances.created_at'
+      @new_users         = group_by_month new_users_collection, 'bot_users.created_at'
       @messages          = group_by_month messages_collection
       @messages_for_bot  = group_by_month messages_for_bot_collection
       @messages_from_bot = group_by_month messages_from_bot_collection

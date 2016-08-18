@@ -126,7 +126,7 @@ RSpec.describe BotUser do
       bu = create :bot_user, bot_instance: bi
       create :bot_user
 
-      users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), start_time, end_time)
+      users = BotUser.with_bot_instances(BotInstance.where(id: [bi.id]), bi.bot, start_time, end_time)
 
       expect(users.map(&:id)).to eq [bu.id]
     end

@@ -34,14 +34,13 @@ class DashboardsController < ApplicationController
   end
 
   def users
-    @users = BotUser.with_bot_instances(@instances, @start.utc, @end.utc)
-
-    @tableized = @users.order("bot_instances.created_at DESC").page(params[:page])
+    @users = BotUser.with_bot_instances(@instances, @bot, @start.utc, @end.utc)
+    @tableized = @users.order("bot_users.created_at DESC").page(params[:page])
 
     @users = GetResourcesCountByUnit.new(
                @group_by,
                @users,
-               group_table: 'bot_instances',
+               group_table: @bot.provider == 'slack' ? 'bot_instances' : 'bot_users',
                user_time_zone: current_user.timezone
              ).call
 
