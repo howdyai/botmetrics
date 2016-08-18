@@ -206,6 +206,8 @@ CREATE TABLE dashboards (
     user_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    dashboard_type character varying NOT NULL,
+    CONSTRAINT valid_dashboard_type_on_dashboards CHECK (((((((provider)::text = 'slack'::text) AND ((((((((dashboard_type)::text = 'bots-installed'::text) OR ((dashboard_type)::text = 'bots-uninstalled'::text)) OR ((dashboard_type)::text = 'new-users'::text)) OR ((dashboard_type)::text = 'messages'::text)) OR ((dashboard_type)::text = 'messages-to-bot'::text)) OR ((dashboard_type)::text = 'messages-from-bot'::text)) OR ((dashboard_type)::text = 'custom'::text))) OR (((provider)::text = 'facebook'::text) AND (((((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text)) OR ((dashboard_type)::text = 'messages-from-bot'::text)) OR ((dashboard_type)::text = 'custom'::text)))) OR (((provider)::text = 'facebook'::text) AND (((((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text)) OR ((dashboard_type)::text = 'messages-from-bot'::text)) OR ((dashboard_type)::text = 'custom'::text)))) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT valid_provider_on_dashboards CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
@@ -1172,4 +1174,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160811171418');
 INSERT INTO schema_migrations (version) VALUES ('20160818200451');
 
 INSERT INTO schema_migrations (version) VALUES ('20160818202212');
+
+INSERT INTO schema_migrations (version) VALUES ('20160818202734');
 
