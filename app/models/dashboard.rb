@@ -14,7 +14,9 @@ class Dashboard < ActiveRecord::Base
   belongs_to :bot
   belongs_to :user
 
-  attr_accessor :growth, :count, :data, :instances, :group_by, :current
+  attr_accessor :growth, :count, :data, :instances,
+                :group_by, :current, :start_time, :end_time, :page,
+                :should_tableize, :tableized
   delegate :timezone, to: :user
 
   def init!
@@ -25,25 +27,36 @@ class Dashboard < ActiveRecord::Base
              when 'bots-installed'    then  new_bots_collection.count
              when 'bots-uninstalled'  then  disabled_bots_collection.count
              when 'new-users'         then  new_users_collection.count
-             when 'messages'          then  messages_collection.count
-             when 'messages-to-bot'   then  messages_for_bot_collection.count
+             when 'messages'          then  all_messages_collection.count
+             when 'messages-to-bot'   then  messages_to_bot_collection.count
              when 'messages-from-bot' then  messages_from_bot_collection.count
              end
     else
       func = case group_by
-             when 'today' then 'group_by_day'
-             when 'this-week' then 'group_by_week'
-             when 'this-month' then 'group_by_month'
+             when 'today', 'day' then 'group_by_day'
+             when 'this-week', 'week' then 'group_by_week'
+             when 'this-month', 'month' then 'group_by_month'
              end
 
       @data = case dashboard_type
-             when 'bots-installed'    then send func, new_bots_collection
-             when 'bots-uninstalled'  then send func, disabled_bots_collection
-             when 'new-users'         then send func, new_users_collection, 'bot_users.created_at'
-             when 'messages'          then send func, messages_collection
-             when 'messages-to-bot'   then send func, messages_for_bot_collection
-             when 'messages-from-bot' then send func, messages_from_bot_collection
-             end
+              when 'bots-installed'    then send(func, new_bots_collection)
+              when 'bots-uninstalled'  then send(func, disabled_bots_collection)
+              when 'new-users'         then send(func, new_users_collection, self.provider == 'slack' ? 'bot_instances.created_at' : 'bot_users.created_at')
+              when 'messages'          then send(func, all_messages_collection)
+              when 'messages-to-bot'   then send(func, messages_to_bot_collection)
+              when 'messages-from-bot' then send(func, messages_from_bot_collection)
+              end
+
+      if self.should_tableize
+        @tableized = case dashboard_type
+                     when 'bots-installed'    then new_bots_tableized.page(page)
+                     when 'bots-uninstalled'  then disabled_bots_tableized.page(page)
+                     when 'new-users'         then new_users_tableized.page(page)
+                     when 'messages'          then all_messages_tableized.page(page)
+                     when 'messages-from-bot' then messages_from_bot_tableized.page(page)
+                     when 'messages-to-bot'   then messages_to_bot_tableized.page(page)
+                     end
+      end
     end
   end
 
@@ -64,36 +77,77 @@ class Dashboard < ActiveRecord::Base
     instances
   end
 
+  def new_bots_tableized
+    instances.with_new_bots(@start_time, @end_time)
+  end
+
   def disabled_bots_collection
     Event.where(event_type: 'bot_disabled', bot_instance_id: instance_ids)
+  end
+
+  def disabled_bots_tableized
+    events = Event.with_disabled_bots(instances, @start_time.utc, @end_time.utc)
+    instances.with_disabled_bots(events.select(:bot_instance_id))
   end
 
   def new_users_collection
     BotUser.where(bot_instance_id: instance_ids).joins(:bot_instance)
   end
 
-  def messages_collection
+  def new_users_tableized
+    BotUser.with_bot_instances(@instances, self.bot, @start_time.utc, @end_time.utc).
+            order("bot_users.created_at DESC")
+  end
+
+  def all_messages_collection
     Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: false)
   end
 
-  def messages_for_bot_collection
+  def all_messages_tableized
+    messages = Event.with_all_messages(@instances, @start_time.utc, @end_time.utc)
+    @instances.with_all_messages(messages.select(:bot_instance_id))
+  end
+
+  def messages_to_bot_collection
     Event.where(bot_instance_id: instance_ids, event_type: 'message', is_for_bot: true)
+  end
+
+  def messages_to_bot_tableized
+    messages = Event.with_messages_to_bot(@instances, @start_time.utc, @end_time.utc)
+
+    case self.bot.provider
+    when 'slack'
+      @instances.with_messages_to_bot(messages.select(:bot_instance_id))
+    when 'facebook'
+      BotUser.with_messages_to_bot(messages.select(:bot_instance_id))
+    end
   end
 
   def messages_from_bot_collection
     Event.where(bot_instance_id: instance_ids, event_type: 'message', is_from_bot: true)
   end
 
+  def messages_from_bot_tableized
+    messages = Event.with_messages_from_bot(@instances, @start_time.utc, @end_time.utc)
+
+    case self.bot.provider
+    when 'slack'
+      @instances.with_messages_from_bot(messages.select(:bot_instance_id))
+    when 'facebook'
+      BotUser.with_messages_from_bot(messages.select(:bot_instance_id))
+    end
+  end
+
   def group_by_day(collection, group_col = :created_at)
-    collection.group_by_day(group_col, last: 7, time_zone: self.timezone).count
+    collection.group_by_day(group_col, params).count
   end
 
   def group_by_week(collection, group_col = :created_at)
-    collection.group_by_week(group_col, last: 4, time_zone: self.timezone).count
+    collection.group_by_week(group_col, params).count
   end
 
   def group_by_month(collection, group_col = :created_at)
-    collection.group_by_month(group_col, last: 12, time_zone: self.timezone).count
+    collection.group_by_month(group_col, params).count
   end
 
   def count_for(var)
@@ -112,5 +166,24 @@ class Dashboard < ActiveRecord::Base
 
   def last_pos
     current ? -1 : -2
+  end
+
+  def params
+    if start_time && end_time
+      default_params.merge!(range: start_time..end_time)
+    else
+      last = case group_by
+             when 'day', 'today' then 7
+             when 'this-week', 'week' then 4
+             when 'this-month', 'month' then 12
+             end
+      default_params.merge!(last: last)
+    end
+
+    default_params
+  end
+
+  def default_params
+    @_default_params ||= { time_zone: self.timezone }
   end
 end

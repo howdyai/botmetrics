@@ -1,0 +1,16 @@
+%table.table.table-striped.tableized
+  %thead
+    %tr
+      %th First Name
+      %th Last Name
+      %th Gender
+      %th Timezone
+      %th Signed Up
+  %tbody
+    - tableized.each do |u|
+      %tr{class: u.id}
+        %td= u.first_name
+        %td= u.last_name
+        %td= u.gender
+        %td= ActiveSupport::TimeZone[u.timezone]
+        %td= "#{time_ago_in_words(u.created_at)} ago"

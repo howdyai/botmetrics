@@ -18,7 +18,16 @@ class DashboardsController < ApplicationController
   end
 
   def show
-    @dashboard = @bot.dashboards.find_by(uid: params[:id])
+    @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true)
+
+    @dashboard.instances = @instances
+    @dashboard.group_by = @group_by
+    @dashboard.start_time = @start
+    @dashboard.end_time = @end
+    @dashboard.page = params[:page]
+    @dashboard.should_tableize = true
+
+    @dashboard.init!
   end
 
   def new_bots
