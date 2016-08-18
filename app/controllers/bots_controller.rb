@@ -26,6 +26,7 @@ class BotsController < ApplicationController
     if @bot.save
       bc = current_user.bot_collaborators.create(bot: @bot, collaborator_type: 'owner', confirmed_at: Time.now)
       if bc.persisted?
+        @bot.create_default_dashboards_with!(current_user)
         redirect_to bot_path(@bot)
         TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)
       else

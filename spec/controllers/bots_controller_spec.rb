@@ -57,6 +57,13 @@ RSpec.describe BotsController do
       expect(bc.bot).to eql Bot.last
     end
 
+    it 'should create default dashboards' do
+      do_request
+      b = Bot.last
+      expect(b.dashboards.order("id").pluck(:dashboard_type)).to eql Dashboard::DEFAULT_FACEBOOK_DASHBOARDS
+      expect(b.dashboards.pluck(:default).uniq).to eql [true]
+    end
+
     it 'should redirect to bot_path' do
       do_request
       bot = user.bots.last

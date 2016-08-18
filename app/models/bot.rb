@@ -35,4 +35,17 @@ class Bot < ActiveRecord::Base
   def events
     Event.where(bot_instance_id: self.instances.select(:id))
   end
+
+  def create_default_dashboards_with!(owner)
+    Dashboard.const_get(:"DEFAULT_#{self.provider.upcase}_DASHBOARDS").each do |type|
+      self.dashboards.create!(
+        name: type.titleize,
+        dashboard_type: type,
+        bot: self,
+        user: owner,
+        provider: self.provider,
+        default: true
+      )
+    end
+  end
 end
