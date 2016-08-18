@@ -1,4 +1,4 @@
-RSpec.describe AnalyticsController do
+RSpec.describe InsightsController do
   describe '#index' do
     let!(:user)   { create :user }
     let!(:bot)    { create(:bot) }

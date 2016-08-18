@@ -39,13 +39,13 @@
                 = icon('line-chart')
                 Metrics
             %li
+              = link_to bot_insights_path(@bot), class: menu_class('analyze') do
+                = icon('pie-chart')
+                Insights
+            %li
               = link_to bot_notifications_path(@bot), class: menu_class('notifications') do
                 = icon('comment')
                 Notifications
-            %li
-              = link_to bot_analytics_path(@bot), class: menu_class('analyze') do
-                = icon('pie-chart')
-                Analyze
           %ul.menu.footer
             %li
               = link_to edit_bot_path(@bot), class: menu_class('bot-settings') do

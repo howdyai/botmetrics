@@ -1,4 +1,4 @@
-class AnalyticsController < ApplicationController
+class InsightsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_bot
 

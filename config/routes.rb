@@ -44,7 +44,7 @@ Rails.application.routes.draw do
 
     resources :messages, only: [:create]
 
-    resources :analytics, only: [:index], path: :analyze
+    resources :insights, only: [:index]
   end
 
   resources :users, only: [:show, :update] do

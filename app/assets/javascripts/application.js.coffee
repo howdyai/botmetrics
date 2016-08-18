@@ -25,4 +25,4 @@
 #= require pages/notifications/notification_scheduler
 #= require pages/notifications/notification_sending_progress
 #= require pages/bots/verifying_webhook
-#= require pages/analytics/filter
+#= require pages/insights/filter

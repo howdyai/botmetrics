@@ -10,7 +10,7 @@ module ApplicationHelper
       'active'
     elsif controller.controller_name == 'users' && controller.action_name == 'show' && link == 'my-profile'
       'active'
-    elsif controller.controller_name == 'analytics' && link == 'analyze'
+    elsif controller.controller_name == 'insights' && link == 'analyze'
       'active'
     end
   end

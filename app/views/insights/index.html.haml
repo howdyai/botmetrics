@@ -1,6 +1,6 @@
 .secondary-menu.row
   .col-md-6.col-sm-3.col-xs-6
-    %h2 Analyze
+    %h2 Insights
 
 .container-fluid
   .row.query-set
@@ -9,9 +9,9 @@
         %h3 Filters
         = render 'shared/filters/form',
           query_set: @query_set,
-          get_url: bot_analytics_path(@bot),
+          get_url: bot_insights_path(@bot),
           default_query: default_query,
-          reset_url: bot_analytics_path
+          reset_url: bot_insights_path
 
   = render 'shared/filters/tableized', tableized: @tableized, provider: @bot.provider
 
