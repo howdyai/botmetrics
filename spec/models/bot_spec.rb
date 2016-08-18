@@ -21,6 +21,7 @@ RSpec.describe Bot do
     it { is_expected.to have_many(:owners).through(:bot_collaborators) }
     it { is_expected.to have_many :notifications }
     it { is_expected.to have_many :webhook_events }
+    it { is_expected.to have_many :dashboards }
   end
 
   describe '#build_instance' do

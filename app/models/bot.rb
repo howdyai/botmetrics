@@ -22,6 +22,7 @@ class Bot < ActiveRecord::Base
 
   has_many :notifications
   has_many :webhook_events
+  has_many :dashboards
 
   def build_instance(params)
     instance = instances.find_by(provider: provider)

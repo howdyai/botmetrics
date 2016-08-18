@@ -191,6 +191,44 @@ ALTER SEQUENCE bots_id_seq OWNED BY bots.id;
 
 
 --
+-- Name: dashboards; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE dashboards (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    provider character varying NOT NULL,
+    "default" boolean DEFAULT false NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    uid character varying NOT NULL,
+    regex character varying,
+    bot_id integer NOT NULL,
+    user_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: dashboards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE dashboards_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dashboards_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE dashboards_id_seq OWNED BY dashboards.id;
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
@@ -521,6 +559,13 @@ ALTER TABLE ONLY bots ALTER COLUMN id SET DEFAULT nextval('bots_id_seq'::regclas
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY dashboards ALTER COLUMN id SET DEFAULT nextval('dashboards_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::regclass);
 
 
@@ -596,6 +641,14 @@ ALTER TABLE ONLY bot_users
 
 ALTER TABLE ONLY bots
     ADD CONSTRAINT bots_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dashboards_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT dashboards_pkey PRIMARY KEY (id);
 
 
 --
@@ -729,6 +782,34 @@ CREATE UNIQUE INDEX index_bot_users_on_uid_and_bot_instance_id ON bot_users USIN
 --
 
 CREATE UNIQUE INDEX index_bots_on_uid ON bots USING btree (uid);
+
+
+--
+-- Name: index_dashboards_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_dashboards_on_bot_id ON dashboards USING btree (bot_id);
+
+
+--
+-- Name: index_dashboards_on_name_and_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_dashboards_on_name_and_bot_id ON dashboards USING btree (name, bot_id);
+
+
+--
+-- Name: index_dashboards_on_uid; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_dashboards_on_uid ON dashboards USING btree (uid);
+
+
+--
+-- Name: index_dashboards_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_dashboards_on_user_id ON dashboards USING btree (user_id);
 
 
 --
@@ -870,6 +951,14 @@ ALTER TABLE ONLY bot_collaborators
 
 
 --
+-- Name: fk_rails_8cb1930a1d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT fk_rails_8cb1930a1d FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
 -- Name: fk_rails_9fc3b26d0b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -899,6 +988,14 @@ ALTER TABLE ONLY bot_users
 
 ALTER TABLE ONLY bot_collaborators
     ADD CONSTRAINT fk_rails_d9f77fff58 FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: fk_rails_dbec2a54ad; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT fk_rails_dbec2a54ad FOREIGN KEY (bot_id) REFERENCES bots(id);
 
 
 --
@@ -1070,4 +1167,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160805231725');
 INSERT INTO schema_migrations (version) VALUES ('20160808061328');
 
 INSERT INTO schema_migrations (version) VALUES ('20160811171418');
+
+INSERT INTO schema_migrations (version) VALUES ('20160818200451');
 
