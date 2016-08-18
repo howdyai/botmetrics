@@ -5,6 +5,22 @@ class DashboardsController < ApplicationController
   before_action :init_detail_view!
   layout 'app'
 
+  def index
+    @dashboards = @bot.dashboards.where(enabled: true).order("id")
+    @group_by = params[:group_by].presence || 'today'
+    @show_trends = (@group_by != 'all-time')
+
+    @dashboards.each do |dashboard|
+      dashboard.instances = @instances
+      dashboard.group_by = @group_by
+      dashboard.init!
+    end
+  end
+
+  def show
+    @dashboard = @bot.dashboards.find_by(uid: params[:id])
+  end
+
   def new_bots
     @tableized = @instances.with_new_bots(@start.utc, @end.utc).page(params[:page])
 

@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
     resources :events, only: [:create]
 
-    resources :dashboards, only: [] do
+    resources :dashboards, only: [:index, :show] do
       collection do
         get :new_bots
         get :disabled_bots
