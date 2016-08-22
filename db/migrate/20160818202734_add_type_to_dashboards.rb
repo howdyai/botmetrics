@@ -24,7 +24,7 @@ CHECK (
     )
   ) OR
   (
-    provider = 'facebook' AND (
+    provider = 'kik' AND (
       dashboard_type = 'new-users' OR
       dashboard_type = 'messages-to-bot' OR
       dashboard_type = 'messages-from-bot' OR
