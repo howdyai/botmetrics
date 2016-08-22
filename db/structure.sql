@@ -251,13 +251,16 @@ CREATE TABLE events (
     text text,
     has_been_delivered boolean DEFAULT false,
     has_been_read boolean DEFAULT false,
-    CONSTRAINT valid_event_type_on_events CHECK (((((((((event_type)::text = 'user_added'::text) OR ((event_type)::text = 'bot_disabled'::text)) OR ((event_type)::text = 'added_to_channel'::text)) OR ((event_type)::text = 'message'::text)) OR ((event_type)::text = 'message_reaction'::text)) AND ((provider)::text = 'slack'::text)) OR (((((((event_type)::text = 'message'::text) OR ((event_type)::text = 'messaging_postbacks'::text)) OR ((event_type)::text = 'messaging_optins'::text)) OR ((event_type)::text = 'account_linking'::text)) AND ((provider)::text = 'facebook'::text)) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_event_type_on_events CHECK ((((((event_type)::text = ANY ((ARRAY['user_added'::character varying, 'bot_disabled'::character varying, 'added_to_channel'::character varying, 'message'::character varying, 'message_reaction'::character varying])::text[])) AND ((provider)::text = 'slack'::text)) OR ((((event_type)::text = ANY ((ARRAY['message'::character varying, 'messaging_postbacks'::character varying, 'messaging_optins'::character varying, 'account_linking'::character varying])::text[])) AND ((provider)::text = 'facebook'::text)) AND (bot_user_id IS NOT NULL))) OR ((((event_type)::text = 'message'::text) AND ((provider)::text = 'kik'::text)) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
-    CONSTRAINT validate_attributes_channel CHECK ((((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'facebook'::text))),
-    CONSTRAINT validate_attributes_mid CHECK ((((((((event_attributes ->> 'mid'::text) IS NOT NULL) AND (length((event_attributes ->> 'mid'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((event_type)::text = 'message'::text)) OR ((((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'slack'::text))),
-    CONSTRAINT validate_attributes_reaction CHECK ((((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'facebook'::text))),
-    CONSTRAINT validate_attributes_seq CHECK ((((((((event_attributes ->> 'seq'::text) IS NOT NULL) AND (length((event_attributes ->> 'seq'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((event_type)::text = 'message'::text)) OR ((((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'slack'::text))),
-    CONSTRAINT validate_attributes_timestamp CHECK ((((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = 'facebook'::text)))
+    CONSTRAINT validate_attributes_channel CHECK ((((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'kik'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_chat_id CHECK (((((((event_attributes ->> 'chat_id'::text) IS NOT NULL) AND (length((event_attributes ->> 'chat_id'::text)) > 0)) AND ((provider)::text = 'kik'::text)) AND ((event_type)::text = 'message'::text)) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'slack'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_id CHECK (((((((event_attributes ->> 'id'::text) IS NOT NULL) AND (length((event_attributes ->> 'id'::text)) > 0)) AND ((provider)::text = 'kik'::text)) AND ((event_type)::text = 'message'::text)) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'slack'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_mid CHECK ((((((((event_attributes ->> 'mid'::text) IS NOT NULL) AND (length((event_attributes ->> 'mid'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((event_type)::text = 'message'::text)) OR ((((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY ((ARRAY['slack'::character varying, 'kik'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_reaction CHECK ((((((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND ((event_type)::text = 'message_reaction'::text)) OR ((((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'kik'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_seq CHECK ((((((((event_attributes ->> 'seq'::text) IS NOT NULL) AND (length((event_attributes ->> 'seq'::text)) > 0)) AND ((provider)::text = 'facebook'::text)) AND ((event_type)::text = 'message'::text)) OR ((((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text)) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY ((ARRAY['slack'::character varying, 'kik'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_sub_type CHECK ((((((((event_attributes ->> 'sub_type'::text) IS NOT NULL) AND (length((event_attributes ->> 'sub_type'::text)) > 0)) AND ((event_attributes ->> 'sub_type'::text) = ANY (ARRAY['text'::text, 'link'::text, 'picture'::text, 'video'::text, 'start-chatting'::text, 'scan-data'::text, 'sticker'::text, 'is-typing'::text, 'friend-picker'::text]))) AND ((provider)::text = 'kik'::text)) AND ((event_type)::text = 'message'::text)) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'slack'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_timestamp CHECK ((((((((event_attributes ->> 'timestamp'::text) IS NOT NULL) AND (length((event_attributes ->> 'timestamp'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'kik'::character varying])::text[]))))
 );
 
 
@@ -725,6 +728,13 @@ CREATE UNIQUE INDEX events_channel_timestamp_message_slack ON events USING btree
 
 
 --
+-- Name: events_id_kik; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX events_id_kik ON events USING btree (((event_attributes -> 'id'::text))) WHERE (((provider)::text = 'kik'::text) AND ((event_type)::text = 'message'::text));
+
+
+--
 -- Name: events_mid_seq_facebook; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -1170,6 +1180,14 @@ INSERT INTO schema_migrations (version) VALUES ('20160805231725');
 INSERT INTO schema_migrations (version) VALUES ('20160808061328');
 
 INSERT INTO schema_migrations (version) VALUES ('20160811171418');
+
+INSERT INTO schema_migrations (version) VALUES ('20160816102343');
+
+INSERT INTO schema_migrations (version) VALUES ('20160816102648');
+
+INSERT INTO schema_migrations (version) VALUES ('20160816103209');
+
+INSERT INTO schema_migrations (version) VALUES ('20160816143700');
 
 INSERT INTO schema_migrations (version) VALUES ('20160818200451');
 
