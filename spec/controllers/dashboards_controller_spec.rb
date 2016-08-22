@@ -5,12 +5,12 @@ RSpec.describe DashboardsController do
     expect(TrackMixpanelEventJob).to have_received(:perform_async).with(message, user_id)
   end
 
-  describe 'GET new_bots' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled', bot: bot }
+  let!(:user) { create :user }
+  let!(:bot)  { create :bot }
+  let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
+  let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled', bot: bot }
 
+  describe 'GET new_bots' do
     def do_request
       get :new_bots, bot_id: bot.uid
     end
@@ -32,11 +32,6 @@ RSpec.describe DashboardsController do
   end
 
   describe '#disabled_bots' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'disabled', bot: bot }
-
     def do_request
       get :disabled_bots, bot_id: bot.uid
     end
@@ -58,11 +53,6 @@ RSpec.describe DashboardsController do
   end
 
   describe '#users' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'disabled', bot: bot }
-
     def do_request
       get :users, bot_id: bot.uid
     end
@@ -84,11 +74,6 @@ RSpec.describe DashboardsController do
   end
 
   describe '#all_messages' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'disabled', bot: bot }
-
     def do_request
       get :all_messages, bot_id: bot.uid
     end
@@ -110,11 +95,6 @@ RSpec.describe DashboardsController do
   end
 
   describe '#messages_to_bot' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'disabled', bot: bot }
-
     def do_request
       get :messages_to_bot, bot_id: bot.uid
     end
@@ -136,11 +116,6 @@ RSpec.describe DashboardsController do
   end
 
   describe '#messages_from_bot' do
-    let!(:user) { create :user }
-    let!(:bot)  { create :bot }
-    let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
-    let!(:bi)   { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'disabled', bot: bot }
-
     def do_request
       get :messages_from_bot, bot_id: bot.uid
     end
