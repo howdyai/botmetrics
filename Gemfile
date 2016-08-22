@@ -71,7 +71,7 @@ group :development, :test do
   gem 'rspec-rails',              '~> 3.4.2'
   gem 'rspec-its',                '~> 1.2.0'
   gem 'byebug',                   '~> 2.0.0'
-  gem 'timecop',                  '~> 0.7.4'
+  gem 'timecop',                  '~> 0.8.1'
   gem 'factory_girl_rails',       '~> 4.5.0'
   gem 'faker',                    '~> 1.6.6'
   gem 'pry-rails'
