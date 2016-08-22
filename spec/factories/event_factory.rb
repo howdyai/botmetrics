@@ -29,20 +29,23 @@ FactoryGirl.define do
   end
 
   factory :all_messages_event, parent: :event do
-    event_type { 'message' }
-    is_from_bot { false }
+    event_type          { 'message' }
+    is_from_bot         { false }
+    association :user,   factory: :bot_user
     event_attributes
   end
 
   factory :messages_to_bot_event, parent: :event do
-    event_type { 'message' }
-    is_for_bot { true }
+    event_type          { 'message' }
+    is_for_bot          { true }
+    association :user,   factory: :bot_user
     event_attributes
   end
 
   factory :messages_from_bot_event, parent: :event do
-    event_type { 'message' }
-    is_from_bot { true }
+    event_type          { 'message' }
+    is_from_bot         { true }
+    association :user,   factory: :bot_user
     event_attributes
   end
 end

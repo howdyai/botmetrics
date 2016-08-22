@@ -14,13 +14,16 @@ class Dashboard < ActiveRecord::Base
   belongs_to :bot
   belongs_to :user
 
-  attr_accessor :growth, :count, :data, :instances,
+  attr_accessor :growth, :count, :data,
                 :group_by, :current, :start_time, :end_time, :page,
                 :should_tableize, :tableized
+
+  attr_reader :instances
   delegate :timezone, to: :user
 
   def init!
     @current = true if current.nil?
+    @instances = self.bot.instances.legit
 
     if group_by == 'all-time'
       @data = case dashboard_type
@@ -41,7 +44,7 @@ class Dashboard < ActiveRecord::Base
       @data = case dashboard_type
               when 'bots-installed'    then send(func, new_bots_collection)
               when 'bots-uninstalled'  then send(func, disabled_bots_collection)
-              when 'new-users'         then send(func, new_users_collection, self.provider == 'slack' ? 'bot_instances.created_at' : 'bot_users.created_at')
+              when 'new-users'         then send(func, new_users_collection, 'bot_users.created_at')
               when 'messages'          then send(func, all_messages_collection)
               when 'messages-to-bot'   then send(func, messages_to_bot_collection)
               when 'messages-from-bot' then send(func, messages_from_bot_collection)
