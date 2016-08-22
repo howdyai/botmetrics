@@ -1,7 +1,6 @@
 class DashboardsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_bot
-  before_action :find_instances
   before_action :init_detail_view!
   layout 'app'
 
@@ -11,7 +10,6 @@ class DashboardsController < ApplicationController
     @show_trends = (@group_by != 'all-time')
 
     @dashboards.each do |dashboard|
-      dashboard.instances = @instances
       dashboard.group_by = @group_by
       dashboard.init!
     end
@@ -22,7 +20,6 @@ class DashboardsController < ApplicationController
   def show
     @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true)
 
-    @dashboard.instances = @instances
     @dashboard.group_by = @group_by
     @dashboard.start_time = @start
     @dashboard.end_time = @end
@@ -128,13 +125,6 @@ class DashboardsController < ApplicationController
   end
 
   protected
-
-  def find_instances
-    if (@instances = @bot.instances.legit).count == 0
-      return redirect_to(new_bot_instance_path(@bot))
-    end
-  end
-
   def init_detail_view!
     @group_by = params[:group_by].presence || 'day'
     @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call

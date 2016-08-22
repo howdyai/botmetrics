@@ -176,14 +176,14 @@ RSpec.describe BotInstance do
 
   describe '.with_all_messages' do
     let(:associated_bot_instances_ids) { BotInstance.ids }
-    let(:bi1) { create :bot_instance }
-    let(:bi2) { create :bot_instance }
-    let(:bu1) { create :bot_user, bot_instance: bi1 }
-    let(:bu2) { create :bot_user, bot_instance: bi2 }
+    let!(:bi1) { create :bot_instance }
+    let!(:bi2) { create :bot_instance }
+    let!(:bu1) { create :bot_user, bot_instance: bi1 }
+    let!(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      create :all_messages_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
-      create :all_messages_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
+      create :all_messages_event, bot_instance: bi1, user: bu1
+      create :all_messages_event, bot_instance: bi2, user: bu2, created_at: Time.current.yesterday
 
       result = described_class.with_all_messages(associated_bot_instances_ids)
 
@@ -194,8 +194,8 @@ RSpec.describe BotInstance do
       travel_to Time.current do
         yesterday = Time.current.yesterday
 
-        create :all_messages_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
-        create :all_messages_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+        create :all_messages_event, bot_instance: bi1, user: bu1
+        create :all_messages_event, bot_instance: bi2, user: bu2, created_at: yesterday
 
         result = described_class.with_all_messages(associated_bot_instances_ids)
 
@@ -216,8 +216,8 @@ RSpec.describe BotInstance do
     let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      create :messages_to_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
-      create :messages_to_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
+      create :messages_to_bot_event, bot_instance: bi1, user: bu1
+      create :messages_to_bot_event, bot_instance: bi2, user: bu2, created_at: Time.current.yesterday
 
       result = described_class.with_messages_to_bot(associated_bot_instances_ids)
 
@@ -228,8 +228,8 @@ RSpec.describe BotInstance do
       travel_to Time.current do
         yesterday = Time.current.yesterday
 
-        create :messages_to_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
-        create :messages_to_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: yesterday
+        create :messages_to_bot_event, bot_instance: bi1, user: bu1
+        create :messages_to_bot_event, bot_instance: bi2, user: bu2, created_at: yesterday
 
         result = described_class.with_messages_to_bot(associated_bot_instances_ids)
 
@@ -250,8 +250,8 @@ RSpec.describe BotInstance do
     let(:bu2) { create :bot_user, bot_instance: bi2 }
 
     it 'returns instances within correct ranges and order by last_event_at at' do
-      create :messages_from_bot_event, bot_instance_id: bi1.id, bot_user_id: bu1.id
-      create :messages_from_bot_event, bot_instance_id: bi2.id, bot_user_id: bu2.id, created_at: Time.current.yesterday
+      create :messages_from_bot_event, bot_instance: bi1, user: bu1
+      create :messages_from_bot_event, bot_instance: bi2, user: bu2, created_at: Time.current.yesterday
 
       result = described_class.with_messages_from_bot(associated_bot_instances_ids)
 
