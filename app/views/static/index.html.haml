@@ -121,6 +121,44 @@
                   https://www.getbotmetrics.com/bots/id/instances \
                   -d "format=json&instance[token]=token"
 
+.container-fluid.request-a-demo-container
+  .row
+    .col-md-6.col-md-offset-3
+      .row.header
+        %h2.text-center
+          Request A Demo
+      .row.content
+        .col-md-4.email
+          %h3.text-center
+            Email
+          %h4.text-center
+            sales@getbotmetrics.com
+        .col-md-8.contact-form
+          #mc_embed_signup
+            %form#mc-embedded-subscribe-form.validate{action: "//zerobotlabs.us11.list-manage.com/subscribe/post?u=90e6fddfd0f6117d87cf23c3f&id=f5dc244de2", method: "post", name: "mc-embedded-subscribe-form", :novalidate => "", :target => "_blank"}
+              #mc_embed_signup_scroll
+                .form-group
+                  %label{for: "mce-EMAIL"}
+                    Your Email
+                  %input#mce-EMAIL.required.form-control.email{name: "EMAIL", type: "email", value: ""}
+                .form-group
+                  %label{for: "mce-NAME"}
+                    Your Name
+                  %input#mce-NAME.required.form-control{name: "NAME", type: "text", value: ""}
+                .form-group
+                  %label{for: "mce-MMERGE3"} Your Phone Number
+                  %input#mce-MMERGE3.form-control{name: "MMERGE3", type: "text", value: ""}
+                .form-group
+                  %label{for: "mce-MMERGE1"} Company Name
+                  %input#mce-MMERGE1.form-control{name: "MMERGE1", type: "text", value: ""}
+                #mce-responses.clear
+                  #mce-error-response.response.text-danger{style: "display:none"}
+                  #mce-success-response.response.text-success{style: "display:none"}
+                %div{"aria-hidden" => "true", style: "position: absolute; left: -5000px;"}
+                  %input{name: "b_90e6fddfd0f6117d87cf23c3f_f5dc244de2", tabindex: "-1", type: "text", value: ""}
+                .form-group
+                  %input#mc-embedded-subscribe.button{name: "subscribe", type: "submit", value: "Confirm Request"}
+
 .container-fluid.footer-container
   .row
     .col-md-4
@@ -140,6 +178,10 @@
           = icon('twitter')
           %a{href:"https://twitter.com/getbotmetrics"} getbotmetrics
 - content_for :page_scripts do
+  %script{src: "//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js", type: "text/javascript"}
+
   :javascript
+    (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[2]='NAME';ftypes[2]='text';fnames[3]='MMERGE3';ftypes[3]='phone';fnames[1]='MMERGE1';ftypes[1]='text';fnames[4]='MMERGE4';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
+
     App.page = new App.StaticIndex();
     App.page.run();
