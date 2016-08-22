@@ -67,10 +67,13 @@ class BotsController < ApplicationController
       redirect_to(new_bot_instance_path(@bot)) && return
     end
 
-    @show_trends = (@group_by != 'all-time')
-    @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
-    @dashboarder.init!
-    TrackMixpanelEventJob.perform_async('Viewed Bot Dashboard Page', current_user.id)
+    if Settings.show_legacy_dashboards
+      @show_trends = (@group_by != 'all-time')
+      @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
+      @dashboarder.init!
+    else
+      redirect_to bot_dashboards_path(@bot)
+    end
   end
 
   def verifying_webhook

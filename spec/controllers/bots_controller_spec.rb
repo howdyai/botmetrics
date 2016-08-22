@@ -138,12 +138,7 @@ RSpec.describe BotsController do
 
       it 'should render template :show' do
         do_request
-        expect(response).to render_template :show
-      end
-
-      it 'should track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Bot Dashboard Page', user.id)
+        expect(response).to redirect_to bot_dashboards_path(bot)
       end
     end
   end

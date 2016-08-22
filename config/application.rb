@@ -54,7 +54,7 @@ module BotMetrics
     config.settings.on_premise            = ENV['ON_PREMISE']
     config.settings.letsencrypt_challenge = ENV['LETSENCRYPT_CHALLENGE']
     config.settings.facebook_id           = ENV['FACEBOOK_ID']
-
+    config.settings.show_legacy_dashboards = ENV['SHOW_LEGACY_DASHBOARDS']
   end
 end
 
