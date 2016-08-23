@@ -860,6 +860,13 @@ CREATE INDEX index_dashboard_events_on_event_id ON dashboard_events USING btree 
 
 
 --
+-- Name: index_dashboard_events_on_event_id_and_dashboard_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_dashboard_events_on_event_id_and_dashboard_id ON dashboard_events USING btree (event_id, dashboard_id);
+
+
+--
 -- Name: index_dashboards_on_bot_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -1262,4 +1269,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160818205031');
 INSERT INTO schema_migrations (version) VALUES ('20160823044836');
 
 INSERT INTO schema_migrations (version) VALUES ('20160823052121');
+
+INSERT INTO schema_migrations (version) VALUES ('20160823053730');
 
