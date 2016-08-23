@@ -26,9 +26,9 @@
         - if @show_trends
           = line_chart dashboard.data, dashboard_chartjs_opts
   = link_to new_bot_dashboard_path(@bot) do
-    .stat.col-sm-6.col-md-3.new-dashboard
+    .stat.col-sm-6.col-md-3.new-dashboard{class: @group_by}
       %h3.text-center
         +
       %h4.text-center
-        New Dashboard
+        New Custom Dashboard
 
