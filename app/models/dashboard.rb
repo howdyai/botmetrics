@@ -16,6 +16,8 @@ class Dashboard < ActiveRecord::Base
 
   belongs_to :bot
   belongs_to :user
+  has_many :dashboard_events
+  has_many :events, through: :dashboard_events
 
   attr_accessor :growth, :count, :data,
                 :group_by, :current, :start_time, :end_time, :page,
@@ -36,7 +38,7 @@ class Dashboard < ActiveRecord::Base
              when 'messages'          then  all_messages_collection.count
              when 'messages-to-bot'   then  messages_to_bot_collection.count
              when 'messages-from-bot' then  messages_from_bot_collection.count
-             when 'custom'            then  0
+             when 'custom'            then  custom_events_collection.count
              end
     else
       func = case group_by
@@ -52,6 +54,7 @@ class Dashboard < ActiveRecord::Base
               when 'messages'          then send(func, all_messages_collection)
               when 'messages-to-bot'   then send(func, messages_to_bot_collection)
               when 'messages-from-bot' then send(func, messages_from_bot_collection)
+              when 'custom'            then send(func, custom_events_collection, 'events.created_at')
               end
 
       if self.should_tableize
@@ -68,11 +71,11 @@ class Dashboard < ActiveRecord::Base
   end
 
   def growth
-    self.dashboard_type == 'custom' ? 0 : growth_for(self.data)
+    growth_for(self.data)
   end
 
   def count
-    self.dashboard_type == 'custom' ? 0 : count_for(self.data)
+    count_for(self.data)
   end
 
   private
@@ -143,6 +146,10 @@ class Dashboard < ActiveRecord::Base
     when 'facebook'
       BotUser.with_messages_from_bot(messages.select(:bot_instance_id))
     end
+  end
+
+  def custom_events_collection
+    self.events
   end
 
   def group_by_day(collection, group_col = :created_at)
