@@ -1,3 +1,3 @@
 #!/bin/bash
 
-redis-server config/redis.conf
+redis-server config/redis.conf --port 9000
