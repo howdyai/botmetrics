@@ -44,6 +44,13 @@ class RelaxService
         user.increment!(:bot_interaction_count)
         user.update_attribute(:last_interacted_with_bot_at, e.created_at)
       end
+
+      if e.text.present?
+        bi.bot.dashboards.custom.enabled.each do |dashboard|
+          r = Regexp.new(dashboard.regex, Regexp::IGNORECASE)
+          dashboard.dashboard_events.create(event: e) if r.match(e.text)
+        end
+      end
     when 'reaction_added'
       user = find_bot_user_from(bi, event)
       return if user.blank?

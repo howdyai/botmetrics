@@ -2,30 +2,48 @@ RSpec.describe KikEventsService do
   let!(:timestamp)    { Time.now.to_i * 1000 }
   let!(:bot)          { create :bot, provider: 'kik' }
   let!(:bot_instance) { create :bot_instance, provider: 'kik', bot: bot }
+  let!(:kik_client)   { double(Kik) }
+  let!(:first_name)   { Faker::Name.first_name }
+  let!(:last_name)   { Faker::Name.last_name }
+  let!(:profile_pic_url)           { Faker::Internet.url }
+  let!(:profile_pic_last_modified) { Faker::Date.between(2.days.ago, Date.today)  }
 
-  subject { KikEventsService.new(bot_id: bot.uid, events: events).create_events! }
+  def do_request
+    KikEventsService.new(bot_id: bot.uid, events: events).create_events!
+  end
+
+  before do
+    allow(Kik).to receive(:new).with(bot_instance.token, bot_instance.uid).and_return(kik_client)
+
+    allow(kik_client).to receive(:call).
+                     with("user/#{kik_user_id}", :get).
+                     and_return(firstName: first_name,
+                                lastName: last_name,
+                                profilePicUrl: profile_pic_url,
+                                profilePicLastModified: profile_pic_last_modified)
+  end
+
+
+  shared_examples "associates event with custom dashboard if custom dashboards exist" do
+    let!(:dashboard1) { create :dashboard, bot: bot, regex: 'hello', dashboard_type: 'custom', provider: 'slack' }
+    let!(:dashboard2) { create :dashboard, bot: bot, regex: 'eLLo', dashboard_type: 'custom', provider: 'slack' }
+    let!(:dashboard3) { create :dashboard, bot: bot, regex: 'welcome', dashboard_type: 'custom', provider: 'slack' }
+
+    it 'should associate events with dashboards that match the text' do
+      do_request
+      dashboard1.reload; dashboard2.reload; dashboard3.reload
+      e = bot_instance.events.last
+
+      expect(dashboard1.events.to_a).to eql [e]
+      expect(dashboard2.events.to_a).to eql [e]
+      expect(dashboard3.events.to_a).to be_empty
+    end
+  end
 
   shared_examples "should create an event as well as create the bot users" do
-    let!(:kik_client)   { double(Kik) }
-    let!(:first_name)   { Faker::Name.first_name }
-    let!(:last_name)   { Faker::Name.last_name }
-    let!(:profile_pic_url)           { Faker::Internet.url }
-    let!(:profile_pic_last_modified) { Faker::Date.between(2.days.ago, Date.today)  }
-
-    before do
-      allow(Kik).to receive(:new).with(bot_instance.token, bot_instance.uid).and_return(kik_client)
-
-      allow(kik_client).to receive(:call).
-                       with("user/#{kik_user_id}", :get).
-                       and_return(firstName: first_name,
-                                  lastName: last_name,
-                                  profilePicUrl: profile_pic_url,
-                                  profilePicLastModified: profile_pic_last_modified)
-    end
-
     it "should create an event" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.events, :count).by(1)
 
@@ -44,7 +62,7 @@ RSpec.describe KikEventsService do
 
     it "should create a new BotUser" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.users, :count).by(1)
 
@@ -59,7 +77,7 @@ RSpec.describe KikEventsService do
     end
 
     it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
-      subject
+      do_request
       user = bot_instance.users.last
 
       if is_for_bot
@@ -70,7 +88,7 @@ RSpec.describe KikEventsService do
     end
 
     it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
-      subject
+      do_request
       user = bot_instance.users.last
       event = bot_instance.events.last
 
@@ -87,7 +105,7 @@ RSpec.describe KikEventsService do
 
     it "should create an event" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to change(bot_instance.events, :count).by(1)
 
@@ -106,7 +124,7 @@ RSpec.describe KikEventsService do
 
     it "should NOT create new BotUsers" do
       expect {
-        subject
+        do_request
         bot_instance.reload
       }.to_not change(bot_instance.users, :count)
     end
@@ -114,12 +132,12 @@ RSpec.describe KikEventsService do
     it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do
       if is_for_bot
         expect {
-          subject
+          do_request
           user.reload
         }.to change(user, :bot_interaction_count).from(0).to(1)
       else
         expect {
-          subject
+          do_request
           user.reload
         }.to_not change(user, :bot_interaction_count)
       end
@@ -128,14 +146,14 @@ RSpec.describe KikEventsService do
     it "should set last_interacted_with_bot_at to the event's created_at timestamp if is_for_bot, otherwise don't do anything" do
       if is_for_bot
         expect {
-          subject
+          do_request
           user.reload
         }.to change(user, :last_interacted_with_bot_at)
 
         expect(user.last_interacted_with_bot_at).to eql bot_instance.events.last.created_at
       else
         expect {
-          subject
+          do_request
           user.reload
         }.to_not change(user, :last_interacted_with_bot_at)
       end
@@ -173,10 +191,12 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
+        it_behaves_like "associates event with custom dashboard if custom dashboards exist"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
+        it_behaves_like "associates event with custom dashboard if custom dashboards exist"
       end
     end
 
@@ -413,7 +433,6 @@ RSpec.describe KikEventsService do
     let(:kik_user_id)   { "kik-user-id"  }
     let(:bot_user_id)   { bot.uid        }
     let!(:user)         { create :bot_user, bot_instance: bot_instance, provider: 'kik' }
-    let!(:kik_client)   { double(Kik) }
     let!(:first_name)   { Faker::Name.first_name }
     let!(:last_name)   { Faker::Name.last_name }
     let!(:profile_pic_url)           { Faker::Internet.url }
@@ -429,17 +448,6 @@ RSpec.describe KikEventsService do
     let!(:e3)    do
       create :event, user: user, bot_instance: bot_instance, event_type: 'message', provider: 'kik',
                      event_attributes: { id: "id-3", chat_id: "chat_id-1", sub_type: 'text' }
-    end
-
-    before do
-      allow(Kik).to receive(:new).with(bot_instance.token, bot_instance.uid).and_return(kik_client)
-
-      allow(kik_client).to receive(:call).
-                       with("user/#{kik_user_id}", :get).
-                       and_return(firstName: first_name,
-                                  lastName: last_name,
-                                  profilePicUrl: profile_pic_url,
-                                  profilePicLastModified: profile_pic_last_modified)
     end
 
     let(:events) {
@@ -459,7 +467,7 @@ RSpec.describe KikEventsService do
     }
 
     it "should update the 'has_been_delivered' value for all of the events that belong to the bot_instance to 'true'" do
-      subject
+      do_request
       expect(e1.reload.has_been_delivered).to be true
       expect(e2.reload.has_been_delivered).to be true
       expect(e3.reload.has_been_delivered).to be false
@@ -470,7 +478,6 @@ RSpec.describe KikEventsService do
     let(:kik_user_id)   { "kik-user-id"  }
     let(:bot_user_id)   { bot.uid        }
     let!(:user)         { create :bot_user, bot_instance: bot_instance, provider: 'kik' }
-    let!(:kik_client)   { double(Kik) }
     let!(:first_name)   { Faker::Name.first_name }
     let!(:last_name)   { Faker::Name.last_name }
     let!(:profile_pic_url)           { Faker::Internet.url }
@@ -486,17 +493,6 @@ RSpec.describe KikEventsService do
     let!(:e3)    do
       create :event, user: user, bot_instance: bot_instance, event_type: 'message', provider: 'kik',
                      event_attributes: { id: "id-3", chat_id: "chat_id-1", sub_type: 'text' }
-    end
-
-    before do
-      allow(Kik).to receive(:new).with(bot_instance.token, bot_instance.uid).and_return(kik_client)
-
-      allow(kik_client).to receive(:call).
-                       with("user/#{kik_user_id}", :get).
-                       and_return(firstName: first_name,
-                                  lastName: last_name,
-                                  profilePicUrl: profile_pic_url,
-                                  profilePicLastModified: profile_pic_last_modified)
     end
 
     let(:events) {
@@ -516,7 +512,7 @@ RSpec.describe KikEventsService do
     }
 
     it "should update the 'has_been_read' value for all of the events that belong to the bot_instance to 'true'" do
-      subject
+      do_request
       expect(e1.reload.has_been_read).to be true
       expect(e2.reload.has_been_read).to be true
       expect(e3.reload.has_been_read).to be false

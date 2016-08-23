@@ -19,6 +19,9 @@ class Dashboard < ActiveRecord::Base
   has_many :dashboard_events
   has_many :events, through: :dashboard_events
 
+  scope :custom, -> { where("dashboards.dashboard_type" => 'custom') }
+  scope :enabled, -> { where("dashboards.enabled" => true) }
+
   attr_accessor :growth, :count, :data,
                 :group_by, :current, :start_time, :end_time, :page,
                 :should_tableize, :tableized

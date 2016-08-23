@@ -54,6 +54,13 @@ class KikEventsService
         @bot_user.increment!(:bot_interaction_count)
         @bot_user.update_attribute(:last_interacted_with_bot_at, event.created_at)
       end
+
+      if (text = event.text).present?
+        bot.dashboards.custom.enabled.each do |dashboard|
+          r = Regexp.new(dashboard.regex, Regexp::IGNORECASE)
+          dashboard.dashboard_events.create(event: event) if r.match(text)
+        end
+      end
     end
   end
 

@@ -28,6 +28,22 @@ RSpec.describe FacebookEventsService do
                                 gender: gender)
   end
 
+  shared_examples "associates event with custom dashboard if custom dashboards exist" do
+    let!(:dashboard1) { create :dashboard, bot: bot, regex: 'hello', dashboard_type: 'custom', provider: 'slack' }
+    let!(:dashboard2) { create :dashboard, bot: bot, regex: 'world', dashboard_type: 'custom', provider: 'slack' }
+    let!(:dashboard3) { create :dashboard, bot: bot, regex: 'welcome', dashboard_type: 'custom', provider: 'slack' }
+
+    it 'should associate events with dashboards that match the text' do
+      do_request
+      dashboard1.reload; dashboard2.reload; dashboard3.reload
+      e = bot_instance.events.last
+
+      expect(dashboard1.events.to_a).to eql [e]
+      expect(dashboard2.events.to_a).to eql [e]
+      expect(dashboard3.events.to_a).to be_empty
+    end
+  end
+
   shared_examples "should create an event as well as create the bot users" do
     it "should create an event" do
       expect {
@@ -195,6 +211,7 @@ RSpec.describe FacebookEventsService do
 
     context "bot user exists" do
       it_behaves_like "should create an event as well as create the bot users"
+      it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
       it "should succeed if the same call is called more than once" do
         expect {
@@ -207,6 +224,7 @@ RSpec.describe FacebookEventsService do
 
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
+      it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
       it "should succeed if the same call is called more than once" do
         expect {
@@ -259,6 +277,7 @@ RSpec.describe FacebookEventsService do
 
     context "bot user exists" do
       it_behaves_like "should create an event as well as create the bot users"
+      it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
       it "should succeed if the same call is called more than once" do
         expect {
@@ -271,6 +290,7 @@ RSpec.describe FacebookEventsService do
 
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
+      it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
       it "should succeed if the same call is called more than once" do
         expect {

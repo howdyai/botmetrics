@@ -161,6 +161,22 @@ RSpec.describe RelaxService do
     let!(:user) { create :bot_user, uid: 'UDEADBEEF1', provider: 'slack', bot_instance: bi }
     let!(:bot)  { create :bot_user, uid: 'UNESTOR1', provider: 'slack', bot_instance: bi }
 
+    shared_examples "associates event with custom dashboard if custom dashboards exist" do
+      let!(:dashboard1) { create :dashboard, bot: bi.bot, regex: 'thanks', dashboard_type: 'custom', provider: 'slack' }
+      let!(:dashboard2) { create :dashboard, bot: bi.bot, regex: 'nks', dashboard_type: 'custom', provider: 'slack' }
+      let!(:dashboard3) { create :dashboard, bot: bi.bot, regex: 'welcome', dashboard_type: 'custom', provider: 'slack' }
+
+      it 'should associate events with dashboards that match the text' do
+        RelaxService.handle(event)
+        dashboard1.reload; dashboard2.reload; dashboard3.reload
+        e = bi.events.last
+
+        expect(dashboard1.events.to_a).to eql [e]
+        expect(dashboard2.events.to_a).to eql [e]
+        expect(dashboard3.events.to_a).to be_empty
+      end
+    end
+
     context 'bot instance exists' do
       let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
@@ -267,6 +283,7 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+        it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
         context 'when message is from the bot' do
           before do
@@ -304,6 +321,7 @@ RSpec.describe RelaxService do
           end
 
           it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+          it_behaves_like "associates event with custom dashboard if custom dashboards exist"
         end
       end
 
@@ -340,6 +358,7 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+        it_behaves_like "associates event with custom dashboard if custom dashboards exist"
 
         context 'when message is from the bot' do
           before do
@@ -377,6 +396,7 @@ RSpec.describe RelaxService do
           end
 
           it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+          it_behaves_like "associates event with custom dashboard if custom dashboards exist"
         end
       end
     end
