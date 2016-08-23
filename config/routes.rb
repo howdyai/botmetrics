@@ -5,17 +5,7 @@ Rails.application.routes.draw do
 
   resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
     resources :events, only: [:create]
-
-    resources :dashboards, only: [:index, :show] do
-      collection do
-        get :new_bots
-        get :disabled_bots
-        get :users
-        get :all_messages
-        get :messages_to_bot
-        get :messages_from_bot
-      end
-    end
+    resources :dashboards, only: [:index, :show]
 
     get :verifying_webhook
     get :webhook_events, on: :member

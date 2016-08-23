@@ -67,13 +67,7 @@ class BotsController < ApplicationController
       redirect_to(new_bot_instance_path(@bot)) && return
     end
 
-    if Settings.show_legacy_dashboards
-      @show_trends = (@group_by != 'all-time')
-      @dashboarder = Dashboarder.new(@instances, @group_by, current_user.timezone)
-      @dashboarder.init!
-    else
-      redirect_to bot_dashboards_path(@bot)
-    end
+    redirect_to bot_dashboards_path(@bot)
   end
 
   def verifying_webhook
