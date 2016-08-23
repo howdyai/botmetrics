@@ -68,6 +68,7 @@ class Dashboard < ActiveRecord::Base
                      when 'messages'          then all_messages_tableized.page(page)
                      when 'messages-from-bot' then messages_from_bot_tableized.page(page)
                      when 'messages-to-bot'   then messages_to_bot_tableized.page(page)
+                     when 'custom'            then custom_events_tableized.page(page)
                      end
       end
     end
@@ -134,6 +135,11 @@ class Dashboard < ActiveRecord::Base
     when 'facebook'
       BotUser.with_messages_to_bot(messages.select(:bot_instance_id))
     end
+  end
+
+  def custom_events_tableized
+    messages = self.events.where("events.created_at" => @start_time.utc..@end_time.utc)
+    BotUser.with_events(messages.select(:bot_user_id))
   end
 
   def messages_from_bot_collection

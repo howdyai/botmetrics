@@ -87,4 +87,11 @@ class BotUser < ActiveRecord::Base
     where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
     order("last_event_at DESC NULLS LAST")
   end
+
+  def self.with_events(associated_bot_user_ids)
+    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
+    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 't' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
+    where("bot_users.id IN (?)", associated_bot_user_ids).
+    order("last_event_at DESC NULLS LAST")
+  end
 end

@@ -10,3 +10,5 @@
   = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
 - elsif dashboard.dashboard_type == 'messages-from-bot'
   = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
+- elsif dashboard.dashboard_type == 'custom'
+  = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
