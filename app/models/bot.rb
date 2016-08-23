@@ -48,4 +48,13 @@ class Bot < ActiveRecord::Base
       )
     end
   end
+
+  def update_first_received_event_at!
+    if self.first_received_event_at.blank?
+      self.collaborators.each do |user|
+        SetMixpanelPropertyJob.perform_async(user.id, "received_first_event", true)
+      end
+      self.update_attribute(:first_received_event_at, Time.now)
+    end
+  end
 end

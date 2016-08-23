@@ -70,6 +70,8 @@ class FacebookEventsService
           dashboard.dashboard_events.create(event: event) if r.match(text)
         end
       end
+
+      bot.update_first_received_event_at!
     end
   end
 

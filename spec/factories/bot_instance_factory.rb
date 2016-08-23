@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :bot_instance do
     sequence(:token)  { |n| "bot-instance-token-#{n}" }
     provider          "slack"
-    bot
+    association :bot, factory: :bot
 
     trait :with_attributes do
       instance_attributes do

@@ -6,6 +6,8 @@ class RelaxService
       return
     end
 
+    bi.bot.update_first_received_event_at!
+
     case event.type
     when 'team_joined'
       ImportUsersForBotInstanceJob.perform_async(bi.id)

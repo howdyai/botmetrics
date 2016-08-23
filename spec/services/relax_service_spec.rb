@@ -1,5 +1,12 @@
 RSpec.describe RelaxService do
-  before { allow(SendEventToWebhookJob).to receive(:perform_async) }
+  let!(:admin_user)  { create :user }
+  let!(:parent_bot)  { create :bot  }
+  let!(:bc1)         { create :bot_collaborator, bot: parent_bot, user: admin_user }
+
+  before do
+    allow(SendEventToWebhookJob).to receive(:perform_async)
+    allow(SetMixpanelPropertyJob).to receive(:perform_async)
+  end
 
   shared_examples "calls the webhook if it is setup and doesn't if it is not" do
     context "bot doesn't has a webhook_url set up" do
@@ -21,13 +28,45 @@ RSpec.describe RelaxService do
     end
   end
 
+  shared_examples "sets the mixpanel property 'received_first_event' if first_received_event_at is nil" do
+    context "first_received_event_at is not nil" do
+      it 'should update first_received_event_at and set the property on Mixpanel' do
+        expect {
+          RelaxService.handle(event)
+          parent_bot.reload
+        }.to change(parent_bot, :first_received_event_at)
+      end
+
+      it 'should set the mixpanel property "received_first_event" to true' do
+        RelaxService.handle(event)
+        expect(SetMixpanelPropertyJob).to have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
+      end
+    end
+
+    context "first_received_event_at is NOT nil" do
+      before { parent_bot.update_attribute(:first_received_event_at, Time.now) }
+
+      it 'should NOT update first_received_event_at and set the property on Mixpanel' do
+        expect {
+          RelaxService.handle(event)
+          parent_bot.reload
+        }.to_not change(parent_bot, :first_received_event_at)
+      end
+
+      it 'should NOT set the mixpanel property "received_first_event" to true' do
+        RelaxService.handle(event)
+        expect(SetMixpanelPropertyJob).to_not have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
+      end
+    end
+  end
+
   describe 'team_joined' do
     let!(:event) { Relax::Event.new(team_uid: 'TDEADBEEF', namespace: 'UNESTOR1', type: 'team_joined') }
 
     before { allow(ImportUsersForBotInstanceJob).to receive(:perform_async) }
 
     context 'bot instance exists' do
-      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+      let!(:bi) { create :bot_instance, bot: parent_bot, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
       it 'should call ImportUsersForBotInstanceJob' do
         RelaxService.handle(event)
@@ -46,6 +85,7 @@ RSpec.describe RelaxService do
       end
 
       it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+      it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
     end
 
     context 'bot instance does not exist' do
@@ -62,7 +102,7 @@ RSpec.describe RelaxService do
     before { allow(Alerts::DisabledBotInstanceJob).to receive(:perform_async) }
 
     context 'bot instance exists' do
-      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+      let!(:bi) { create :bot_instance, bot: parent_bot, uid: 'UNESTOR1', instance_attributes: { team_id: 'TDEADBEEF', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
       it 'should disable the bot' do
         expect {
@@ -89,6 +129,7 @@ RSpec.describe RelaxService do
       end
 
       it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+      it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
     end
   end
 
@@ -112,7 +153,7 @@ RSpec.describe RelaxService do
     let!(:bot)  { create :bot_user, uid: 'UNESTOR1', provider: 'slack', bot_instance: bi }
 
     context 'bot instance exists' do
-      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+      let!(:bi) { create :bot_instance, bot: parent_bot, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
 
       context 'when message is not meant for the bot' do
@@ -139,6 +180,7 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
   end
@@ -178,7 +220,7 @@ RSpec.describe RelaxService do
     end
 
     context 'bot instance exists' do
-      let!(:bi) { create :bot_instance, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
+      let!(:bi) { create :bot_instance, bot: parent_bot, uid: 'UNESTOR1', instance_attributes: { team_id: 'TCAFEDEAD', team_name: 'My Team', team_url: 'https://my-team.slack.com/' }, state: 'enabled' }
 
       context 'when message is not meant for the bot' do
         it 'should create a new event' do
@@ -211,6 +253,7 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
+        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -284,6 +327,7 @@ RSpec.describe RelaxService do
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
+        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -359,6 +403,7 @@ RSpec.describe RelaxService do
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
+        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -397,6 +442,7 @@ RSpec.describe RelaxService do
 
           it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
           it_behaves_like "associates event with custom dashboard if custom dashboards exist"
+          it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
         end
       end
     end
