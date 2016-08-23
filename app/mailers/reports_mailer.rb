@@ -7,21 +7,17 @@ class ReportsMailer < ApplicationMailer
 
     User.with_advisory_lock("reports-mailer-daily-summary-#{@user.id}") do
       if monday_in_time_zone?(@user.timezone)
-        @weekly_dashboarders = {}
-        @user.bots.each do |bot|
-          dashboarder = Dashboarder.new(bot.instances.legit, 'this-week', @user.timezone, false)
-          dashboarder.init!
+        @weekly_dashboarders = []
 
-          @weekly_dashboarders[bot] = dashboarder
+        @user.bots.each do |bot|
+          @weekly_dashboarders << bot
         end
       end
 
-      @daily_dashboarders = {}
-      @user.bots.each do |bot|
-        dashboarder = Dashboarder.new(bot.instances.legit, 'today', @user.timezone, false)
-        dashboarder.init!
+      @daily_dashboarders = []
 
-        @daily_dashboarders[bot] = dashboarder
+      @user.bots.each do |bot|
+        @daily_dashboarders << bot
       end
 
       opts = {

@@ -1,32 +1,23 @@
 RSpec.describe ReportsMailer do
-  let(:bot1)  { double(:bot, name: 'Bot', provider: 'slack', instances: BotInstance.where(id: [enabled1.id, pending1.id])) }
-  let(:bot2)  { double(:bot, name: 'Bot', provider: 'facebook', instances: BotInstance.where(id: [enabled2.id, pending2.id])) }
+  let!(:bot1)  { create :bot, name: 'Slack Bot', provider: 'slack' }
+  let!(:bot2)  { create :bot, name: 'Facebook Bot', provider: 'facebook' }
 
-  let!(:enabled1) { create(:bot_instance, :with_attributes, uid: 'B123', state: 'enabled') }
-  let!(:enabled2) { create(:bot_instance, :with_attributes, uid: 'B345', state: 'enabled') }
-  let!(:pending1) { create(:bot_instance, :with_attributes, uid: 'B456', state: 'pending') }
-  let!(:pending2) { create(:bot_instance, :with_attributes, uid: 'B678', state: 'pending') }
+  let!(:enabled1) { create(:bot_instance, :with_attributes, uid: 'B123', bot: bot1, state: 'enabled') }
+  let!(:enabled2) { create(:bot_instance, :with_attributes, uid: 'B345', bot: bot2, state: 'enabled') }
+  let!(:pending1) { create(:bot_instance, :with_attributes, uid: 'B456', bot: bot1, state: 'pending') }
+  let!(:pending2) { create(:bot_instance, :with_attributes, uid: 'B678', bot: bot2, state: 'pending') }
 
   before do
     allow(User).to receive(:find) { user }
     allow(user).to receive(:log_daily_summary_sent)
-    allow(Dashboarder).to receive(:new) do
-      double(
-        :dashboard,
-        new_bots_growth: 0.5,
-        disabled_bots_growth: 0.5,
-        new_users_growth: 0.5,
-        messages_growth: 0.5,
-        messages_for_bot_growth: 0.5,
-        messages_from_bot_growth: 0.5,
-      ).as_null_object
-    end
   end
 
   describe '#daily_summary' do
-    let(:user) { double(:user, id: 1, email: 'a@example.com', timezone: 'Singapore', bots: [bot1, bot2]) }
+    let!(:user) { create :user, timezone: 'Singapore' }
+    let!(:bc1) { create :bot_collaborator, bot: bot1, user: user }
+    let!(:bc2) { create :bot_collaborator, bot: bot2, user: user }
 
-    it 'send email to bot owners' do
+    it 'sends email to bot owners' do
       mail = ReportsMailer.daily_summary(user.id)
 
       expect(mail.to).to      eq [user.email]
@@ -34,13 +25,11 @@ RSpec.describe ReportsMailer do
 
       expect(mail.body.encoded).to match bot1.name
       expect(mail.body.encoded).to match bot2.name
-
-      expect(Dashboarder).to have_received(:new).with(contain_exactly(enabled1), 'today', 'Singapore', false)
-      expect(Dashboarder).to have_received(:new).with(contain_exactly(enabled2), 'today', 'Singapore', false)
     end
 
-    context 'weeky summary' do
+    context 'weekly summary' do
       it 'has weekly summary if monday' do
+        # May 23, is Monday
         travel_to Time.parse('23 May, 2016 09:00 +0800') do
           mail = ReportsMailer.daily_summary(user.id)
 
@@ -49,6 +38,7 @@ RSpec.describe ReportsMailer do
       end
 
       it 'does not have weekly summary on non-mondays' do
+        # May 24, is Tuesday
         travel_to Time.parse('24 May, 2016 09:00 +0800') do
           mail = ReportsMailer.daily_summary(user.id)
 
