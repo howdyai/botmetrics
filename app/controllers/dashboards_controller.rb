@@ -4,6 +4,23 @@ class DashboardsController < ApplicationController
   before_action :init_detail_view!
   layout 'app'
 
+  def new
+    @dashboard = @bot.dashboards.new
+  end
+
+  def create
+    @dashboard = @bot.dashboards.create(dashboard_params.merge!(user: current_user,
+                                                                dashboard_type: 'custom',
+                                                                provider: @bot.provider,
+                                                                enabled: true))
+
+    if @dashboard.persisted?
+      redirect_to bot_dashboards_path
+    else
+      render :new
+    end
+  end
+
   def index
     @dashboards = @bot.dashboards.where(enabled: true).order("id")
     @group_by = params[:group_by].presence || 'today'
@@ -34,5 +51,9 @@ class DashboardsController < ApplicationController
   def init_detail_view!
     @group_by = params[:group_by].presence || 'day'
     @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call
+  end
+
+  def dashboard_params
+    params.require(:dashboard).permit(:name, :regex, :provider)
   end
 end

@@ -8,8 +8,11 @@ class Dashboard < ActiveRecord::Base
   validates_presence_of :name, :bot_id, :user_id, :provider, :dashboard_type
   validates_uniqueness_of :uid
   validates_uniqueness_of :name, scope: :bot_id
+  validates_presence_of :regex, if: Proc.new { |d| d.dashboard_type == 'custom' }
 
   validates_inclusion_of :provider, in: Bot::PROVIDERS.keys
+
+  validates_with DashboardRegexValidator
 
   belongs_to :bot
   belongs_to :user
@@ -33,6 +36,7 @@ class Dashboard < ActiveRecord::Base
              when 'messages'          then  all_messages_collection.count
              when 'messages-to-bot'   then  messages_to_bot_collection.count
              when 'messages-from-bot' then  messages_from_bot_collection.count
+             when 'custom'            then  0
              end
     else
       func = case group_by
@@ -64,11 +68,11 @@ class Dashboard < ActiveRecord::Base
   end
 
   def growth
-    growth_for(self.data)
+    self.dashboard_type == 'custom' ? 0 : growth_for(self.data)
   end
 
   def count
-    count_for(self.data)
+    self.dashboard_type == 'custom' ? 0 : count_for(self.data)
   end
 
   private

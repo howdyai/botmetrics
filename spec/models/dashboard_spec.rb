@@ -15,6 +15,25 @@ RSpec.describe Dashboard, type: :model do
     it { should allow_value('kik').for(:provider) }
     it { should allow_value('slack').for(:provider) }
     it { should_not allow_value('abcdef').for(:provider) }
+
+    describe 'regex errors' do
+      let!(:dashboard) { build :dashboard }
+
+      it 'should now allow invalid regexs for regex' do
+        dashboard.dashboard_type = 'custom'
+        dashboard.regex = "(abc"
+
+        expect(dashboard).to_not be_valid
+        expect(dashboard.errors[:regex]).to eql ["end pattern with unmatched parenthesis: /(abc/"]
+      end
+
+      it 'should allow valid regexs for regex' do
+        dashboard.dashboard_type = 'custom'
+        dashboard.regex = "(abc)"
+
+        expect(dashboard).to be_valid
+      end
+    end
   end
 
   describe 'associations' do
