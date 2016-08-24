@@ -10,11 +10,12 @@
   .graph.row
     .col-md-6.col-sm-6.col-xs-6.graph-container
       = simple_form_for [@bot, @dashboard], url: bot_dashboards_path, method: :post do |f|
-        = f.input :name, label: "Your Custom Dashboard's Name", required: true
-        = f.input :regex, label: "Regular Expression To Match Messages Against", required: true
+        = f.input :name, label: "Custom Dashboard Name", required: true
+        = f.input :regex, label: "Message Matching Criteria (protip: you can use a regex)", required: true
         %p.disclaimer
-          For e.g. if your bot has a failure condition when it responds with "I don't know what you mean", set the regex as
+          For e.g. To track all the times your bot responded with "I did not understand that", set
+          the Message Matching Criteria to
           %strong
-            don't know what you mean
+            I did not understand that
         = f.submit "Create New Dashboard"
 
