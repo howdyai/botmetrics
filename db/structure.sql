@@ -167,6 +167,7 @@ CREATE TABLE bots (
     webhook_url character varying,
     webhook_status boolean DEFAULT false,
     webhooks_enabled boolean DEFAULT false NOT NULL,
+    first_received_event_at timestamp without time zone,
     CONSTRAINT valid_provider_on_bots CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text)))
 );
 
@@ -509,7 +510,9 @@ CREATE TABLE users (
     invitation_limit integer,
     invited_by_id integer,
     invited_by_type character varying,
-    signed_up_at timestamp without time zone
+    signed_up_at timestamp without time zone,
+    invited_to_slack_at timestamp without time zone,
+    slack_invite_response jsonb
 );
 
 
@@ -1271,4 +1274,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160823044836');
 INSERT INTO schema_migrations (version) VALUES ('20160823052121');
 
 INSERT INTO schema_migrations (version) VALUES ('20160823053730');
+
+INSERT INTO schema_migrations (version) VALUES ('20160823214743');
+
+INSERT INTO schema_migrations (version) VALUES ('20160824201210');
 

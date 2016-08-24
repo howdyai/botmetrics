@@ -18,6 +18,7 @@ RSpec.describe RegistrationsController do
       allow(TrackMixpanelEventJob).to receive(:perform_async)
       allow(IdentifyMixpanelUserJob).to receive(:perform_async)
       allow(NotifyAdminOnSlackJob).to receive(:perform_async)
+      allow(InviteToSlackJob).to receive(:perform_async)
     end
 
     def do_request
@@ -50,6 +51,11 @@ RSpec.describe RegistrationsController do
     it 'should notify admins on Slack' do
       do_request
       expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(User.last.id, title: 'User Signed Up')
+    end
+
+    it 'should invite the user to Slack' do
+      do_request
+      expect(InviteToSlackJob).to have_received(:perform_async).with(User.last.id)
     end
   end
 end

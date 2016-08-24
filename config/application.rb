@@ -55,6 +55,7 @@ module BotMetrics
     config.settings.letsencrypt_challenge = ENV['LETSENCRYPT_CHALLENGE']
     config.settings.facebook_id           = ENV['FACEBOOK_ID']
     config.settings.show_legacy_dashboards = ENV['SHOW_LEGACY_DASHBOARDS']
+    config.settings.slack_inviter_token   = ENV['SLACK_INVITER_TOKEN']
   end
 end
 
