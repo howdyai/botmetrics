@@ -44,13 +44,6 @@ RSpec.describe KikEventsService do
     context "first_received_event_at is NOT nil" do
       before { bot.update_attribute(:first_received_event_at, Time.now) }
 
-      it 'should NOT update first_received_event_at and set the property on Mixpanel' do
-        expect {
-          do_request
-          bot.reload
-        }.to_not change(bot, :first_received_event_at)
-      end
-
       it 'should NOT set the mixpanel property "received_first_event" to true' do
         do_request
         expect(SetMixpanelPropertyJob).to_not have_received(:perform_async).with(admin_user.id, 'received_first_event', true)

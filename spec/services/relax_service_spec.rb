@@ -46,13 +46,6 @@ RSpec.describe RelaxService do
     context "first_received_event_at is NOT nil" do
       before { parent_bot.update_attribute(:first_received_event_at, Time.now) }
 
-      it 'should NOT update first_received_event_at and set the property on Mixpanel' do
-        expect {
-          RelaxService.handle(event)
-          parent_bot.reload
-        }.to_not change(parent_bot, :first_received_event_at)
-      end
-
       it 'should NOT set the mixpanel property "received_first_event" to true' do
         RelaxService.handle(event)
         expect(SetMixpanelPropertyJob).to_not have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
