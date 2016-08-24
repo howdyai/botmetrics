@@ -29,9 +29,8 @@ module Messages
     end
 
     private
-
-      def message_attributes
-        { team_id: team_id, channel: channel, user: user }.delete_if { |_, v| v.blank? }
-      end
+    def message_attributes
+      { team_id: team_id, channel: channel, user: user }.delete_if { |_, v| v.blank? }
+    end
   end
 end
