@@ -7,8 +7,10 @@ module Clockwork
     SendScheduledMessageJob.perform_async
   end
 
-  every(5.minutes, 'DailyReport.Send') do
-    SendDailyReportsJob.perform_async
+  if Rails.env.production?
+    every(5.minutes, 'DailyReport.Send') do
+      SendDailyReportsJob.perform_async
+    end
   end
 
   every(5.minutes, 'Notification.recurring_send') do
