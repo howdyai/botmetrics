@@ -56,6 +56,7 @@ module BotMetrics
     config.settings.facebook_id           = ENV['FACEBOOK_ID']
     config.settings.show_legacy_dashboards = ENV['SHOW_LEGACY_DASHBOARDS']
     config.settings.slack_inviter_token   = ENV['SLACK_INVITER_TOKEN']
+    config.settings.olark_id              = ENV['OLARK_ID']
   end
 end
 
