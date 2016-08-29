@@ -18,3 +18,5 @@
 *.rdb
 
 .DS_Store
+
+*.pid*
