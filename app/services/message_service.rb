@@ -15,27 +15,26 @@ class MessageService
 
   private
 
-    attr_reader :message, :bot_instance
+  attr_reader :message, :bot_instance
 
-    delegate :notification, :success, :user, :channel, to: :message
+  delegate :notification, :success, :user, :channel, to: :message
+  def service
+    @_service ||= PostMessageToSlackService.new(message, bot_instance.token)
+  end
 
-    def service
-      @_service ||= PostMessageToSlackService.new(message, bot_instance.token)
-    end
+  def response
+    @_response ||= service.call
+  end
 
-    def response
-      @_response ||= service.call
-    end
-
-    def ping_pusher_for_new_message_notification
-      PusherJob.perform_async(
-        "notification",
-        "notification-#{notification.id}",
-        {
-          ok: success,
-          recipient: (user || channel),
-          sent: notification.messages.sent.count
-        }.to_json
-      )
-    end
+  def ping_pusher_for_new_message_notification
+    PusherJob.perform_async(
+      "notification",
+      "notification-#{notification.id}",
+      {
+        ok: success,
+        recipient: (user || channel),
+        sent: notification.messages.sent.count
+      }.to_json
+    )
+  end
 end

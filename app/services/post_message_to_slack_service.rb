@@ -17,26 +17,25 @@ class PostMessageToSlackService
   end
 
   private
+  attr_reader :message, :token
 
-    attr_reader :message, :token
+  delegate :channel, :user, :log_response, :text, :attachments, to: :message, prefix: true
 
-    delegate :channel, :user, :log_response, :text, :attachments, to: :message, prefix: true
+  def slack_client
+    @_slack_client ||= Slack.new(token)
+  end
 
-    def slack_client
-      @_slack_client ||= Slack.new(token)
-    end
+  def im_response
+    @_im_response ||= slack_client.call('im.open', 'POST', user: message_user)
+  end
 
-    def im_response
-      @_im_response ||= slack_client.call('im.open', 'POST', user: message_user)
-    end
-
-    def options
-      {
-        as_user: 'true',
-        channel: channel,
-        text: message_text,
-        attachments: message_attachments,
-        mrkdwn: true,
-      }.delete_if { |_, v| v.blank? }
-    end
+  def options
+    {
+      as_user: 'true',
+      channel: channel,
+      text: message_text,
+      attachments: message_attachments,
+      mrkdwn: true,
+    }.delete_if { |_, v| v.blank? }
+  end
 end
