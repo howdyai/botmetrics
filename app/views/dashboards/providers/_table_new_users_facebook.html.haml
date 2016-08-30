@@ -12,5 +12,5 @@
         %td= u.first_name
         %td= u.last_name
         %td= u.gender
-        %td= ActiveSupport::TimeZone[u.timezone]
+        %td= ActiveSupport::TimeZone[u.timezone] if u.timezone.present?
         %td= "#{time_ago_in_words(u.created_at)} ago"
