@@ -19,11 +19,8 @@ class PostMessageToFacebookService
 
   def options
     {
-      as_user: 'true',
-      channel: channel,
-      text: message_text,
-      attachments: message_attachments,
-      mrkdwn: true,
-    }.delete_if { |_, v| v.blank? }
+      recipient: { id: message.user },
+      message:   { text: message.text }
+    }
   end
 end

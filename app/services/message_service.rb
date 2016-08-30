@@ -6,7 +6,7 @@ class MessageService
 
   def send_now
     return false if bot_instance.state != 'enabled'
-    return false if service.channel.blank?
+    return false if (message.provider == 'slack' && service.channel.blank?)
 
     message.log_response(response)
     message.update(sent_at: Time.current)
@@ -19,7 +19,10 @@ class MessageService
 
   delegate :notification, :success, :user, :channel, to: :message
   def service
-    @_service ||= PostMessageToSlackService.new(message, bot_instance.token)
+    @_service ||= case message.provider
+                  when 'slack' then PostMessageToSlackService.new(message, bot_instance.token)
+                  when 'facebook' then PostMessageToFacebookService.new(message, bot_instance.token)
+                  end
   end
 
   def response

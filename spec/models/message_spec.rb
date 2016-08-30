@@ -51,31 +51,63 @@ RSpec.describe Message do
   end
 
   describe '#log_response' do
-    context 'success' do
-      let(:response) { { 'ok' => true } }
+    context 'slack' do
+      context 'success' do
+        let(:response) { { 'ok' => true } }
 
-      it 'log success, response and returns true' do
-        message = build_stubbed(:message)
+        it 'log success, response and returns true' do
+          message = build_stubbed(:message, provider: 'slack')
 
-        expect(message).to receive(:update).with(
-          success: true, response: response
-        )
+          expect(message).to receive(:update).with(
+            success: true, response: response
+          )
 
-        result = message.log_response(response)
+          result = message.log_response(response)
+        end
+      end
+
+      context 'failure' do
+        let(:response) { { 'ok' => false } }
+
+        it 'log success, response and returns false' do
+          message = build_stubbed(:message, provider: 'slack')
+
+          expect(message).to receive(:update).with(
+            success: false, response: response
+          )
+
+          result = message.log_response(response)
+        end
       end
     end
 
-    context 'failure' do
-      let(:response) { { 'ok' => false } }
+    context 'facebook' do
+      context 'success' do
+        let(:response) { { 'recipient_id' => 'recipient_id', 'message_id' => 'message_id' } }
 
-      it 'log success, response and returns false' do
-        message = build_stubbed(:message)
+        it 'log success, response and returns true' do
+          message = build_stubbed(:message, provider: 'facebook')
 
-        expect(message).to receive(:update).with(
-          success: false, response: response
-        )
+          expect(message).to receive(:update).with(
+            success: true, response: response
+          )
 
-        result = message.log_response(response)
+          result = message.log_response(response)
+        end
+      end
+
+      context 'failure' do
+        let(:response) { { 'error' => 'wrong' } }
+
+        it 'log success, response and returns false' do
+          message = build_stubbed(:message, provider: 'facebook')
+
+          expect(message).to receive(:update).with(
+            success: false, response: response
+          )
+
+          result = message.log_response(response)
+        end
       end
     end
   end

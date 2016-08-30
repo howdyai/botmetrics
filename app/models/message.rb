@@ -32,7 +32,12 @@ class Message < ActiveRecord::Base
   end
 
   def log_response(response)
-    update(success: response['ok'], response: response)
+    success = case self.provider
+              when 'slack' then response['ok']
+              when 'facebook' then response['recipient_id'].present?
+              end
+
+    update(success: success, response: response)
   end
 
   private
