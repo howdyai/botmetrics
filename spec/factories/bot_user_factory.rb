@@ -20,5 +20,18 @@ FactoryGirl.define do
         }
       end
     end
+
+    trait :with_facebook_attributes do
+      user_attributes do
+        {
+          'first_name'           => Faker::Name.first_name,
+          'last_name'            => Faker::Name.last_name,
+          'gender'               => ['male', 'female'].sample,
+          'profile_pic'          => Faker::Avatar.image,
+          'locale'               => 'en/US',
+          'timezone'             => -8
+        }
+      end
+    end
   end
 end

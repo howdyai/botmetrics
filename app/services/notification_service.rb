@@ -33,7 +33,10 @@ class NotificationService
                   where("bot_users.uid NOT IN (?)", notification.messages.select("messages.message_attributes ->> 'user'"))
 
     bot_users.each do |bot_user|
-      message_object = Messages::Slack.new(message_params(bot_user))
+      message_object = case bot_user.provider
+                       when 'slack' then Messages::Slack.new(message_params(bot_user))
+                       when 'facebook' then Messages::Facebook.new(message_params(bot_user))
+                       end
       message_model  = message_object.save_for(bot_user.bot_instance, notification_params(bot_user))
 
       unless message_model
@@ -53,11 +56,19 @@ class NotificationService
   end
 
   def message_params(bot_user)
-    {
-      team_id: bot_user.bot_instance.team_id,
-      user:    bot_user.uid,
-      text:    notification.content
-    }
+    case bot_user.provider
+    when 'slack'
+      {
+        team_id: bot_user.bot_instance.team_id,
+        user:    bot_user.uid,
+        text:    notification.content
+      }
+    when 'facebook', 'kik'
+      {
+        user:    bot_user.uid,
+        text:    notification.content
+      }
+    end
   end
 
   def notification_params(bot_user)

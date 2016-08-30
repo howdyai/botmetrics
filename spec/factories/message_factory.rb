@@ -11,5 +11,10 @@ FactoryGirl.define do
       message_attributes({ team_id: 'T123', user: 'U1234' })
       text 'ok!'
     end
+
+    trait :to_facebook do
+      message_attributes({user: 'U1234'})
+      text 'ok!'
+    end
   end
 end

@@ -6,5 +6,9 @@ FactoryGirl.define do
     trait :with_slack_queries do
       queries { build_list(:slack_query, 1) }
     end
+
+    trait :with_facebook_queries do
+      queries { build_list(:facebook_query, 1) }
+    end
   end
 end

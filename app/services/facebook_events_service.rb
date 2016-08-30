@@ -103,7 +103,6 @@ class FacebookEventsService
     Facebook.new(bot_instance.token)
   end
 
-
   def bot_user_uid
     if params.dig(:data, :is_from_bot) == true
       params.dig(:recip_info, :recipient_id)

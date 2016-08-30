@@ -335,8 +335,8 @@ CREATE TABLE messages (
     notification_id integer,
     scheduled_at timestamp without time zone,
     sent_at timestamp without time zone,
-    CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
-    CONSTRAINT validate_attributes_team_id CHECK (((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)))
+    CONSTRAINT validate_attributes_channel_user CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'channel'::text) IS NOT NULL)) AND (length((message_attributes ->> 'channel'::text)) > 0)) AND ((message_attributes ->> 'user'::text) IS NULL)) OR (((((((provider)::text = 'slack'::text) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'kik'::text)) AND ((message_attributes ->> 'user'::text) IS NOT NULL)) AND (length((message_attributes ->> 'user'::text)) > 0)) AND ((message_attributes ->> 'channel'::text) IS NULL)))),
+    CONSTRAINT validate_attributes_team_id CHECK (((((((provider)::text = 'slack'::text) AND ((message_attributes ->> 'team_id'::text) IS NOT NULL)) AND (length((message_attributes ->> 'team_id'::text)) > 0)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'kik'::text)))
 );
 
 
@@ -1280,4 +1280,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160823214743');
 INSERT INTO schema_migrations (version) VALUES ('20160824201210');
 
 INSERT INTO schema_migrations (version) VALUES ('20160829225652');
+
+INSERT INTO schema_migrations (version) VALUES ('20160830132256');
 
