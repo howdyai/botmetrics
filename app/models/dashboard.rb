@@ -139,7 +139,7 @@ class Dashboard < ActiveRecord::Base
 
   def custom_events_tableized
     messages = self.events.where("events.created_at" => @start_time.utc..@end_time.utc)
-    BotUser.with_events(messages.select(:bot_user_id))
+    BotUser.with_events(messages.select(:bot_user_id), messages.pluck(:id))
   end
 
   def messages_from_bot_collection
