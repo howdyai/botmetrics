@@ -56,6 +56,7 @@ gem 'json-stream',              '~> 0.2.1', require: 'json/stream'
 gem 'clockwork'
 
 gem 'font_assets',              '~> 0.1.12'
+gem 'sitemap_generator',        '~> 5.1.0'
 
 group :development do
   gem 'foreman',                  '~> 0.82.0'
