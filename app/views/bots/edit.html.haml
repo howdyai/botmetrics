@@ -29,8 +29,8 @@
       = link_to 'Invite Team Member', new_user_invitation_path, class: 'btn btn-success invite-teammember'
       .add-teammember
         = simple_form_for User.new, as: :invite, url: user_invitation_path, method: :post do |f|
-          = f.input :email, label: "Your New Team Member's Email", required: true
           = f.input :full_name, label: "Your New Team Member's Full Name", required: true
+          = f.input :email, label: "Your New Team Member's Email", required: true
           = f.input :timezone, required: true, label: "Your New Team Member's Timezone", as: :time_zone, default: current_user.timezone
           = f.input :bot_id, required: true, input_html: { value: @bot.uid }, as: :hidden
           = f.submit 'Invite Team Member'
