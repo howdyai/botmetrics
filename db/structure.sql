@@ -912,6 +912,13 @@ CREATE INDEX index_events_on_bot_user_id ON events USING btree (bot_user_id);
 
 
 --
+-- Name: index_events_on_event_type; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX index_events_on_event_type ON events USING btree (event_type);
+
+
+--
 -- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -1284,4 +1291,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160829225652');
 INSERT INTO schema_migrations (version) VALUES ('20160830132256');
 
 INSERT INTO schema_migrations (version) VALUES ('20160902183523');
+
+INSERT INTO schema_migrations (version) VALUES ('20160902224101');
 
