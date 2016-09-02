@@ -38,14 +38,18 @@ class Bot < ActiveRecord::Base
 
   def create_default_dashboards_with!(owner)
     Dashboard.const_get(:"DEFAULT_#{self.provider.upcase}_DASHBOARDS").each do |type|
-      self.dashboards.create!(
-        name: type.titleize,
-        dashboard_type: type,
-        bot: self,
-        user: owner,
-        provider: self.provider,
-        default: true
-      )
+      if self.dashboards.find_by(dashboard_type: type).blank?
+        self.dashboards.create!(
+          name: type.titleize,
+          dashboard_type: type,
+          bot: self,
+          user: owner,
+          provider: self.provider,
+          default: true
+        )
+
+        puts "Created Dashboard: #{type.titleize} for #{self.name} #{self.owners.map(&:email)}"
+      end
     end
   end
 

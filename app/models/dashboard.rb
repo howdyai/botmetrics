@@ -2,7 +2,7 @@ class Dashboard < ActiveRecord::Base
   include WithUidUniqueness
 
   DEFAULT_SLACK_DASHBOARDS    = %w(bots-installed bots-uninstalled new-users messages messages-to-bot messages-from-bot)
-  DEFAULT_FACEBOOK_DASHBOARDS = %w(new-users messages-to-bot messages-from-bot)
+  DEFAULT_FACEBOOK_DASHBOARDS = %w(new-users messages-to-bot messages-from-bot user-actions)
   DEFAULT_KIK_DASHBOARDS      = %w(new-users messages-to-bot messages-from-bot)
 
   validates_presence_of :name, :bot_id, :user_id, :provider, :dashboard_type
@@ -35,13 +35,14 @@ class Dashboard < ActiveRecord::Base
 
     if group_by == 'all-time'
       @data = case dashboard_type
-             when 'bots-installed'    then  new_bots_collection.count
-             when 'bots-uninstalled'  then  disabled_bots_collection.count
-             when 'new-users'         then  new_users_collection.count
-             when 'messages'          then  all_messages_collection.count
-             when 'messages-to-bot'   then  messages_to_bot_collection.count
-             when 'messages-from-bot' then  messages_from_bot_collection.count
-             when 'custom'            then  custom_events_collection.count
+             when 'bots-installed'      then  new_bots_collection.count
+             when 'bots-uninstalled'    then  disabled_bots_collection.count
+             when 'new-users'           then  new_users_collection.count
+             when 'messages'            then  all_messages_collection.count
+             when 'messages-to-bot'     then  messages_to_bot_collection.count
+             when 'messages-from-bot'   then  messages_from_bot_collection.count
+             when 'user-actions'        then  messaging_postbacks_collection.count
+             when 'custom'              then  custom_events_collection.count
              end
     else
       func = case group_by
@@ -51,13 +52,14 @@ class Dashboard < ActiveRecord::Base
              end
 
       @data = case dashboard_type
-              when 'bots-installed'    then send(func, new_bots_collection)
-              when 'bots-uninstalled'  then send(func, disabled_bots_collection)
-              when 'new-users'         then send(func, new_users_collection, 'bot_users.created_at')
-              when 'messages'          then send(func, all_messages_collection)
-              when 'messages-to-bot'   then send(func, messages_to_bot_collection)
-              when 'messages-from-bot' then send(func, messages_from_bot_collection)
-              when 'custom'            then send(func, custom_events_collection, 'events.created_at')
+              when 'bots-installed'      then send(func, new_bots_collection)
+              when 'bots-uninstalled'    then send(func, disabled_bots_collection)
+              when 'new-users'           then send(func, new_users_collection, 'bot_users.created_at')
+              when 'messages'            then send(func, all_messages_collection)
+              when 'messages-to-bot'     then send(func, messages_to_bot_collection)
+              when 'messages-from-bot'   then send(func, messages_from_bot_collection)
+              when 'user-actions'        then send(func, messaging_postbacks_collection)
+              when 'custom'              then send(func, custom_events_collection, 'events.created_at')
               end
 
       if self.should_tableize
@@ -68,6 +70,7 @@ class Dashboard < ActiveRecord::Base
                      when 'messages'          then all_messages_tableized.page(page)
                      when 'messages-from-bot' then messages_from_bot_tableized.page(page)
                      when 'messages-to-bot'   then messages_to_bot_tableized.page(page)
+                     when 'user-actions'      then messaging_postbacks_tableized.page(page)
                      when 'custom'            then custom_events_tableized.page(page)
                      end
       end
@@ -155,6 +158,15 @@ class Dashboard < ActiveRecord::Base
     when 'facebook'
       BotUser.with_messages_from_bot(messages.select(:bot_instance_id))
     end
+  end
+
+  def messaging_postbacks_collection
+    Event.where(bot_instance_id: instance_ids, event_type: 'messaging_postbacks')
+  end
+
+  def messaging_postbacks_tableized
+    messages = Event.with_messaging_postbacks(@instances, @start_time.utc, @end_time.utc)
+    BotUser.with_messaging_postbacks(messages.select(:bot_instance_id))
   end
 
   def custom_events_collection

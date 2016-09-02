@@ -37,4 +37,10 @@ class Event < ActiveRecord::Base
           is_from_bot: true,
           created_at: start_time..end_time)
   end
+
+  def self.with_messaging_postbacks(instances, start_time, end_time)
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'messaging_postbacks',
+          created_at: start_time..end_time)
+  end
 end
