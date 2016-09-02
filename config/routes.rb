@@ -56,5 +56,6 @@ Rails.application.routes.draw do
 
   unless Rails.env.production?
     mount SlackApiMocks, at: "/slack_api_mocks"
+    mount FacebookApiMocks, at: "/facebook_api_mocks"
   end
 end
