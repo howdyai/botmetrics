@@ -20,8 +20,8 @@
     - if @dashboard.dashboard_type == 'custom'
       .custom-header
         %h3
-          Message Matching Criteria:
-          %pre= @dashboard.regex
+          Messages Matching:
+          %pre= "\"#{@dashboard.regex}\""
     .col-md-123.col-sm-12.col-xs-12.graph-container
       = line_chart @dashboard.data, solo_chartjs_opts
       = render 'table', dashboard: @dashboard
