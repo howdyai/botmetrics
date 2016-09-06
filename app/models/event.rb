@@ -44,10 +44,15 @@ class Event < ActiveRecord::Base
           created_at: start_time..end_time)
   end
 
-  def self.with_message_subtype(instances, start_time, end_time, type)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'message',
-          created_at: start_time..end_time).
-    where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
+  def self.with_message_subtype(instances, start_time, end_time, type, provider)
+    relation = where(bot_instance_id: instances.select(:id),
+                     event_type: 'message',
+                     created_at: start_time..end_time)
+    case provider
+    when 'facebook'
+      relation.where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
+    when 'kik'
+      relation.where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = ?", type)
+    end
   end
 end

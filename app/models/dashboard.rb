@@ -3,7 +3,7 @@ class Dashboard < ActiveRecord::Base
 
   DEFAULT_SLACK_DASHBOARDS    = %w(bots-installed bots-uninstalled new-users messages messages-to-bot messages-from-bot)
   DEFAULT_FACEBOOK_DASHBOARDS = %w(new-users messages-to-bot messages-from-bot user-actions image-uploaded audio-uploaded video-uploaded file-uploaded location-sent)
-  DEFAULT_KIK_DASHBOARDS      = %w(new-users messages-to-bot messages-from-bot)
+  DEFAULT_KIK_DASHBOARDS      = %w(new-users messages-to-bot messages-from-bot image-uploaded video-uploaded link-uploaded scanned-data sticker-uploaded friend-picker-chosen)
 
   validates_presence_of :name, :bot_id, :user_id, :provider, :dashboard_type
   validates_uniqueness_of :uid
@@ -35,19 +35,23 @@ class Dashboard < ActiveRecord::Base
 
     if group_by == 'all-time'
       @data = case dashboard_type
-             when 'bots-installed'      then  new_bots_collection.count
-             when 'bots-uninstalled'    then  disabled_bots_collection.count
-             when 'new-users'           then  new_users_collection.count
-             when 'messages'            then  all_messages_collection.count
-             when 'messages-to-bot'     then  messages_to_bot_collection.count
-             when 'messages-from-bot'   then  messages_from_bot_collection.count
-             when 'user-actions'        then  messaging_postbacks_collection.count
-             when 'image-uploaded'      then  image_uploaded_collection.count
-             when 'video-uploaded'      then  video_uploaded_collection.count
-             when 'audio-uploaded'      then  audio_uploaded_collection.count
-             when 'file-uploaded'       then  file_uploaded_collection.count
-             when 'location-sent'       then  location_sent_collection.count
-             when 'custom'              then  custom_events_collection.count
+             when 'bots-installed'       then  new_bots_collection.count
+             when 'bots-uninstalled'     then  disabled_bots_collection.count
+             when 'new-users'            then  new_users_collection.count
+             when 'messages'             then  all_messages_collection.count
+             when 'messages-to-bot'      then  messages_to_bot_collection.count
+             when 'messages-from-bot'    then  messages_from_bot_collection.count
+             when 'user-actions'         then  messaging_postbacks_collection.count
+             when 'image-uploaded'       then  image_uploaded_collection.count
+             when 'video-uploaded'       then  video_uploaded_collection.count
+             when 'audio-uploaded'       then  audio_uploaded_collection.count
+             when 'link-uploaded'        then  link_uploaded_collection.count
+             when 'sticker-uploaded'     then  sticker_uploaded_collection.count
+             when 'scanned-data'         then  scanned_data_collection.count
+             when 'friend-picker-chosen' then  friend_picker_chosen_collection.count
+             when 'file-uploaded'        then  file_uploaded_collection.count
+             when 'location-sent'        then  location_sent_collection.count
+             when 'custom'               then  custom_events_collection.count
              end
     else
       func = case group_by
@@ -57,36 +61,44 @@ class Dashboard < ActiveRecord::Base
              end
 
       @data = case dashboard_type
-              when 'bots-installed'      then send(func, new_bots_collection)
-              when 'bots-uninstalled'    then send(func, disabled_bots_collection)
-              when 'new-users'           then send(func, new_users_collection, 'bot_users.created_at')
-              when 'messages'            then send(func, all_messages_collection)
-              when 'messages-to-bot'     then send(func, messages_to_bot_collection)
-              when 'messages-from-bot'   then send(func, messages_from_bot_collection)
-              when 'user-actions'        then send(func, messaging_postbacks_collection)
-              when 'image-uploaded'      then send(func, image_uploaded_collection)
-              when 'video-uploaded'      then send(func, video_uploaded_collection)
-              when 'audio-uploaded'      then send(func, audio_uploaded_collection)
-              when 'file-uploaded'       then send(func, file_uploaded_collection)
-              when 'location-sent'       then send(func, location_sent_collection)
-              when 'custom'              then send(func, custom_events_collection, 'events.created_at')
+              when 'bots-installed'       then send(func, new_bots_collection)
+              when 'bots-uninstalled'     then send(func, disabled_bots_collection)
+              when 'new-users'            then send(func, new_users_collection, 'bot_users.created_at')
+              when 'messages'             then send(func, all_messages_collection)
+              when 'messages-to-bot'      then send(func, messages_to_bot_collection)
+              when 'messages-from-bot'    then send(func, messages_from_bot_collection)
+              when 'user-actions'         then send(func, messaging_postbacks_collection)
+              when 'image-uploaded'       then send(func, image_uploaded_collection)
+              when 'video-uploaded'       then send(func, video_uploaded_collection)
+              when 'audio-uploaded'       then send(func, audio_uploaded_collection)
+              when 'link-uploaded'        then send(func, link_uploaded_collection)
+              when 'sticker-uploaded'     then send(func, sticker_uploaded_collection)
+              when 'scanned-data'         then send(func, scanned_data_collection)
+              when 'friend-picker-chosen' then send(func, friend_picker_chosen_collection)
+              when 'file-uploaded'        then send(func, file_uploaded_collection)
+              when 'location-sent'        then send(func, location_sent_collection)
+              when 'custom'               then send(func, custom_events_collection, 'events.created_at')
               end
 
       if self.should_tableize
         @tableized = case dashboard_type
-                     when 'bots-installed'    then new_bots_tableized.page(page)
-                     when 'bots-uninstalled'  then disabled_bots_tableized.page(page)
-                     when 'new-users'         then new_users_tableized.page(page)
-                     when 'messages'          then all_messages_tableized.page(page)
-                     when 'messages-from-bot' then messages_from_bot_tableized.page(page)
-                     when 'messages-to-bot'   then messages_to_bot_tableized.page(page)
-                     when 'user-actions'      then messaging_postbacks_tableized.page(page)
-                     when 'image-uploaded'    then message_subtype_tableized('image').page(page)
-                     when 'video-uploaded'    then message_subtype_tableized('video').page(page)
-                     when 'audio-uploaded'    then message_subtype_tableized('audio').page(page)
-                     when 'file-uploaded'     then message_subtype_tableized('file').page(page)
-                     when 'location-sent'     then message_subtype_tableized('location').page(page)
-                     when 'custom'            then custom_events_tableized.page(page)
+                     when 'bots-installed'       then new_bots_tableized.page(page)
+                     when 'bots-uninstalled'     then disabled_bots_tableized.page(page)
+                     when 'new-users'            then new_users_tableized.page(page)
+                     when 'messages'             then all_messages_tableized.page(page)
+                     when 'messages-from-bot'    then messages_from_bot_tableized.page(page)
+                     when 'messages-to-bot'      then messages_to_bot_tableized.page(page)
+                     when 'user-actions'         then messaging_postbacks_tableized.page(page)
+                     when 'image-uploaded'       then message_subtype_tableized((self.provider == 'facebook') ? 'image' : 'picture').page(page)
+                     when 'video-uploaded'       then message_subtype_tableized('video').page(page)
+                     when 'audio-uploaded'       then message_subtype_tableized('audio').page(page)
+                     when 'link-uploaded'        then message_subtype_tableized('link').page(page)
+                     when 'sticker-uploaded'     then message_subtype_tableized('sticker').page(page)
+                     when 'scanned-data'         then message_subtype_tableized('scan-data').page(page)
+                     when 'friend-picker-chosen' then message_subtype_tableized('friend-picker').page(page)
+                     when 'file-uploaded'        then message_subtype_tableized('file').page(page)
+                     when 'location-sent'        then message_subtype_tableized('location').page(page)
+                     when 'custom'               then custom_events_tableized.page(page)
                      end
       end
     end
@@ -184,7 +196,12 @@ class Dashboard < ActiveRecord::Base
   end
 
   def image_uploaded_collection
-    message_subtype_collection('image')
+    type = case self.provider
+           when 'facebook' then 'image'
+           when 'kik'      then 'picture'
+           end
+
+    message_subtype_collection(type)
   end
 
   def audio_uploaded_collection
@@ -199,9 +216,25 @@ class Dashboard < ActiveRecord::Base
     message_subtype_collection('file')
   end
 
+  def link_uploaded_collection
+    message_subtype_collection('link')
+  end
+
+  def scanned_data_collection
+    message_subtype_collection('scan-data')
+  end
+
+  def sticker_uploaded_collection
+    message_subtype_collection('sticker')
+  end
+
+  def friend_picker_chosen_collection
+    message_subtype_collection('friend-picker')
+  end
+
   def message_subtype_tableized(type)
-    messages = Event.with_messaging_postbacks(@instances, @start_time.utc, @end_time.utc)
-    BotUser.with_message_subtype(messages.select(:bot_instance_id), type)
+    messages = Event.with_message_subtype(@instances, @start_time.utc, @end_time.utc, type, self.provider)
+    BotUser.with_message_subtype(messages.select(:bot_instance_id), type, self.provider)
   end
 
   def messaging_postbacks_tableized
@@ -263,7 +296,12 @@ class Dashboard < ActiveRecord::Base
   end
 
   def message_subtype_collection(type)
-    Event.where(bot_instance_id: instance_ids, event_type: 'message').
-          where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
+    if self.provider == 'facebook'
+      Event.where(bot_instance_id: instance_ids, event_type: 'message').
+            where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
+    elsif self.provider == 'kik'
+      Event.where(bot_instance_id: instance_ids, event_type: 'message').
+            where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->'sub_type')::text = ?", type)
+    end
   end
 end

@@ -11,6 +11,18 @@ namespace :botmetrics do
     end
   end
 
+  desc "setup kik dashboards"
+  task :setup_kik_dashboards => :environment do
+    Bot.where(provider: 'kik').find_each do |bot|
+      owner = bot.owners.first
+      if owner.blank?
+        raise ArgumentError, "omg owner blank for bot: #{bot.inspect}"
+      end
+
+      bot.create_default_dashboards_with!(owner)
+    end
+  end
+
   desc "backfill_mixpanel_first_received_event_at"
   task :backfill_mixpanel_first_received_event_at => :environment do
     Bot.where(first_received_event_at: nil).find_each do |bot|
