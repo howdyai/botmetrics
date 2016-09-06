@@ -162,7 +162,7 @@ class Dashboard < ActiveRecord::Base
     case self.bot.provider
     when 'slack'
       @instances.with_messages_to_bot(messages.select(:bot_instance_id))
-    when 'facebook'
+    when 'facebook', 'kik'
       BotUser.with_messages_to_bot(messages.select(:bot_instance_id))
     end
   end
@@ -182,7 +182,7 @@ class Dashboard < ActiveRecord::Base
     case self.bot.provider
     when 'slack'
       @instances.with_messages_from_bot(messages.select(:bot_instance_id))
-    when 'facebook'
+    when 'facebook', 'kik'
       BotUser.with_messages_from_bot(messages.select(:bot_instance_id))
     end
   end
