@@ -43,4 +43,11 @@ class Event < ActiveRecord::Base
           event_type: 'messaging_postbacks',
           created_at: start_time..end_time)
   end
+
+  def self.with_message_subtype(instances, start_time, end_time, type)
+    where(bot_instance_id: instances.select(:id),
+          event_type: 'message',
+          created_at: start_time..end_time).
+    where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
+  end
 end

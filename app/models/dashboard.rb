@@ -2,7 +2,7 @@ class Dashboard < ActiveRecord::Base
   include WithUidUniqueness
 
   DEFAULT_SLACK_DASHBOARDS    = %w(bots-installed bots-uninstalled new-users messages messages-to-bot messages-from-bot)
-  DEFAULT_FACEBOOK_DASHBOARDS = %w(new-users messages-to-bot messages-from-bot user-actions)
+  DEFAULT_FACEBOOK_DASHBOARDS = %w(new-users messages-to-bot messages-from-bot user-actions image-uploaded audio-uploaded video-uploaded file-uploaded location-sent)
   DEFAULT_KIK_DASHBOARDS      = %w(new-users messages-to-bot messages-from-bot)
 
   validates_presence_of :name, :bot_id, :user_id, :provider, :dashboard_type
@@ -42,6 +42,11 @@ class Dashboard < ActiveRecord::Base
              when 'messages-to-bot'     then  messages_to_bot_collection.count
              when 'messages-from-bot'   then  messages_from_bot_collection.count
              when 'user-actions'        then  messaging_postbacks_collection.count
+             when 'image-uploaded'      then  image_uploaded_collection.count
+             when 'video-uploaded'      then  video_uploaded_collection.count
+             when 'audio-uploaded'      then  audio_uploaded_collection.count
+             when 'file-uploaded'       then  file_uploaded_collection.count
+             when 'location-sent'       then  location_sent_collection.count
              when 'custom'              then  custom_events_collection.count
              end
     else
@@ -59,6 +64,11 @@ class Dashboard < ActiveRecord::Base
               when 'messages-to-bot'     then send(func, messages_to_bot_collection)
               when 'messages-from-bot'   then send(func, messages_from_bot_collection)
               when 'user-actions'        then send(func, messaging_postbacks_collection)
+              when 'image-uploaded'      then send(func, image_uploaded_collection)
+              when 'video-uploaded'      then send(func, video_uploaded_collection)
+              when 'audio-uploaded'      then send(func, audio_uploaded_collection)
+              when 'file-uploaded'       then send(func, file_uploaded_collection)
+              when 'location-sent'       then send(func, location_sent_collection)
               when 'custom'              then send(func, custom_events_collection, 'events.created_at')
               end
 
@@ -71,6 +81,11 @@ class Dashboard < ActiveRecord::Base
                      when 'messages-from-bot' then messages_from_bot_tableized.page(page)
                      when 'messages-to-bot'   then messages_to_bot_tableized.page(page)
                      when 'user-actions'      then messaging_postbacks_tableized.page(page)
+                     when 'image-uploaded'    then message_subtype_tableized('image').page(page)
+                     when 'video-uploaded'    then message_subtype_tableized('video').page(page)
+                     when 'audio-uploaded'    then message_subtype_tableized('audio').page(page)
+                     when 'file-uploaded'     then message_subtype_tableized('file').page(page)
+                     when 'location-sent'     then message_subtype_tableized('location').page(page)
                      when 'custom'            then custom_events_tableized.page(page)
                      end
       end
@@ -164,6 +179,31 @@ class Dashboard < ActiveRecord::Base
     Event.where(bot_instance_id: instance_ids, event_type: 'messaging_postbacks')
   end
 
+  def location_sent_collection
+    message_subtype_collection('location')
+  end
+
+  def image_uploaded_collection
+    message_subtype_collection('image')
+  end
+
+  def audio_uploaded_collection
+    message_subtype_collection('audio')
+  end
+
+  def video_uploaded_collection
+    message_subtype_collection('video')
+  end
+
+  def file_uploaded_collection
+    message_subtype_collection('file')
+  end
+
+  def message_subtype_tableized(type)
+    messages = Event.with_messaging_postbacks(@instances, @start_time.utc, @end_time.utc)
+    BotUser.with_message_subtype(messages.select(:bot_instance_id), type)
+  end
+
   def messaging_postbacks_tableized
     messages = Event.with_messaging_postbacks(@instances, @start_time.utc, @end_time.utc)
     BotUser.with_messaging_postbacks(messages.select(:bot_instance_id))
@@ -220,5 +260,10 @@ class Dashboard < ActiveRecord::Base
 
   def default_params
     @_default_params ||= { time_zone: self.timezone }
+  end
+
+  def message_subtype_collection(type)
+    Event.where(bot_instance_id: instance_ids, event_type: 'message').
+          where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
   end
 end

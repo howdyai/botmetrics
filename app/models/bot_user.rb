@@ -95,6 +95,15 @@ class BotUser < ActiveRecord::Base
     order("last_event_at DESC NULLS LAST")
   end
 
+  def self.with_message_subtype(associated_bot_instance_ids, type)
+    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
+    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' " +
+          "AND (event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = '#{type}' " +
+          "GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
+    where("bot_users.bot_instance_id IN (?)", associated_bot_instance_ids).
+    order("last_event_at DESC NULLS LAST")
+  end
+
   def self.with_events(associated_bot_user_ids, event_ids)
     select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
     joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.id IN (#{event_ids.join(',')}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").

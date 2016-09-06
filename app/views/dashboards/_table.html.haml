@@ -6,11 +6,5 @@
   = render "dashboards/providers/table_new_users_#{dashboard.provider}", tableized: dashboard.tableized
 - elsif dashboard.dashboard_type == 'messages'
   = render 'table_all_messages', tableized: dashboard.tableized
-- elsif dashboard.dashboard_type == 'messages-to-bot'
-  = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
-- elsif dashboard.dashboard_type == 'messages-from-bot'
-  = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
-- elsif dashboard.dashboard_type == 'user-actions'
-  = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
-- elsif dashboard.dashboard_type == 'custom'
+- else
   = render "dashboards/providers/table_messages_to_from_bot_#{dashboard.provider}", tableized: dashboard.tableized
