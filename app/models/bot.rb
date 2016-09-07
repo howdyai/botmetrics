@@ -40,7 +40,7 @@ class Bot < ActiveRecord::Base
     Dashboard.const_get(:"DEFAULT_#{self.provider.upcase}_DASHBOARDS").each do |type|
       if self.dashboards.find_by(dashboard_type: type).blank?
         self.dashboards.create!(
-          name: type.titleize,
+          name: Dashboard.name_for(type),
           dashboard_type: type,
           bot: self,
           user: owner,

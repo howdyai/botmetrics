@@ -304,4 +304,15 @@ class Dashboard < ActiveRecord::Base
             where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->'sub_type')::text = ?", type)
     end
   end
+
+  def self.name_for(type)
+    case type
+    when 'image-uploaded' then 'Image Uploads'
+    when 'audio-uploaded' then 'Audio Uploads'
+    when 'video-uploaded' then 'Video Uploads'
+    when 'file-uploaded'  then 'File Uploads'
+    when 'location-sent'  then 'Locations Shared'
+    else type.titleize
+    end
+  end
 end
