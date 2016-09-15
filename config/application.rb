@@ -13,7 +13,7 @@ require 'active_job/railtie'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module BotMetrics
+module Botmetrics
   class Application < Rails::Application
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
@@ -60,4 +60,4 @@ module BotMetrics
   end
 end
 
-Settings = BotMetrics::Application.config.settings
+Settings = Botmetrics::Application.config.settings
