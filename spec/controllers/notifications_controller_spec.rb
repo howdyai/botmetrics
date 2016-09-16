@@ -19,19 +19,12 @@ RSpec.describe NotificationsController do
     context 'with notifications' do
       before do
         create(:notification, bot: bot)
-        allow(TrackMixpanelEventJob).to receive(:perform_async)
       end
 
       it 'works' do
         do_request
 
         expect(response).to be_success
-      end
-
-      it 'tracks the event on Mixpanel' do
-        do_request
-
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Notifications Index Page', user.id)
       end
     end
 
@@ -48,8 +41,6 @@ RSpec.describe NotificationsController do
     let!(:notification) { create(:notification, bot: bot, query_set: query_set) }
     let!(:query_set)    { build(:query_set, :with_slack_queries, bot: bot) }
 
-    before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
-
     def do_request
       get :show, bot_id: bot.uid, id: notification.uid
     end
@@ -58,12 +49,6 @@ RSpec.describe NotificationsController do
       do_request
 
       expect(response).to be_success
-    end
-
-    it 'tracks the event on Mixpanel' do
-      do_request
-
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with 'Viewed Notifications Show Page', user.id
     end
   end
 

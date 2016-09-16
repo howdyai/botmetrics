@@ -6,7 +6,6 @@ class BotInstancesController < ApplicationController
 
   def new
     @instance = @bot.instances.build
-    TrackMixpanelEventJob.perform_async('Viewed New Bot Instance Page', current_user.id)
   end
 
   def create
@@ -17,7 +16,6 @@ class BotInstancesController < ApplicationController
     end
 
     if @instance.save
-      TrackMixpanelEventJob.perform_async('Started Bot Instance Creation', current_user.id)
       SetupBotJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|
@@ -38,7 +36,6 @@ class BotInstancesController < ApplicationController
     end
 
     @instance = @bot.instances.find(params[:id])
-    TrackMixpanelEventJob.perform_async('Viewed Edit Bot Instance Page', current_user.id)
   end
 
   def update
@@ -49,7 +46,6 @@ class BotInstancesController < ApplicationController
     @instance = @bot.instances.find(params[:id])
 
     if @instance.update_attributes(update_instance_params)
-      TrackMixpanelEventJob.perform_async('Started Bot Instance Update', current_user.id)
       SetupBotJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|

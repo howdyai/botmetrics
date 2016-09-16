@@ -26,20 +26,14 @@ class EditNotificationController < ApplicationController
     @tableized = FilterBotUsersService.new(@query_set).scope.page(params[:page])
 
     session[:edit_notification_query_set] = @query_set.to_form_params
-
-    mixpanel_track('Viewed Edit Notification Step 1', notification_id: @notification.id)
   end
 
   def step_2
     @notification.assign_attributes(model_params)
-
-    mixpanel_track('Viewed Edit Notification Step 2', notification_id: @notification.id)
   end
 
   def step_3
     @notification.assign_attributes(model_params)
-
-    mixpanel_track('Viewed Edit Notification Step 3', notification_id: @notification.id)
   end
 
   def update
@@ -48,7 +42,6 @@ class EditNotificationController < ApplicationController
 
     if @query_set.present? && @query_set.valid? && @notification.save(context: :schedule)
       session.delete(:edit_notification_query_set)
-      mixpanel_track('Updated Notification', notification_id: @notification.id)
 
       send_or_queue_and_redirect
     else
@@ -106,9 +99,5 @@ class EditNotificationController < ApplicationController
 
       redirect_to bot_notifications_path(@bot), notice: 'This notification has been queued.'
     end
-  end
-
-  def mixpanel_track(event, options={})
-    TrackMixpanelEventJob.perform_async(event, current_user.id, options)
   end
 end

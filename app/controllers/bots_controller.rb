@@ -6,7 +6,6 @@ class BotsController < ApplicationController
 
   def new
     @bot = current_user.bots.build
-    TrackMixpanelEventJob.perform_async('Viewed New Bot Page', current_user.id)
 
     render :new, layout: 'devise'
   end
@@ -28,7 +27,6 @@ class BotsController < ApplicationController
       if bc.persisted?
         @bot.create_default_dashboards_with!(current_user)
         redirect_to bot_path(@bot)
-        TrackMixpanelEventJob.perform_async('Created Bot', current_user.id)
       else
         @bot.destroy
         @bot.errors.base.add 'unexpected error while creating your bot'
@@ -40,7 +38,6 @@ class BotsController < ApplicationController
   end
 
   def edit
-    TrackMixpanelEventJob.perform_async('Viewed Edit Bot Page', current_user.id)
   end
 
   def update
@@ -52,8 +49,6 @@ class BotsController < ApplicationController
       else
         redirect_to bot_path(@bot)
       end
-
-      TrackMixpanelEventJob.perform_async('Updated Bot', current_user.id)
     else
       render :edit
     end
@@ -72,7 +67,6 @@ class BotsController < ApplicationController
 
   def verifying_webhook
     ValidateWebhookAndUpdatesJob.perform_in(0.5.seconds, @bot.id)
-    TrackMixpanelEventJob.perform_async('Viewed Verifying Webhook Page', current_user.id)
   end
 
   def webhook_events

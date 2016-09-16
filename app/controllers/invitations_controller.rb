@@ -17,18 +17,9 @@ class InvitationsController < Devise::InvitationsController
   def update
     super do |resource|
       if resource.errors.empty?
-        mixpanel_properties = @mixpanel_attributes.dup
-        mixpanel_properties.delete('distinct_id')
-        mixpanel_properties['invited_by'] = resource.invited_by.id
-
-        resource.mixpanel_properties = mixpanel_properties
         resource.set_api_key!  if resource.api_key.blank?
         resource.signed_up_at = Time.now if resource.signed_up_at.blank?
         resource.save
-
-        IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
-        TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
-        NotifyAdminOnSlackJob.perform_async(resource.id, title: 'User Signed Up')
 
         resource.bot_collaborators.where(confirmed_at: nil).update_all(confirmed_at: Time.now)
       end
@@ -42,8 +33,6 @@ class InvitationsController < Devise::InvitationsController
                               user: invited_user,
                               collaborator_type: 'member',
                               confirmed_at: invited_user.signed_up_at.present? ? Time.now : nil)
-
-      TrackMixpanelEventJob.perform_async('Invited Collaborator to Bot', current_user.id, bot_id: bot.uid)
 
       if invited_user.signed_up_at.blank?
         invited_user.deliver_invitation

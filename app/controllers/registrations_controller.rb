@@ -2,18 +2,9 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
       if resource.persisted?
-        mixpanel_properties = @mixpanel_attributes.dup
-        mixpanel_properties.delete('distinct_id')
-
-        resource.mixpanel_properties = mixpanel_properties
         resource.set_api_key!  if resource.api_key.blank?
         resource.signed_up_at = Time.now if resource.signed_up_at.blank?
         resource.save
-
-        IdentifyMixpanelUserJob.perform_async(resource.id, @mixpanel_attributes)
-        TrackMixpanelEventJob.perform_async('User Signed Up', resource.id, mixpanel_properties)
-        NotifyAdminOnSlackJob.perform_async(resource.id, title: 'User Signed Up')
-        InviteToSlackJob.perform_async(resource.id)
       end
     end
   end

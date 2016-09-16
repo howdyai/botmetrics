@@ -21,7 +21,6 @@ RSpec.describe InvitationsController, type: :controller do
     end
 
     before do
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
       allow(InvitesMailer).to receive(:invite_to_collaborate).and_return(message_delivery)
       allow(message_delivery).to receive(:deliver_later)
       sign_in user
@@ -57,11 +56,6 @@ RSpec.describe InvitationsController, type: :controller do
         expect(bc.collaborator_type).to eql 'member'
       end
 
-      it 'should track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
-      end
-
       it 'does not send the email meant for an existing user' do
         do_request
         expect(message_delivery).to_not have_received(:deliver_later)
@@ -88,11 +82,6 @@ RSpec.describe InvitationsController, type: :controller do
         expect(bc.collaborator_type).to eql 'member'
       end
 
-      it 'should track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Invited Collaborator to Bot', user.id, bot_id: bot.uid)
-      end
-
       it 'should send the email meant for an existing user' do
         do_request
         expect(InvitesMailer).to have_received(:invite_to_collaborate).with(User.last.id, user.id, bot.id)
@@ -114,10 +103,6 @@ RSpec.describe InvitationsController, type: :controller do
       user.send(:generate_invitation_token)
       @invitation_token = user.instance_variable_get('@raw_invitation_token')
       user.save(validate: false)
-
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
-      allow(IdentifyMixpanelUserJob).to receive(:perform_async)
-      allow(NotifyAdminOnSlackJob).to receive(:perform_async)
     end
 
     def do_request
@@ -136,21 +121,6 @@ RSpec.describe InvitationsController, type: :controller do
         do_request
         user.reload
       }.to change(user, :signed_up_at).from(nil)
-    end
-
-    it 'should identify the user on Mixpanel' do
-      do_request
-      expect(IdentifyMixpanelUserJob).to have_received(:perform_async).with(user.id, {})
-    end
-
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('User Signed Up', user.id, {'invited_by' => inviting_user.id})
-    end
-
-    it 'should notify admins on Slack' do
-      do_request
-      expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(user.id, title: 'User Signed Up')
     end
   end
 end

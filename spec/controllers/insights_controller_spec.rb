@@ -14,11 +14,7 @@ RSpec.describe InsightsController do
       let(:params) { {} }
 
       it 'success' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with('Viewed Analytics Index Page', user.id)
-
         do_request
-
         expect(response).to be_success
       end
     end
@@ -28,15 +24,7 @@ RSpec.describe InsightsController do
       let(:params) { { query_set: queries_attributes } }
 
       it 'filters' do
-        allow(TrackMixpanelEventJob).to receive(:perform_async).
-          with(
-            'Viewed Analytics Index Page and Performed Queries',
-            user.id,
-            query_attributes: queries_attributes
-          )
-
         do_request
-
         expect(response).to be_success
       end
     end

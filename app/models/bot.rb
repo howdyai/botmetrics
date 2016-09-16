@@ -47,8 +47,6 @@ class Bot < ActiveRecord::Base
           provider: self.provider,
           default: true
         )
-
-        puts "Created Dashboard: #{type.titleize} for #{self.name} #{self.owners.map(&:email)}"
       end
     end
   end

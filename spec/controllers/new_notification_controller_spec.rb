@@ -9,8 +9,6 @@ RSpec.describe NewNotificationController do
     dt.strftime('%b %d, %Y %l:%M %p')
   end
 
-  before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
-
   describe '#step_1' do
     def do_request
       get :step_1, { bot_id: bot.to_param }.merge(params)
@@ -23,7 +21,6 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
-        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -35,7 +32,6 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
-        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
 
       it 'sets session' do
@@ -76,7 +72,6 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
-        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -103,7 +98,6 @@ RSpec.describe NewNotificationController do
         do_request
 
         expect(response).to be_success
-        expect(TrackMixpanelEventJob).to have_received(:perform_async)
       end
     end
 
@@ -133,7 +127,6 @@ RSpec.describe NewNotificationController do
       before do
         allow(SendNotificationJob).to    receive(:perform_async)
         allow(EnqueueNotificationJob).to receive(:perform_async)
-        allow(TrackMixpanelEventJob).to  receive(:perform_async)
       end
 
       context 'send now' do
@@ -152,7 +145,6 @@ RSpec.describe NewNotificationController do
 
           expect(Notification.last.recurring).to be_falsey
           expect(response).to redirect_to bot_notification_path(bot, Notification.last)
-          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do
@@ -190,7 +182,6 @@ RSpec.describe NewNotificationController do
           expect(notification.recurring).to be_falsey
 
           expect(response).to redirect_to bot_notifications_path(bot)
-          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do
@@ -229,7 +220,6 @@ RSpec.describe NewNotificationController do
           expect(notification.recurring).to be_truthy
 
           expect(response).to redirect_to bot_notifications_path(bot)
-          expect(TrackMixpanelEventJob).to have_received(:perform_async)
         end
 
         it 'clears the session' do

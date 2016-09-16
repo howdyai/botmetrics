@@ -14,13 +14,6 @@ RSpec.describe RegistrationsController do
       }
     end
 
-    before do
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
-      allow(IdentifyMixpanelUserJob).to receive(:perform_async)
-      allow(NotifyAdminOnSlackJob).to receive(:perform_async)
-      allow(InviteToSlackJob).to receive(:perform_async)
-    end
-
     def do_request
       post :create, user: user_attributes
     end
@@ -41,21 +34,6 @@ RSpec.describe RegistrationsController do
       do_request
       bot = Bot.last
       expect(response).to redirect_to new_bot_path
-    end
-
-    it 'should identify the user on Mixpanel' do
-      do_request
-      expect(IdentifyMixpanelUserJob).to have_received(:perform_async).with(User.last.id, {})
-    end
-
-    it 'should notify admins on Slack' do
-      do_request
-      expect(NotifyAdminOnSlackJob).to have_received(:perform_async).with(User.last.id, title: 'User Signed Up')
-    end
-
-    it 'should invite the user to Slack' do
-      do_request
-      expect(InviteToSlackJob).to have_received(:perform_async).with(User.last.id)
     end
   end
 end

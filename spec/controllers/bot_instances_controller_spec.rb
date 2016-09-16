@@ -10,8 +10,6 @@ RSpec.describe BotInstancesController do
       get :new, bot_id: bot.to_param
     end
 
-    before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
-
     it 'should render template :new' do
       do_request
       expect(response).to render_template :new
@@ -21,11 +19,6 @@ RSpec.describe BotInstancesController do
       do_request
       expect(assigns(:instance)).to_not be_nil
     end
-
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed New Bot Instance Page', user.id)
-    end
   end
 
   describe 'POST create' do
@@ -33,7 +26,6 @@ RSpec.describe BotInstancesController do
 
     before do
       allow(SetupBotJob).to receive(:perform_async)
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     shared_examples 'creates and sets up a bot' do
@@ -53,12 +45,6 @@ RSpec.describe BotInstancesController do
 
         instance = bot.instances.last
         expect(SetupBotJob).to have_received(:perform_async).with(instance.id, user.id)
-      end
-
-      it 'tracks the event on Mixpanel' do
-        do_request
-
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Started Bot Instance Creation', user.id)
       end
     end
 
@@ -119,8 +105,6 @@ RSpec.describe BotInstancesController do
       get :edit, bot_id: bot.to_param, id: instance.to_param
     end
 
-    before { allow(TrackMixpanelEventJob).to receive(:perform_async) }
-
     context "bot provider is facebook" do
       before { bot.update_attribute(:provider, 'facebook') }
 
@@ -132,11 +116,6 @@ RSpec.describe BotInstancesController do
       it "should set instance variable '@instance'" do
         do_request
         expect(assigns(:instance)).to_not be_nil
-      end
-
-      it 'should track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Edit Bot Instance Page', user.id)
       end
     end
 
@@ -155,7 +134,6 @@ RSpec.describe BotInstancesController do
     before do
       bot.update_attribute(:provider, 'facebook')
       allow(SetupBotJob).to receive(:perform_async)
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     shared_examples 'updates and sets up a bot' do
@@ -171,11 +149,6 @@ RSpec.describe BotInstancesController do
       it 'calls SetupBotJob' do
         do_request
         expect(SetupBotJob).to have_received(:perform_async).with(instance.id, user.id)
-      end
-
-      it 'tracks the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Started Bot Instance Update', user.id)
       end
     end
 

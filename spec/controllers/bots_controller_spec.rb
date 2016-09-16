@@ -6,7 +6,6 @@ RSpec.describe BotsController do
   describe 'GET new' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     def do_request
@@ -17,17 +16,11 @@ RSpec.describe BotsController do
       do_request
       expect(response).to render_template :new
     end
-
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed New Bot Page', user.id)
-    end
   end
 
   describe 'POST create' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     let!(:bot_params) { { name: 'My First Bot', provider: 'facebook', webhook_url: 'https://example.com/bot_metrics' } }
@@ -70,11 +63,6 @@ RSpec.describe BotsController do
       expect(response).to redirect_to bot_path(bot)
     end
 
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Created Bot', user.id)
-    end
-
     context 'with invalid params' do
       let!(:bot_params) { { name: '' } }
 
@@ -89,18 +77,12 @@ RSpec.describe BotsController do
         do_request
         expect(response).to render_template :new
       end
-
-      it 'should NOT track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
-      end
     end
   end
 
   describe 'GET show' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     def do_request
@@ -112,11 +94,6 @@ RSpec.describe BotsController do
         do_request
         expect(response).to redirect_to new_bot_instance_path(bot)
       end
-
-      it 'should NOT track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
-      end
     end
 
     context 'if there are bot instances (that are pending)' do
@@ -125,11 +102,6 @@ RSpec.describe BotsController do
       it 'should redirect to the new_bot_instance_path for the bot' do
         do_request
         expect(response).to redirect_to new_bot_instance_path(bot)
-      end
-
-      it 'should NOT track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
       end
     end
 
@@ -146,7 +118,6 @@ RSpec.describe BotsController do
   describe 'GET edit' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     def do_request
@@ -157,17 +128,11 @@ RSpec.describe BotsController do
       do_request
       expect(response).to render_template :edit
     end
-
-    it 'should track the event on Mixpanel' do
-      do_request
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Viewed Edit Bot Page', user.id)
-    end
   end
 
   describe 'PATCH update' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     let!(:bot_params) { { name: 'Nestor Dev', webhook_url: 'https://example.com' } }
@@ -187,12 +152,6 @@ RSpec.describe BotsController do
       do_request
 
       expect(response).to redirect_to bot_verifying_webhook_path(bot)
-    end
-
-    it 'should track the event on Mixpanel' do
-      do_request
-
-      expect(TrackMixpanelEventJob).to have_received(:perform_async).with('Updated Bot', user.id)
     end
 
     context 'without webhook url changes' do
@@ -219,18 +178,12 @@ RSpec.describe BotsController do
         do_request
         expect(response).to render_template :edit
       end
-
-      it 'should NOT track the event on Mixpanel' do
-        do_request
-        expect(TrackMixpanelEventJob).to_not have_received(:perform_async)
-      end
     end
   end
 
   describe 'GET verifying_webhook' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     def do_request
@@ -249,7 +202,6 @@ RSpec.describe BotsController do
   describe 'GET webhook_events' do
     before do
       sign_in user
-      allow(TrackMixpanelEventJob).to receive(:perform_async)
     end
 
     def do_request

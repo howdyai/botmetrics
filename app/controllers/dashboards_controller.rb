@@ -30,8 +30,6 @@ class DashboardsController < ApplicationController
       dashboard.group_by = @group_by
       dashboard.init!
     end
-
-    TrackMixpanelEventJob.perform_async('Viewed Bot Dashboard Page', current_user.id)
   end
 
   def show
@@ -44,7 +42,6 @@ class DashboardsController < ApplicationController
     @dashboard.should_tableize = true
 
     @dashboard.init!
-    TrackMixpanelEventJob.perform_async("Viewed #{@dashboard.name} Dashboard Page", current_user.id)
   end
 
   protected

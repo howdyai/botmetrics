@@ -5,8 +5,6 @@ class UsersController < ApplicationController
   def show
     @user = current_user
     @bot  = params[:bot_id].present? ? @user.bots.find_by(uid: params[:bot_id]) : @user.bots.first
-
-    TrackMixpanelEventJob.perform_async('Viewed User Profile Page', current_user.id)
   end
 
   def update
@@ -26,14 +24,12 @@ class UsersController < ApplicationController
     @user.save
 
     flash[:info] = "Regenerated your API Key!"
-    TrackMixpanelEventJob.perform_async('Regenerated API Key', current_user.id)
 
     redirect_to user_path(@user)
   end
 
   private
-
-    def model_params
-      params.require(:user).permit(:created_bot_instance, :disabled_bot_instance, :daily_reports)
-    end
+  def model_params
+    params.require(:user).permit(:created_bot_instance, :disabled_bot_instance, :daily_reports)
+  end
 end

@@ -38,7 +38,6 @@ class SetupBotJob < Job
 
       Relax::Bot.start!(@instance.instance_attributes['team_id'], @instance.token, namespace: @instance.uid)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
 
       Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
       NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", team: @instance.team_name, bot: @instance.bot.name, members: @instance.users.count)
@@ -49,7 +48,6 @@ class SetupBotJob < Job
       end
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: auth_info['error'])
     end
   end
 
@@ -68,9 +66,6 @@ class SetupBotJob < Job
       )
 
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: true}.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
-
-      NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", team: @instance.name, bot: @instance.bot.name, members: @instance.users.count)
     else
       error_msg = auth_info.dig('error', 'message')
 
@@ -81,7 +76,6 @@ class SetupBotJob < Job
       end
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: error_msg}.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: error_msg)
     end
   end
 
@@ -98,17 +92,13 @@ class SetupBotJob < Job
       )
 
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", { ok: true }.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: 'enabled')
-
       Alerts::CreatedBotInstanceJob.perform_async(@instance.id, @user.id)
-      NotifyAdminOnSlackJob.perform_async(@user.id, title: "New Team Signed Up for #{@instance.bot.name}", bot: @instance.bot.name, members: @instance.users.count)
     else
       error_msg = auth_info['error']
       @instance.update_attributes!(state: 'disabled', uid: nil)
       # @instance.events.create!(event_type: 'bot_disabled', provider: @instance.provider)
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", { ok: false, error: error_msg }.to_json)
-      TrackMixpanelEventJob.perform_async('Completed Bot Instance Creation', @user.id, state: error_msg)
     end
   end
 end
