@@ -1,7 +1,7 @@
 require 'uri'
 
 class Facebook
-  API_URL = ENV['FACEBOOK_API_URL']
+  API_URL = ENV['FACEBOOK_API_URL'] || 'https://graph.facebook.com/v2.6'
   OK = 200
   DELETED = 'deleted'
   INVALID_OAUTH_TOKEN = 'Invalid OAuth Access Token'

@@ -1,0 +1,40 @@
+{
+  "name": "Botmetrics",
+  "description": "Open Source Conversational Analytics",
+  "website": "https://www.getbotmetrics.com",
+  "repository": "https://github.com/botmetrics/botmetrics",
+  "keywords": ["rails", "slack", "messenger", "kik", "facebook", "bots", "telegram", "alexa"],
+  "scripts": {
+    "postdeploy": "bundle exec rake db:migrate db:seed",
+  }
+  "env": {
+    "RELAX_MUTEX_KEY": {
+      "description": "Redis Key used as a lock to decide whether to send events back to clients",
+      "value": "botmetrics_mutex_key"
+    },
+    "RELAX_BOTS_KEY": {
+      "description": "Redis Key used to store information about all Slack bots",
+      "value": "botmetrics_bots_key"
+    },
+    "RELAX_BOTS_PUBSUB": {
+      "description": "Redis Key used to receive PUBLISH messages from Relax clients",
+      "value": "botmetrics_bots_pubsub"
+    },
+    "RELAX_EVENTS_QUEUE": {
+      "description": "Redis Key used to receive events from Relax brokers",
+      "value": "botmetrics_events_queue"
+    },
+    "JSON_WEB_TOKEN_SECRET": {
+      "description": "Secret used to generate web tokens",
+      "generator": "secret"
+    },
+  },
+  "addons": [
+    "heroku-postgres",
+    "heroku-redis",
+    "new-relic",
+    "papertrail",
+    "sendgrid",
+    "rollbar"
+  ]
+}

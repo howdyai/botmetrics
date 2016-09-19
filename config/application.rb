@@ -38,13 +38,10 @@ module Botmetrics
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
-
     # load env variables
     Dotenv.load if Rails.env.test?
 
     config.settings                       = ActiveSupport::OrderedOptions.new
-    config.settings.mixpanel_token        = ENV['MIXPANEL_TOKEN']
-    config.settings.ga_account_id         = ENV['GA_ACCOUNT_ID']
     config.settings.pusher_api_key        = ENV['PUSHER_API_KEY']
     config.settings.pusher_secret         = ENV['PUSHER_SECRET']
     config.settings.pusher_app_id         = ENV['PUSHER_APP_ID']
@@ -53,10 +50,6 @@ module Botmetrics
     config.settings.rails_host            = ENV['RAILS_HOST']
     config.settings.on_premise            = ENV['ON_PREMISE']
     config.settings.letsencrypt_challenge = ENV['LETSENCRYPT_CHALLENGE']
-    config.settings.facebook_id           = ENV['FACEBOOK_ID']
-    config.settings.show_legacy_dashboards = ENV['SHOW_LEGACY_DASHBOARDS']
-    config.settings.slack_inviter_token   = ENV['SLACK_INVITER_TOKEN']
-    config.settings.olark_id              = ENV['OLARK_ID']
   end
 end
 

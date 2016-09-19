@@ -1,7 +1,7 @@
 require 'uri'
 
 class Slack
-  API_URL = ENV['SLACK_API_URL']
+  API_URL = ENV['SLACK_API_URL'] || 'https://slack.com/api'
 
   def initialize(token)
     @token = token

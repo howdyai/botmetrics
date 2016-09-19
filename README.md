@@ -10,6 +10,8 @@
 5. Run `./script/server` to start the server
 6. Visit [localhost:9000](http://localhost:9000)
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
+
 ## CircleCI
 
 [![Circle CI](https://circleci.com/gh/zerobotlabs/bot_metrics.svg?style=svg&circle-token=363a196aec860f76e2ab58360a13f0621d043b9e)](https://circleci.com/gh/zerobotlabs/bot_metrics)

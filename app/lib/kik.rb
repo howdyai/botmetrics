@@ -1,7 +1,7 @@
 require 'uri'
 
 class Kik
-  API_URL = ENV['KIK_API_URL']
+  API_URL = ENV['KIK_API_URL'] || 'https://api.kik.com/v1'
   OK = 200
 
   def initialize(api_key, username)
