@@ -53,4 +53,4 @@ coming soon!
 
 ## CircleCI
 
-[![Circle CI](https://circleci.com/gh/botmetrics/botmetrics.svg?style=svg&circle-token=363a196aec860f76e2ab58360a13f0621d043b9e)](https://circleci.com/gh/botmetrics/botmetrics)
+[![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
