@@ -1,7 +1,6 @@
 
 .container-fluid.sign-in-container
   .col-md-4.col-xs-4.col-xs-offset-4.col-md-offset-4
-    %h2 Sign In
     = simple_form_for(resource, as: resource_name, url: session_path(resource_name), html: {class: 'form-horizontal'}) do |f|
       = f.input :email, autofocus: true, required: true
       = f.input :password
@@ -9,3 +8,5 @@
   .col-md-4.col-xs-4.col-xs-offset-4.col-md-offset-4.footer
     = render "devise/shared/links"
 
+- content_for :header_text do
+  Sign In

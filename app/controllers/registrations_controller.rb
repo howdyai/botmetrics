@@ -1,9 +1,22 @@
 class RegistrationsController < Devise::RegistrationsController
+  def new
+    if redirect_if_admin_account_setup
+      return
+    end
+
+    super
+  end
+
   def create
+    if redirect_if_admin_account_setup
+      return
+    end
+
     super do |resource|
       if resource.persisted?
         resource.set_api_key!  if resource.api_key.blank?
         resource.signed_up_at = Time.now if resource.signed_up_at.blank?
+        resource.site_admin = true
         resource.save
       end
     end
@@ -26,5 +39,15 @@ class RegistrationsController < Devise::RegistrationsController
 
   def after_sign_up_path_for(resource)
     new_bot_path
+  end
+
+  def redirect_if_admin_account_setup
+    if User.count > 0
+      flash[:error] = "An admin account has already been created for this install of Botmetrics"
+      redirect_to(root_path)
+      return true
+    end
+
+    return false
   end
 end

@@ -512,7 +512,8 @@ CREATE TABLE users (
     invited_by_type character varying,
     signed_up_at timestamp without time zone,
     invited_to_slack_at timestamp without time zone,
-    slack_invite_response jsonb
+    slack_invite_response jsonb,
+    site_admin boolean DEFAULT false
 );
 
 
@@ -1299,4 +1300,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160902234106');
 INSERT INTO schema_migrations (version) VALUES ('20160906013944');
 
 INSERT INTO schema_migrations (version) VALUES ('20160906040717');
+
+INSERT INTO schema_migrations (version) VALUES ('20160919061700');
 

@@ -18,7 +18,8 @@
     %nav.navbar.navbar-default
       .container-fluid.header-container
         %a.navbar-brand{href:"/"}
-          botmetrics
+          - header_text = yield :header_text
+          = header_text.empty? ? "botmetrics" : header_text
     .container-fluid.content-container#features
       = yield
 

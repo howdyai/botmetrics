@@ -1,8 +1,8 @@
 = simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'form-horizontal'}) do |f|
   = f.error_notification
 
-  = f.input :email, required: true, autofocus: true
+  = f.input :email, required: true, autofocus: true, label: "Your Work Email"
   = f.input :password, required: true, hint: "8 characters minimum"
-  = f.input :full_name, required: true, label: "First Name & Last Name"
+  = f.input :full_name, required: true, label: "Your First Name & Last Name"
   = f.input :timezone, required: true, label: "Preferred Timezone to View Analytics", as: :time_zone
   = f.button :submit, "Sign Up"

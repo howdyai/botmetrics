@@ -10,7 +10,6 @@ class App.StaticIndex extends App.AppBase
 
   run: ->
     $(document).ready ->
-      mixpanel.track 'Viewed Home Page'
       hljs.initHighlightingOnLoad()
 
       $('#signup-modal').on 'shown.bs.modal', (e) ->
