@@ -5,6 +5,15 @@ GIT
   specs:
     chartkick (1.5.0)
 
+GIT
+  remote: git://github.com/perfectline/validates_url.git
+  revision: 725163e9611aa7e2dd92a00abf4fa6d3fb1dd77a
+  ref: 725163e
+  specs:
+    validate_url (1.0.2)
+      activemodel (>= 3.0.0)
+      addressable
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -385,6 +394,7 @@ DEPENDENCIES
   timecop (~> 0.8.1)
   turbolinks (~> 5.0.0.beta)
   uglifier (~> 2.7.1)
+  validate_url!
   webmock (~> 1.22.3)
   will_paginate (~> 3.1.0)
   will_paginate-bootstrap (~> 1.0.1)

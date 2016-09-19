@@ -56,6 +56,10 @@ class BotsController < ApplicationController
 
   def show
     session[:bot_id] = @bot.uid
+    if Setting.hostname.blank?
+      redirect_to(new_setting_path) && return
+    end
+
     @group_by = params[:group_by].presence || 'today'
 
     if (@instances = @bot.instances.legit).count == 0

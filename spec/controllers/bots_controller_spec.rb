@@ -89,6 +89,8 @@ RSpec.describe BotsController do
       get :show, id: bot.to_param
     end
 
+    let!(:setting) { create :setting, hostname: 'http://localhost:3000' }
+
     context 'if there are no bot instances' do
       it 'should redirect to the new_bot_instance_path for the bot' do
         do_request

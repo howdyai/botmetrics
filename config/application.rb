@@ -33,8 +33,6 @@ module Botmetrics
     # Use sidekiq for ActiveJob
     config.active_job.queue_adapter = :sidekiq
 
-    # Configure Mail URL options
-    config.action_mailer.default_url_options = { protocol: ENV['DEFAULT_PROTOCOL'], host: ENV['DEFAULT_HOST'] }
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 

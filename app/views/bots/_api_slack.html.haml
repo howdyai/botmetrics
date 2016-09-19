@@ -5,7 +5,7 @@
   :preserve
     curl -X POST \
     -H "Authorization: #{current_user.api_key}" \
-    #{Settings.rails_host}/bots/#{@bot.uid}/instances \
+    #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/instances \
     -d "format=json&instance[token]=my-bot-token"
 %h3.api Ruby
 %p.api

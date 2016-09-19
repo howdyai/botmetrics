@@ -67,10 +67,10 @@ RSpec.describe RegistrationsController do
         expect(user.site_admin).to be_truthy
       end
 
-      it 'should redirect to new_bot_path' do
+      it 'should redirect to new_setting_path' do
         do_request
         bot = Bot.last
-        expect(response).to redirect_to new_bot_path
+        expect(response).to redirect_to new_setting_path
       end
     end
   end

@@ -38,7 +38,7 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(resource)
-    new_bot_path
+    new_setting_path
   end
 
   def redirect_if_admin_account_setup
