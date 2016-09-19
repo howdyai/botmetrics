@@ -29,6 +29,28 @@
       "generator": "secret"
     }
   },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "hobby"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "hobby"
+    },
+    "relax_worker": {
+      "quantity": 1,
+      "size": "hobby"
+    },
+    "clock": {
+      "quantity": 1,
+      "size": "hobby"
+    },
+    "relax_server": {
+      "quantity": 1,
+      "size": "hobby"
+    }
+  },
   "addons": [
     {
       "plan": "heroku-postgresql",
