@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+  ./bin/relax-linux-gnu
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  ./bin/relax-darwin
+fi
