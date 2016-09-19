@@ -1,7 +1,7 @@
 RSpec.describe SetupBotJob do
-  let(:slack_api)     { ENV['SLACK_API_URL'] }
-  let(:facebook_api)  { ENV['FACEBOOK_API_URL'] }
-  let(:kik_api)       { ENV['KIK_API_URL'] }
+  let(:slack_api)     { Slack::API_URL    }
+  let(:facebook_api)  { Facebook::API_URL }
+  let(:kik_api)       { Kik::API_URL      }
 
   let!(:user) { create :user }
 
