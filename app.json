@@ -35,6 +35,7 @@
     "newrelic",
     "papertrail",
     "sendgrid",
-    "rollbar"
+    "rollbar",
+    "pusher"
   ]
 }
