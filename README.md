@@ -1,32 +1,56 @@
-## Setup
+# Botmetrics
+
+Botmetrics is the easy, secure, open-source way for you to measure and
+engage with your chat-bot users.
+
+Botmetrics works natively with Messenger, Slack and Kik bots with
+support for other messaging platforms coming soon.
+
+## Analytics
+
+With Botmetrics, you can get analytics for your bot with very little
+code, and native SDKs available in
+
+* [Node.JS](https://github.com/botmetrics/botmetrics.js)
+* [Ruby](https://github.com/botmetrics/botmetrics-rb)
+* [Go](https://github.com/botmetrics/go-botmetrics)
+
+![Metrics](https://github.com/botmetrics/botmetrics/raw/master/app/assets/images/homepage/metrics.png)
+
+## Insights
+
+You can gain more insight into the users using your bot and perform
+sophisticated queries to find out who they are.
+
+![Analyze](https://github.com/botmetrics/botmetrics/raw/master/app/assets/images/homepage/analyze.png)
+
+## Notifications
+
+You can gain more insight into the users using your bot and send then
+re-engagement notifications based on pre-selected criteria.
+
+![Notifications](https://github.com/botmetrics/botmetrics/raw/master/app/assets/images/homepage/notifications.png)
+
+## Quick Installation
+
+You can deploy Botmetrics with one click to your Heroku account.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
+
+One-click deployment to Amazon AWS, Google Cloud and Microsoft Azure is
+coming soon!
+
+## Development
 
 1. `cp .env-example .env`
 2. Start Redis & Postgres (there's a `./script/redis` and
    `./script/dbstart` command that lets you do this easily)
 3. Run `./script/dbreset` to reset the database (creates a new one,
    loads schema and runs `rake db:seed`)
-4. Put `relax` in your $PATH: You can download it from
-   [here](https://dl.equinox.io/zerobotlabs/relax/beta).
-5. Run `./script/server` to start the server
-6. Visit [localhost:9000](http://localhost:9000)
+4. Run `./script/server` to start the server
+5. Visit [localhost:9000](http://localhost:9000)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
 
 ## CircleCI
 
-[![Circle CI](https://circleci.com/gh/zerobotlabs/bot_metrics.svg?style=svg&circle-token=363a196aec860f76e2ab58360a13f0621d043b9e)](https://circleci.com/gh/zerobotlabs/bot_metrics)
-
-## Setting up Production Database
-
-1. Add a `production` remote: `git remote add production https://git.heroku.com/botmetrix.git`
-2. Install [Parity gem](https://github.com/thoughtbot/parity): `gem install parity` as well as the `git` and `dotenv` gems.
-3. Restore from production: `development restore production`
-4. Save the password for the user `admins@asknestor.me` to "password123"
-   or something similar using Rails console and login to the website.
-
-## Some Things to Look Out For
-
-1. Please trim trailing whitespace
-2. Every time you run `rake db:migrate`, the Postgres driver will add
-   trailing spaces to `db/structure.sql`. What I do is hit Save on
-`db/structure.sql` in my editor which trims all the trailing whitespace.
+[![Circle CI](https://circleci.com/gh/botmetrics/botmetrics.svg?style=svg&circle-token=363a196aec860f76e2ab58360a13f0621d043b9e)](https://circleci.com/gh/botmetrics/botmetrics)
