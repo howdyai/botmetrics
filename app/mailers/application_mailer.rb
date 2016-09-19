@@ -1,3 +1,3 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: ENV['FROM_EMAIL']
+  default from: 'hello@getbotmetrics.com'
 end
