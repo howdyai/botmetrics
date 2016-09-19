@@ -477,6 +477,38 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: settings; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE settings (
+    id integer NOT NULL,
+    key character varying NOT NULL,
+    value character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE settings_id_seq OWNED BY settings.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
@@ -651,6 +683,13 @@ ALTER TABLE ONLY query_sets ALTER COLUMN id SET DEFAULT nextval('query_sets_id_s
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY settings ALTER COLUMN id SET DEFAULT nextval('settings_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -747,6 +786,14 @@ ALTER TABLE ONLY queries
 
 ALTER TABLE ONLY query_sets
     ADD CONSTRAINT query_sets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY settings
+    ADD CONSTRAINT settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -966,6 +1013,13 @@ CREATE INDEX index_query_sets_on_bot_id ON query_sets USING btree (bot_id);
 --
 
 CREATE INDEX index_query_sets_on_notification_id ON query_sets USING btree (notification_id);
+
+
+--
+-- Name: index_settings_on_key; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE UNIQUE INDEX index_settings_on_key ON settings USING btree (key);
 
 
 --
@@ -1302,4 +1356,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160906013944');
 INSERT INTO schema_migrations (version) VALUES ('20160906040717');
 
 INSERT INTO schema_migrations (version) VALUES ('20160919061700');
+
+INSERT INTO schema_migrations (version) VALUES ('20160919065157');
 
