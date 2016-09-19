@@ -5,8 +5,8 @@
   "repository": "https://github.com/botmetrics/botmetrics",
   "keywords": ["rails", "slack", "messenger", "kik", "facebook", "bots", "telegram", "alexa"],
   "scripts": {
-    "postdeploy": "bundle exec rake db:migrate db:seed",
-  }
+    "postdeploy": "bundle exec rake db:migrate db:seed"
+  },
   "env": {
     "RELAX_MUTEX_KEY": {
       "description": "Redis Key used as a lock to decide whether to send events back to clients",
@@ -27,12 +27,12 @@
     "JSON_WEB_TOKEN_SECRET": {
       "description": "Secret used to generate web tokens",
       "generator": "secret"
-    },
+    }
   },
   "addons": [
-    "heroku-postgres",
+    "heroku-postgresql",
     "heroku-redis",
-    "new-relic",
+    "newrelic",
     "papertrail",
     "sendgrid",
     "rollbar"
