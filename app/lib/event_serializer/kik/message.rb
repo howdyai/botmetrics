@@ -6,7 +6,7 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
     {
       event_type: 'message',
       is_for_bot: @data[:from] != bi_uid,
-      is_from_bot: false,
+      is_from_bot: @data[:from] == bi_uid,
       is_im: @data[:participants].count == 1 && @data[:participants].first == bi_uid,
       text: @data[:body],
       provider: 'kik',
