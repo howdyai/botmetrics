@@ -301,7 +301,7 @@ class Dashboard < ActiveRecord::Base
             where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
     elsif self.provider == 'kik'
       Event.where(bot_instance_id: instance_ids, event_type: 'message').
-            where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->'sub_type')::text = ?", type)
+            where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = ?", type)
     end
   end
 
