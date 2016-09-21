@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
   store_accessor :email_preferences, :created_bot_instance, :disabled_bot_instance, :daily_reports
   store_accessor :tracking_attributes, :last_daily_summary_sent_at
 
+  attr_accessor :subscribe_to_updates_and_security_patches
+
   scope :subscribed_to, ->(email_preference) do
     where('email_preferences @> ?', { email_preference => '1' }.to_json)
   end

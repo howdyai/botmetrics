@@ -53,6 +53,45 @@ RSpec.describe RegistrationsController do
       end
     end
 
+    context 'when subscribe_to_updates_and_security_updates is true' do
+      let!(:user_attributes) do
+        {
+          email: 'i@mclov.in',
+          full_name: 'Mclovin',
+          password: 'password',
+          timezone: 'Pacific Time (US & Canada)',
+          subscribe_to_updates_and_security_patches: '1'
+        }
+      end
+
+      before { allow(SubscribeUserToUpdatesJob).to receive(:perform_async) }
+
+      it 'should subscribe the user to updates' do
+        do_request
+        user = User.last
+        expect(SubscribeUserToUpdatesJob).to have_received(:perform_async).with(user.id)
+      end
+    end
+
+    context 'when subscribe_to_updates_and_security_updates is false' do
+      let!(:user_attributes) do
+        {
+          email: 'i@mclov.in',
+          full_name: 'Mclovin',
+          password: 'password',
+          timezone: 'Pacific Time (US & Canada)',
+          subscribe_to_updates_and_security_patches: '0'
+        }
+      end
+
+      before { allow(SubscribeUserToUpdatesJob).to receive(:perform_async) }
+
+      it 'should NOT subscribe the user to updates' do
+        do_request
+        expect(SubscribeUserToUpdatesJob).to_not have_received(:perform_async)
+      end
+    end
+
     context 'when an admin user is not created yet' do
       it 'creates a new user' do
         expect { do_request }.to change(User, :count).by(1)
