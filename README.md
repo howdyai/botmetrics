@@ -48,7 +48,7 @@ coming soon!
 3. Run `./script/dbreset` to reset the database (creates a new one,
    loads schema and runs `rake db:seed`)
 4. Run `./script/server` to start the server
-5. Visit [localhost:9000](http://localhost:9000)
+5. Visit [localhost:3000](http://localhost:3000)
 
 
 ## CircleCI
