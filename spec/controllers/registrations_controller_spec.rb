@@ -12,9 +12,9 @@ RSpec.describe RegistrationsController do
     context 'when an admin user is created' do
       let!(:user) { create :user }
 
-      it 'should render redirect to root_path' do
+      it 'should render redirect to new_user_session_path' do
         do_request
-        expect(response).to redirect_to root_path
+        expect(response).to redirect_to new_user_session_path
       end
     end
 
@@ -47,9 +47,9 @@ RSpec.describe RegistrationsController do
         expect { do_request }.to_not change(User, :count)
       end
 
-      it 'should redirect to root_path' do
+      it 'should redirect to new_user_session_path' do
         do_request
-        expect(response).to redirect_to root_path
+        expect(response).to redirect_to new_user_session_path
       end
     end
 
