@@ -1,14 +1,22 @@
 .container-fluid
+  - admin_account_present = User.count > 0
   .col-md-6.col-sm-6.col-xs-6.col-lg-6.col-md-offset-3.col-xs-offset-3.col-lg-offset-3.col-sm-offset-3
     .row.banner-logo.text-center
       = image_tag 'botmetrics-banner.png', width: '400px'
     .row.header
-      %h1.text-center Welcome!
+      - if admin_account_present
+        %h1.text-center Welcome Back!
+      - else
+        %h1.text-center Welcome!
     .row.intro-text.text-center
-      %p
-        Let's Complete the Setup Of your Botmetrics Installation.
+      - if !admin_account_present
+        %p
+          Let's Complete the Setup Of your Botmetrics Installation.
     .row.sign-up.text-center
-      = link_to 'Get Started', new_user_registration_path, class: 'btn btn-lg btn-success'
+      - if admin_account_present
+        = link_to 'Sign In', new_user_session_path, class: 'btn btn-lg btn-success'
+      - else
+        = link_to 'Get Started', new_user_registration_path, class: 'btn btn-lg btn-success'
 
     .row.help.text-center
       %p

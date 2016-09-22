@@ -51,8 +51,8 @@ class RegistrationsController < Devise::RegistrationsController
 
   def redirect_if_admin_account_setup
     if User.count > 0
-      flash[:error] = "An admin account has already been created for this install of Botmetrics"
-      redirect_to(root_path)
+      flash[:error] = "An admin account has already been created for this install of Botmetrics. Sign In with your credentials"
+      redirect_to(new_user_session_path)
       return true
     end
 
