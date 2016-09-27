@@ -42,6 +42,16 @@ You can deploy Botmetrics with one click to your Heroku account.
 One-click deployment to Amazon AWS, Google Cloud and Microsoft Azure is
 coming soon!
 
+## Installation on your own Linux server
+
+1. Make sure you have Ruby 2.3.1 installed along with Rubygems (make
+   sure you have `libxslt-dev`, `libxml2-dev`, `libpq-dev` installed on
+your machine).
+2. Setup the `.env` file by running `cp .env-example .env`
+3. Replace `JSON_WEB_TOKEN_SECRET` with your own randomized secret.
+4. Replace `DATABASE_URL` and `REDIS_URL` with URLs to your Postgres and Redis database URLs respectively. (Postgres and Redis can be on the same machine or different machines).
+5. Run `./script/server` to start the server.
+
 ## Development
 
 1. `cp .env-example .env`
