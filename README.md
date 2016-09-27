@@ -50,6 +50,11 @@ coming soon!
 4. Run `./script/server` to start the server
 5. Visit [localhost:3000](http://localhost:3000)
 
+## Contributing
+
+* Join the [Slack](https://slack.getbotmetrics.com) channel to ask questions
+* Open a [GitHub Issue](https://github.com/botmetrics/botmetrics/issues/new) for bugs/feature requests
+* Create a [GitHub Pull Request](https://help.github.com/articles/using-pull-requests/) to submit patches
 
 ## CircleCI
 
