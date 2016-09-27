@@ -8,6 +8,8 @@ support for other messaging platforms coming soon.
 
 [![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
+
 ## Analytics
 
 With Botmetrics, you can get analytics for your bot with very little
@@ -72,6 +74,11 @@ your machine).
 ## Wiki
 
 Extra information can be found in the [wiki](https://github.com/botmetrics/botmetrics/wiki).
+
+## Roadmap
+
+The Botmetrics Roadmap can be seen
+[here](https://github.com/botmetrics/botmetrics/projects/1).
 
 ## CircleCI
 
