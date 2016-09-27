@@ -6,6 +6,8 @@ engage with your chat-bot users.
 Botmetrics works natively with Messenger, Slack and Kik bots with
 support for other messaging platforms coming soon.
 
+[![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
+
 ## Analytics
 
 With Botmetrics, you can get analytics for your bot with very little
