@@ -6,6 +6,8 @@ engage with your chat-bot users.
 Botmetrics works natively with Messenger, Slack and Kik bots with
 support for other messaging platforms coming soon.
 
+[![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
+
 ## Analytics
 
 With Botmetrics, you can get analytics for your bot with very little
@@ -40,6 +42,16 @@ You can deploy Botmetrics with one click to your Heroku account.
 One-click deployment to Amazon AWS, Google Cloud and Microsoft Azure is
 coming soon!
 
+## Installation on your own Linux server
+
+1. Make sure you have Ruby 2.3.1 installed along with Rubygems (make
+   sure you have `libxslt-dev`, `libxml2-dev`, `libpq-dev` installed on
+your machine).
+2. Setup the `.env` file by running `cp .env-example .env`
+3. Replace `JSON_WEB_TOKEN_SECRET` with your own randomized secret.
+4. Replace `DATABASE_URL` and `REDIS_URL` with URLs to your Postgres and Redis database URLs respectively. (Postgres and Redis can be on the same machine or different machines).
+5. Run `./script/server` to start the server.
+
 ## Development
 
 1. `cp .env-example .env`
@@ -50,6 +62,16 @@ coming soon!
 4. Run `./script/server` to start the server
 5. Visit [localhost:3000](http://localhost:3000)
 
+## Contributing
+
+* Join the [Slack](https://slack.getbotmetrics.com) channel to ask questions
+* Open a [GitHub Issue](https://github.com/botmetrics/botmetrics/issues/new) for bugs/feature requests
+* Create a [GitHub Pull Request](https://help.github.com/articles/using-pull-requests/) to submit patches
+
+
+## Wiki
+
+Extra information can be found in the [wiki](https://github.com/botmetrics/botmetrics/wiki).
 
 ## CircleCI
 
