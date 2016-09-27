@@ -56,6 +56,11 @@ coming soon!
 * Open a [GitHub Issue](https://github.com/botmetrics/botmetrics/issues/new) for bugs/feature requests
 * Create a [GitHub Pull Request](https://help.github.com/articles/using-pull-requests/) to submit patches
 
+
+## Wiki
+
+Extra information can be found in the [wiki](https://github.com/botmetrics/botmetrics/wiki).
+
 ## CircleCI
 
 [![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
