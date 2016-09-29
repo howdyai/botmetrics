@@ -59,6 +59,8 @@ gem 'clockwork'
 gem 'font_assets',              '~> 0.1.12'
 gem 'sitemap_generator',        '~> 5.1.0'
 
+gem 'rollbar',                  '~> 2.13.2'
+
 group :development do
   gem 'foreman',                  '~> 0.82.0'
   gem 'quiet_assets',             '~> 1.1.0'
