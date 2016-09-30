@@ -83,3 +83,15 @@ The Botmetrics Roadmap can be seen
 ## CircleCI
 
 [![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
+
+## Using with Docker
+
+1) [Install Docker](https://www.docker.com/products/overview#/install_the_platform/?utm_source=getbotmetrics.com&utm_campaign=github_docker)
+
+2) Edit `docker-compose.yml` to update all the instances of  `JSON_WEB_TOKEN_SECRET`
+
+3) Get the database ready with `docker-compose run web bundle exec rake db:reset`
+
+4) Bring up the services with `docker-compose up` in the botmetrics project directory.
+
+5) Goto [localhost:3000](http://localhost:3000) Enjoy!

@@ -1,0 +1,113 @@
+version: '2'
+
+services:
+  db:
+    image: postgres:9.4.1
+    ports:
+      - "5431:5432"
+
+  redis:
+    image: redis:3.2
+    ports:
+      - "6379:6379"
+
+  sidekiq:
+    depends_on:
+      - db
+      - redis
+    build: .
+    command: bundle exec sidekiq -q default -q mailers -v -C config/sidekiq.yml
+    environment:
+      - JSON_WEB_TOKEN_SECRET=change_this
+      - RELAX_BOTS_KEY=bot_metrics_teams
+      - RELAX_BOTS_PUBSUB=bot_metrics_pubsub
+      - RELAX_EVENTS_QUEUE=bot_metrics_mq
+      - RELAX_MUTEX_KEY=bot_metrics_mutex
+      - RELAX_SEND_BOT_REPLIES='true'
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - '.:/botmetrics'
+    links:
+      - db
+      - redis
+
+  web:
+    depends_on:
+      - db
+      - redis
+    build: .
+    command: bundle exec passenger start --max-pool-size 3 --min-instances 1
+    ports:
+      - "3000:3000"
+    links:
+      - db
+      - redis
+    volumes:
+      - '.:/botmetrics'
+    environment:
+      - JSON_WEB_TOKEN_SECRET=change_this
+      - RELAX_BOTS_KEY=bot_metrics_teams
+      - RELAX_BOTS_PUBSUB=bot_metrics_pubsub
+      - RELAX_EVENTS_QUEUE=bot_metrics_mq
+      - RELAX_MUTEX_KEY=bot_metrics_mutex
+      - RELAX_SEND_BOT_REPLIES='true'
+      - REDIS_URL=redis://redis:6379
+
+
+  relax-server:
+    depends_on:
+      - redis
+    build: .
+    command: bin/relax
+    links:
+      - redis
+    volumes:
+      - '.:/botmetrics'
+    environment:
+      - JSON_WEB_TOKEN_SECRET=change_this
+      - RELAX_BOTS_KEY=bot_metrics_teams
+      - RELAX_BOTS_PUBSUB=bot_metrics_pubsub
+      - RELAX_EVENTS_QUEUE=bot_metrics_mq
+      - RELAX_MUTEX_KEY=bot_metrics_mutex
+      - RELAX_SEND_BOT_REPLIES='true'
+      - REDIS_URL=redis://redis:6379
+
+  relax-client:
+    depends_on:
+      - db
+      - redis
+    build: .
+    command: bundle exec rake relax:listen_for_events
+    links:
+      - db
+      - redis
+    volumes:
+      - '.:/botmetrics'
+    environment:
+      - JSON_WEB_TOKEN_SECRET=change_this
+      - RELAX_BOTS_KEY=bot_metrics_teams
+      - RELAX_BOTS_PUBSUB=bot_metrics_pubsub
+      - RELAX_EVENTS_QUEUE=bot_metrics_mq
+      - RELAX_MUTEX_KEY=bot_metrics_mutex
+      - RELAX_SEND_BOT_REPLIES='true'
+      - REDIS_URL=redis://redis:6379
+
+  clockwork:
+    depends_on:
+      - db
+      - redis
+    build: .
+    command: bundle exec clockwork clockwork.rb
+    links:
+      - db
+      - redis
+    volumes:
+      - '.:/botmetrics'
+    environment:
+      - JSON_WEB_TOKEN_SECRET=change_this
+      - RELAX_BOTS_KEY=bot_metrics_teams
+      - RELAX_BOTS_PUBSUB=bot_metrics_pubsub
+      - RELAX_EVENTS_QUEUE=bot_metrics_mq
+      - RELAX_MUTEX_KEY=bot_metrics_mutex
+      - RELAX_SEND_BOT_REPLIES='true'
+      - REDIS_URL=redis://redis:6379
