@@ -1,6 +1,7 @@
 {
   "name": "Botmetrics",
   "description": "Open Source Conversational Analytics",
+  "logo": "https://avatars0.githubusercontent.com/u/18603224",
   "website": "https://www.getbotmetrics.com",
   "repository": "https://github.com/botmetrics/botmetrics",
   "keywords": ["rails", "slack", "messenger", "kik", "facebook", "bots", "telegram", "alexa"],
