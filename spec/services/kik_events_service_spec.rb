@@ -16,39 +16,12 @@ RSpec.describe KikEventsService do
 
   before do
     allow(Kik).to receive(:new).with(bot_instance.token, bot_instance.uid).and_return(kik_client)
-    allow(SetMixpanelPropertyJob).to receive(:perform_async)
-
     allow(kik_client).to receive(:call).
                      with("user/#{kik_user_id}", :get).
                      and_return(firstName: first_name,
                                 lastName: last_name,
                                 profilePicUrl: profile_pic_url,
                                 profilePicLastModified: profile_pic_last_modified)
-  end
-
-  shared_examples "sets the mixpanel property 'received_first_event' if first_received_event_at is nil" do
-    context "first_received_event_at is not nil" do
-      it 'should update first_received_event_at and set the property on Mixpanel' do
-        expect {
-          do_request
-          bot.reload
-        }.to change(bot, :first_received_event_at)
-      end
-
-      it 'should set the mixpanel property "received_first_event" to true' do
-        do_request
-        expect(SetMixpanelPropertyJob).to have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
-      end
-    end
-
-    context "first_received_event_at is NOT nil" do
-      before { bot.update_attribute(:first_received_event_at, Time.now) }
-
-      it 'should NOT set the mixpanel property "received_first_event" to true' do
-        do_request
-        expect(SetMixpanelPropertyJob).to_not have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
-      end
-    end
   end
 
   shared_examples "associates event with custom dashboard if custom dashboards exist" do
@@ -219,13 +192,11 @@ RSpec.describe KikEventsService do
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -254,12 +225,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -287,12 +256,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -320,12 +287,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -348,12 +313,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -376,12 +339,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -406,12 +367,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -435,12 +394,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
 
@@ -464,12 +421,10 @@ RSpec.describe KikEventsService do
 
       context "bot user exists" do
         it_behaves_like "should create an event as well as create the bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
 
       context "bot user does not exist" do
         it_behaves_like "should create an event but not create any bot users"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
   end
