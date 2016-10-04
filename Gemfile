@@ -81,7 +81,6 @@ group :test do
   gem 'database_cleaner',         '~> 1.3.0'
   gem 'shoulda-matchers',         '~> 3.1.1', require: false
   gem 'webmock',                  '~> 1.22.3'
-  gem 'stripe-ruby-mock',         '~> 2.2.1', require: 'stripe_mock'
 end
 
 group :production do

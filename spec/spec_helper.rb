@@ -77,12 +77,7 @@ RSpec.configure do |config|
 
   config.before :each do
     DatabaseCleaner.clean
-    StripeMock.start
     Sidekiq::Testing.inline!
-  end
-
-  config.after :each do
-    StripeMock.stop
   end
 
 # The settings below are suggested to provide a good initial experience
