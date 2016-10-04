@@ -38,9 +38,6 @@ gem 'devise_invitable',         '~> 1.6.0'
 gem 'will_paginate',            '~> 3.1.0'
 gem 'will_paginate-bootstrap',  '~> 1.0.1'
 
-# Mixpanel
-gem 'mixpanel-ruby',            '~> 2.2.0', require: 'mixpanel-ruby'
-
 # Redis
 gem 'relax-rb',                 '~> 0.5.0', require: 'relax'
 gem 'sidekiq',                  '~> 4.1.0'
@@ -57,7 +54,6 @@ gem 'validate_url',             github: 'perfectline/validates_url', ref: '72516
 gem 'clockwork'
 
 gem 'font_assets',              '~> 0.1.12'
-gem 'sitemap_generator',        '~> 5.1.0'
 
 gem 'rollbar',                  '~> 2.13.2'
 
