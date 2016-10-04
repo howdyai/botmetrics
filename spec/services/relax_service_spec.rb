@@ -5,7 +5,6 @@ RSpec.describe RelaxService do
 
   before do
     allow(SendEventToWebhookJob).to receive(:perform_async)
-    allow(SetMixpanelPropertyJob).to receive(:perform_async)
   end
 
   shared_examples "calls the webhook if it is setup and doesn't if it is not" do
@@ -24,31 +23,6 @@ RSpec.describe RelaxService do
       it 'should call SendEventToWebhookJob' do
         RelaxService.handle(event)
         expect(SendEventToWebhookJob).to have_received(:perform_async).with(bi.bot_id, event.to_json)
-      end
-    end
-  end
-
-  shared_examples "sets the mixpanel property 'received_first_event' if first_received_event_at is nil" do
-    context "first_received_event_at is not nil" do
-      it 'should update first_received_event_at and set the property on Mixpanel' do
-        expect {
-          RelaxService.handle(event)
-          parent_bot.reload
-        }.to change(parent_bot, :first_received_event_at)
-      end
-
-      it 'should set the mixpanel property "received_first_event" to true' do
-        RelaxService.handle(event)
-        expect(SetMixpanelPropertyJob).to have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
-      end
-    end
-
-    context "first_received_event_at is NOT nil" do
-      before { parent_bot.update_attribute(:first_received_event_at, Time.now) }
-
-      it 'should NOT set the mixpanel property "received_first_event" to true' do
-        RelaxService.handle(event)
-        expect(SetMixpanelPropertyJob).to_not have_received(:perform_async).with(admin_user.id, 'received_first_event', true)
       end
     end
   end
@@ -78,7 +52,6 @@ RSpec.describe RelaxService do
       end
 
       it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
-      it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
     end
 
     context 'bot instance does not exist' do
@@ -122,7 +95,6 @@ RSpec.describe RelaxService do
       end
 
       it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
-      it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
     end
   end
 
@@ -173,7 +145,6 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
       end
     end
   end
@@ -246,7 +217,6 @@ RSpec.describe RelaxService do
         end
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -320,7 +290,6 @@ RSpec.describe RelaxService do
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -396,7 +365,6 @@ RSpec.describe RelaxService do
 
         it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
         it_behaves_like "associates event with custom dashboard if custom dashboards exist"
-        it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
 
         context 'when message is from the bot' do
           before do
@@ -435,7 +403,6 @@ RSpec.describe RelaxService do
 
           it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
           it_behaves_like "associates event with custom dashboard if custom dashboards exist"
-          it_behaves_like "sets the mixpanel property 'received_first_event' if first_received_event_at is nil"
         end
       end
     end

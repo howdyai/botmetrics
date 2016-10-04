@@ -3,5 +3,3 @@
   #{@user.full_name} has signed up his team "#{@bot_instance.bot_team_name}" (#{@bot_instance.team_url}) with #{pluralize(@bot_instance.users.count, 'members')}.
 %p
   You can update your email preferences on #{link_to 'your botmetrics profile page', user_url(:me)}.
-
-= mixpanel_event_tracking_pixel(@user, "Opened 'Created Bot Instance' Email")
