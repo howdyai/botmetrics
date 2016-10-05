@@ -1,6 +1,6 @@
 FROM ruby:2.3.1
 
-MAINTAINER Bot Metrics <hello@getbotmetrics.com>
+MAINTAINER Botmetrics <hello@getbotmetrics.com>
 
 RUN apt-get update -qq && apt-get install -y build-essential
 
