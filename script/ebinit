@@ -1,0 +1,5 @@
+#!/bin/bash
+set -x
+set -e
+
+eb init botmetrics -p "Ruby 2.3 (Passenger Standalone)"

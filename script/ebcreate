@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]
+then
+  echo "Usage: ./script/ebcreate <environment-name> e.g. ./script/ebcreate botmetrics"
+  exit 1
+fi
+
+SECRET=`bundle exec rake secret`
+
+eb create $1 -db.engine postgres -db.i db.t2.micro --envvars "SECRET_KEY_BASE=${SECRET} JSON_WEB_TOKEN_SECRET=${SECRET} RACK_ENV=production RELAX_MUTEX_KEY=relax_mutex_key RELAX_BOTS_KEY=relax_bots_key RELAX_BOTS_PUBSUB=relax_bots_pubsub RELAX_EVENTS_QUEUE=relax_events_queue"
