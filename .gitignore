@@ -20,3 +20,8 @@
 .DS_Store
 
 *.pid*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
