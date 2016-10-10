@@ -95,3 +95,7 @@ The Botmetrics Roadmap can be seen
 4) Bring up the services with `docker-compose up` in the botmetrics project directory.
 
 5) Goto [localhost:3000](http://localhost:3000) Enjoy!
+
+## Stay Connected
+
+Follow [Botmetrics on Twitter](https://www.twitter.com/getbotmetrics) to get the latest updates.
