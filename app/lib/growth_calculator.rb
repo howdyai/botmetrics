@@ -10,7 +10,7 @@ class GrowthCalculator
     return nil if current == 0
 
     growth = (current - previous).to_f / previous
-    growth = 0.0 if growth.infinite?
+    growth = nil if growth.infinite?
     growth
   end
 
