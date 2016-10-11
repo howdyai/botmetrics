@@ -7,7 +7,7 @@ module Clockwork
     SendScheduledMessageJob.perform_async
   end
 
-  if Rails.env.production?
+  if Rails.env.production? && Setting.hostname.present?
     every(5.minutes, 'DailyReport.Send') do
       SendDailyReportsJob.perform_async
     end
