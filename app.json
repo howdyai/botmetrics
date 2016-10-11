@@ -28,6 +28,14 @@
     "JSON_WEB_TOKEN_SECRET": {
       "description": "Secret used to generate web tokens",
       "generator": "secret"
+    },
+    "SIDEKIQ_USERNAME": {
+      "description": "Username for Sidekiq Web Interface",
+      "value": "admin"
+    },
+    "SIDEKIQ_PASSWORD": {
+      "description": "Password for Sidekiq Web Interface",
+      "generator": "secret"
     }
   },
   "formation": {
