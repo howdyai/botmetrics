@@ -44,6 +44,15 @@ You can deploy Botmetrics with one click to your Heroku account.
 One-click deployment to Amazon AWS, Google Cloud and Microsoft Azure is
 coming soon!
 
+## Updating your Heroku installation
+
+1. Clone the repo to your local computer.
+2. Setup a Heroku git remote for your local instance `heroku git:remote -a <your-app-name>`
+3. For the first time, you will need to run `git push -f heroku master`
+4. For subsequent updates, run `git pull --rebase origin master && git push heroku master`
+5. Run `heroku run rake db:migrate` for database migrations that need to
+   happen.
+
 ## Installation on your own Linux server
 
 1. Make sure you have Ruby 2.3.1 installed along with Rubygems (make
@@ -69,7 +78,6 @@ your machine).
 * Join the [Slack](https://slack.getbotmetrics.com) channel to ask questions
 * Open a [GitHub Issue](https://github.com/botmetrics/botmetrics/issues/new) for bugs/feature requests
 * Create a [GitHub Pull Request](https://help.github.com/articles/using-pull-requests/) to submit patches
-
 
 ## Wiki
 
