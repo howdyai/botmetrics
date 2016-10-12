@@ -42,6 +42,34 @@ FactoryGirl.define do
     event_attributes
   end
 
+  factory :facebook_image_event, parent: :event do
+    event_type          { 'message' }
+    is_for_bot          { true }
+    association :user,   factory: :bot_user
+    provider            'facebook'
+    sequence(:event_attributes) do |n|
+      Hash(
+        mid: 'mid',
+        seq: n,
+        attachments: [{type: 'image'}]
+      )
+    end
+  end
+
+  factory :kik_image_event, parent: :event do
+    event_type          { 'message' }
+    is_for_bot          { true }
+    association :user,   factory: :bot_user
+    provider            'kik'
+    sequence(:event_attributes) do |n|
+      Hash(
+        id: "id-#{n}",
+        chat_id: "chat-id-#{n}",
+        sub_type: 'picture'
+      )
+    end
+  end
+
   factory :messages_from_bot_event, parent: :event do
     event_type          { 'message' }
     is_from_bot         { true }

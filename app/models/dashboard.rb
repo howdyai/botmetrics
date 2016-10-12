@@ -17,7 +17,6 @@ class Dashboard < ActiveRecord::Base
   belongs_to :bot
   belongs_to :user
   has_many :dashboard_events
-  has_many :events, through: :dashboard_events
 
   scope :custom, -> { where("dashboards.dashboard_type" => 'custom') }
   scope :enabled, -> { where("dashboards.enabled" => true) }
@@ -110,6 +109,33 @@ class Dashboard < ActiveRecord::Base
 
   def count
     count_for(self.data)
+  end
+
+  def action_name
+    self.name
+  end
+
+  def events
+    relation = nil
+
+    if custom?
+      relation = Event.where(id: self.dashboard_events.select(:event_id))
+    else
+      bot = self.bot
+
+      relation = bot.events.where("events.event_type" => 'message')
+      if self.provider == 'facebook'
+        relation = relation.where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", event_subtype)
+      elsif self.provider == 'kik'
+        relation = relation.where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = ?", event_subtype)
+      end
+    end
+
+    relation
+  end
+
+  def custom?
+    self.dashboard_type == 'custom'
   end
 
   private
@@ -313,6 +339,20 @@ class Dashboard < ActiveRecord::Base
     when 'file-uploaded'  then 'File Uploads'
     when 'location-sent'  then 'Locations Shared'
     else type.titleize
+    end
+  end
+
+  def event_subtype
+    case self.dashboard_type
+    when 'image-uploaded'       then (self.provider == 'facebook') ? 'image' : 'picture'
+    when 'video-uploaded'       then 'video'
+    when 'audio-uploaded'       then 'audio'
+    when 'link-uploaded'        then 'link'
+    when 'sticker-uploaded'     then 'sticker'
+    when 'scanned-data'         then 'scan-data'
+    when 'friend-picker-chosen' then 'friend-picker'
+    when 'file-uploaded'        then 'file'
+    when 'location-sent'        then 'location'
     end
   end
 end
