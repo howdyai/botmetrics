@@ -11,6 +11,7 @@
       %span
       %b.caret
     .btn-group.time-segmented-controls.pull-right
+      = link_to 'Hour', bot_dashboard_path(@bot, @dashboard), class: (@group_by == 'hour' ? 'btn active' : 'btn'), data: { group: 'hour' }
       = link_to 'Day', bot_dashboard_path(@bot, @dashboard), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
       = link_to 'Week', bot_dashboard_path(@bot, @dashboard, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
       = link_to 'Month', bot_dashboard_path(@bot, @dashboard, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
@@ -23,7 +24,7 @@
           Messages Matching:
           %pre= "\"#{@dashboard.regex}\""
     .col-md-123.col-sm-12.col-xs-12.graph-container
-      = line_chart @dashboard.data, solo_chartjs_opts
+      = line_chart @dashboard.data, solo_chartjs_opts(@group_by)
       = render 'table', dashboard: @dashboard
       = will_paginate @dashboard.tableized, renderer: BootstrapPagination::Rails
 
