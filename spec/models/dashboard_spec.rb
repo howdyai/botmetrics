@@ -40,7 +40,6 @@ RSpec.describe Dashboard, type: :model do
     it { should belong_to :bot }
     it { should belong_to :user }
     it { should have_many :dashboard_events }
-    it { should have_many :events }
   end
 
   describe 'init!' do
