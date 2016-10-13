@@ -138,6 +138,22 @@ class Dashboard < ActiveRecord::Base
     self.dashboard_type == 'custom'
   end
 
+  def action_name
+    case self.dashboard_type
+    when 'image-uploaded'       then 'Uploaded An Image'
+    when 'video-uploaded'       then 'Uploaded A Video'
+    when 'audio-uploaded'       then 'Uploaded An Audio'
+    when 'link-uploaded'        then 'Uploaded A Link'
+    when 'sticker-uploaded'     then 'Uploaded A Sticker'
+    when 'scanned-data'         then 'Scanned Data'
+    when 'friend-picker-chosen' then 'Chosen From Friend Picker'
+    when 'file-uploaded'        then 'Uploaded A File'
+    when 'location-sent'        then 'Sent Location'
+    when 'user-actions'         then 'Clicked Button'
+    else name
+    end
+  end
+
   private
   def instance_ids
     @_instance_ids ||= instances.select(:id)

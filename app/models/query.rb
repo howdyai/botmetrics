@@ -12,7 +12,7 @@ class Query < ActiveRecord::Base
   validates_presence_of  :min_value, if: ->(query) { query.method == 'between' }
   validates_presence_of  :max_value, if: ->(query) { query.method == 'between' }
 
-  delegate :fields, :string_methods, :number_methods, :datetime_methods,
+  delegate :fields, :select_fields_collection, :string_methods, :number_methods, :datetime_methods,
            to: :query_source
 
   def query_source

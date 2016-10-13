@@ -1,4 +1,12 @@
 module Queries
+  class Field
+    attr_accessor :id, :to_label
+
+    def initialize(opts = {})
+      opts.each { |k,v| self.send("#{k}=", v) }
+    end
+  end
+
   class Base
     DASHBOARDS = [
       'user-actions',
@@ -11,7 +19,6 @@ module Queries
       'scanned-data',
       'sticker-uploaded',
       'friend-picker-chosen',
-      'custom'
     ]
 
     STRING_METHODS = {
@@ -41,9 +48,26 @@ module Queries
     end
 
     def fields(bot)
-      dashboard_hash = bot.dashboards.where(dashboard_type: DASHBOARDS, enabled: true).
+      dashboard_hash = bot.dashboards.where(dashboard_type: DASHBOARDS + ['custom'], enabled: true).
                         inject({}) { |hash, d| hash["dashboard:#{d.uid}"] = d.action_name; hash }
       self.class::FIELDS.merge(dashboard_hash)
+    end
+
+    # Returns in format suitable for Simple Form's :grouped_select
+    def select_fields_collection(bot)
+      fields = [
+        ["", self.class::FIELDS.map {|k,v| Queries::Field.new(id: k, to_label: v)}]
+      ]
+
+      if (rich_metrics = bot.dashboards.where(dashboard_type: DASHBOARDS, enabled: true).order("dashboard_type ASC")).count > 0
+        fields << ["Rich Metrics", to_fields(rich_metrics)]
+      end
+
+      if (custom_metrics = bot.dashboards.where(dashboard_type: 'custom', enabled: true).order("dashboard_type ASC")).count > 0
+        fields << ["Custom Metrics", to_fields(custom_metrics)]
+      end
+
+      fields
     end
 
     def string_methods
@@ -56,6 +80,10 @@ module Queries
 
     def datetime_methods
       DATETIME_METHODS
+    end
+
+    def to_fields(relation)
+      relation.map { |d| Queries::Field.new(id: "dashboard:#{d.uid}", to_label: d.action_name) }
     end
   end
 end
