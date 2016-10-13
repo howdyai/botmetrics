@@ -54,6 +54,7 @@ class Dashboard < ActiveRecord::Base
              end
     else
       func = case group_by
+             when 'hour' then 'group_by_hour'
              when 'today', 'day' then 'group_by_day'
              when 'this-week', 'week' then 'group_by_week'
              when 'this-month', 'month' then 'group_by_month'
@@ -290,6 +291,10 @@ class Dashboard < ActiveRecord::Base
 
   def group_by_day(collection, group_col = :created_at)
     collection.group_by_day(group_col, params).count
+  end
+
+  def group_by_hour(collection, group_col = :created_at)
+    collection.group_by_hour(group_col, params).count
   end
 
   def group_by_week(collection, group_col = :created_at)

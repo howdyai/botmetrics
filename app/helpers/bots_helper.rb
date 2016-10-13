@@ -1,5 +1,5 @@
 module BotsHelper
-  def solo_chartjs_opts
+  def solo_chartjs_opts(group_by)
     {
       library: {
         elements: {
@@ -22,12 +22,13 @@ module BotsHelper
           xAxes: [
             {
               ticks: {
-                fontSize: 16
+                fontSize: group_by == 'hour' ? 10 : 16
               },
               time: {
                 displayFormats: {
                   'day': 'MMM D',
-                  'week': 'MMM D'
+                  'week': 'MMM D',
+                  'hour': 'MMM D, HH:mm'
                 }
               }
             }
