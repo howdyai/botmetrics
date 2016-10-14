@@ -10,7 +10,7 @@ support for other messaging platforms coming soon.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
 
-### [Deploy to AWS](#deploy-to-aws-with-convox)
+### [Deploy to AWS](#deploying-botmetrics-to-aws-with-convox)
 
 ## Analytics
 
