@@ -1,34 +1,24 @@
 FROM convox/rails
-
 MAINTAINER Botmetrics <hello@getbotmetrics.com>
 
-RUN apt-get update -qq && apt-get install -y build-essential
+# copy only the files needed for bundle install
+COPY Gemfile      /app/Gemfile
+COPY Gemfile.lock /app/Gemfile.lock
+RUN RAILS_ENV=production bundle install
 
-# for postgres
-RUN apt-get install -y libpq-dev
+# copy only the files needed for assets:precompile
+COPY Rakefile                       /app/Rakefile
+COPY config/database.yml.sample     /app/config/database.yml
+COPY config                         /app/config
+COPY public                         /app/public
+COPY app/assets                     /app/app/assets
+COPY vendor                         /app/vendor
+COPY app/lib/json_web_token.rb      /app/app/lib/json_web_token.rb
+COPY app/lib/jwt_strategy.rb        /app/app/lib/jwt_strategy.rb
+COPY app/services/relax_service.rb  /app/app/services/relax_service.rb
+COPY app/models/user.rb             /app/app/models/user.rb
 
-# for nokogiri
-RUN apt-get install -y libxml2-dev libxslt1-dev
+RUN RAILS_ENV=production SECRET_KEY_BASE=secrud rake assets:precompile
 
-# for a JS runtime
-RUN apt-get install -y nodejs
-
-#phusion passenger
-RUN apt-get install -y wget curl 
-
-# for psql
-RUN apt-get install -y postgresql-client-9.5
-
-ENV APP_HOME /botmetrics
-
-RUN mkdir $APP_HOME
-
-WORKDIR $APP_HOME
-
-ADD Gemfile $APP_HOME/
-
-ADD Gemfile.lock $APP_HOME/
-
-RUN bundle install --binstubs
-
-ADD . $APP_HOME
+# copy the rest of the app
+COPY . /app
