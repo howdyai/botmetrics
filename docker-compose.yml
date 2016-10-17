@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - './data:/var/lib/postgresql/data' 
+      - './data:/var/lib/postgresql/data'
 
   redis:
     image: convox/redis
@@ -19,12 +19,15 @@ services:
       - redis
     build: .
     command: bundle exec passenger start --max-pool-size 3 --min-instances 1
+    labels:
+      - convox.port.443.protocol=https
     ports:
       - "80:3000"
+      - "443:3000"
     links:
       - database
       - redis
-    #Uncomment if you want to bring up with docker-compose    
+    #Uncomment if you want to bring up with docker-compose
     #volumes:
     #  - '.:/botmetrics'
     environment:
