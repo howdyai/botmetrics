@@ -1,6 +1,8 @@
 FROM convox/rails
 MAINTAINER Botmetrics <hello@getbotmetrics.com>
 
+RUN apt-get install -yq wget
+
 # copy only the files needed for bundle install
 COPY Gemfile      /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
