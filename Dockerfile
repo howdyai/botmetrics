@@ -1,7 +1,7 @@
 FROM convox/rails
 MAINTAINER Botmetrics <hello@getbotmetrics.com>
 
-RUN apt-get install -yq wget
+RUN apt-get install -yq wget postgresql-client-9.5
 
 # copy only the files needed for bundle install
 COPY Gemfile      /app/Gemfile
