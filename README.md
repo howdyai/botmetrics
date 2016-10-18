@@ -125,4 +125,4 @@ The Botmetrics Roadmap can be seen
 
 Follow [Botmetrics on Twitter](https://www.twitter.com/getbotmetrics/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) to get the latest updates.
 
-Read the [Botmetrics Blog](http://blog.getbotmetrics.com/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) for more How Tos, Success stories and more on our
+Read the [Botmetrics Blog](http://blog.getbotmetrics.com/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) for more How tos, success stories and more. 
