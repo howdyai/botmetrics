@@ -55,4 +55,8 @@ class Event < ActiveRecord::Base
       relation.where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = ?", type)
     end
   end
+
+  def created_at_string
+    self.created_at.to_s('%Y-%m-%d %H:%M:%S.%N')
+  end
 end

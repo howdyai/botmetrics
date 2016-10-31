@@ -135,16 +135,42 @@ class BotUser < ActiveRecord::Base
     order("last_event_at DESC NULLS LAST")
   end
 
-  def self.by_cohort(bot, start_time: 8.weeks.ago, group_by: 'week')
-    start_time = start_time.beginning_of_week
-    end_time = Time.current.end_of_week
-    # number of weeks
-    periods = ((end_time.to_i - start_time.to_i).to_f / (24 * 60 * 60 * 7)).ceil
+  def self.by_cohort(bot, start_time: 8.weeks.ago, end_time: Time.current, group_by: 'week')
+    start_time = case group_by
+                 when 'day' then start_time.beginning_of_day
+                 when 'week' then start_time.beginning_of_week
+                 when 'month' then start_time.beginning_of_month
+                 end
+
+    first_cohort_end = case group_by
+    when 'day'
+      start_time.end_of_day
+    when 'week'
+      start_time.end_of_week
+    when 'month'
+      start_time.end_of_month
+    end
+
+    end_time = case group_by
+                 when 'day' then end_time.end_of_day
+                 when 'week' then end_time.end_of_week
+                 when 'month' then end_time.end_of_month
+                 end
+    # number of periods
+    multiplier = case group_by
+                 when 'day' then 1
+                 when 'week' then 7
+                 when 'month' then 30
+                 end
+
+    periods = ((end_time.to_i - start_time.to_i).to_f / (24 * 60 * 60 * multiplier)).ceil
+    start_time_string = start_time.strftime('%Y-%m-%d %H:%M:%S.%N')
+    first_cohort_end_string = first_cohort_end.strftime('%Y-%m-%d %H:%M:%S.%N')
 
     bot_instance_ids = bot.instances.pluck("bot_instances.id")
-    first_cohort = sanitize_sql_hash_for_conditions("esub.created_at" => start_time..start_time.end_of_week)
-    users_condition = sanitize_sql_hash_for_conditions("bot_users.created_at" => start_time..start_time.end_of_week)
-    bot_condition = sanitize_sql_hash_for_conditions("esub.bot_instance_id" => bot_instance_ids)
+    first_cohort = sanitize_sql_for_conditions(["esub.created_at BETWEEN :start_time AND :end_time", start_time: start_time_string, end_time: first_cohort_end_string])
+    users_condition = sanitize_sql_for_conditions(["bot_users.created_at BETWEEN :start_time AND :end_time AND bot_users.bot_instance_id IN (:bot_instances)", start_time: start_time_string, end_time: first_cohort_end_string, bot_instances: bot_instance_ids])
+    bot_condition = sanitize_sql_for_conditions(["esub.bot_instance_id IN (?)", bot_instance_ids])
 
     counts = []
     periods.times { |i| counts << "COUNT(DISTINCT e#{i+1}.bot_user_id)" }
@@ -164,7 +190,19 @@ class BotUser < ActiveRecord::Base
     """
 
     (2..periods).each do |i|
-      next_cohort = sanitize_sql_hash_for_conditions("esub.created_at" => (start_time + (i-1).week)..(start_time + (i-1).week).end_of_week)
+      next_start, next_end = case group_by
+      when 'day'
+        [(start_time + (i-1).send(group_by)), (start_time + (i-1).send(group_by)).end_of_day]
+      when 'week'
+        [(start_time + (i-1).send(group_by)), (start_time + (i-1).send(group_by)).end_of_week]
+      when 'month'
+        [(start_time + (i-1).send(group_by)), (start_time + (i-1).send(group_by)).end_of_month]
+      end
+
+      next_start = next_start.strftime('%Y-%m-%d %H:%M:%S.%N')
+      next_end = next_end.strftime('%Y-%m-%d %H:%M:%S.%N')
+
+      next_cohort = sanitize_sql_for_conditions(["esub.created_at BETWEEN :start_time AND :end_time", start_time: next_start, end_time: next_end])
       sql << """
         LEFT OUTER JOIN LATERAL (
          SELECT * FROM events esub

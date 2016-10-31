@@ -6,15 +6,21 @@
       \/
     %h2
       Retention
+  .col-md-7.col-sm-9.col-xs-6.text-right
+    #report-range.pull-right
+      = icon('calendar')
+      %span
+      %b.caret
+    .btn-group.time-segmented-controls.pull-right
+      = link_to 'Daily', bot_retention_index_path(@bot), class: (@group_by == 'day' ? 'btn active' : 'btn'), data: { group: 'day' }
+      = link_to 'Weekly', bot_retention_index_path(@bot, group_by: 'week'), class: (@group_by == 'week' ? 'btn active' : 'btn'), data: { group: 'week' }
+      = link_to 'Monthly', bot_retention_index_path(@bot, group_by: 'month'), class: (@group_by == 'month' ? 'btn active' : 'btn'), data: { group: 'month' }
 
 .container-fluid.retention-container
   .graph.row
     .col-md-12.col-sm-12.col-xs-12#retention
-    .retention-details.text-center
-      %p.retention-details
-        Each cohort represents users that signed up in that week and interacted with your bot at least once.
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.RetentionIndex(#{@retention.to_json}, #{8.weeks.ago.beginning_of_week.to_json});
+    App.page = new App.RetentionIndex(#{@retention.to_json}, #{@start.to_json}, #{@end.to_json}, #{@group_by.to_json});
     App.page.run();
