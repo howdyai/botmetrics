@@ -275,7 +275,6 @@ CREATE TABLE events (
     bot_instance_id integer NOT NULL,
     bot_user_id integer,
     is_for_bot boolean DEFAULT false NOT NULL,
-    "boolean" boolean DEFAULT false NOT NULL,
     event_attributes jsonb DEFAULT '{}'::jsonb NOT NULL,
     provider character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -1371,4 +1370,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161004235348');
 INSERT INTO schema_migrations (version) VALUES ('20161012225313');
 
 INSERT INTO schema_migrations (version) VALUES ('20161031165417');
+
+INSERT INTO schema_migrations (version) VALUES ('20161107211020');
 
