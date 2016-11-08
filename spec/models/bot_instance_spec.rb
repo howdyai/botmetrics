@@ -6,6 +6,7 @@ RSpec.describe BotInstance do
     it { is_expected.to have_many :users }
     it { is_expected.to have_many :events }
     it { is_expected.to have_many :messages }
+    it { is_expected.to have_many :short_links }
   end
 
   describe 'validations' do

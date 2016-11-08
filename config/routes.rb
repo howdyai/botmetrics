@@ -39,6 +39,9 @@ Rails.application.routes.draw do
     resources :messages, only: [:create]
 
     resources :insights, only: [:index]
+
+    resources :shorten_links, only: [:create, :new]
+
   end
 
   resources :users, only: [:show, :update] do
@@ -46,6 +49,8 @@ Rails.application.routes.draw do
       patch :regenerate_api_key
     end
   end
+
+  resources :shorten_links, only: [:show]
 
   root 'static#index'
 

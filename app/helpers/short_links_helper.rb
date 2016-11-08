@@ -1,0 +1,2 @@
+module ShortLinksHelper
+end

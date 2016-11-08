@@ -24,3 +24,4 @@ config/database.yml
 *.pid*
 
 dump.rdb
+logfile
