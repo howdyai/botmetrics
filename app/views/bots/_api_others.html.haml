@@ -6,6 +6,8 @@
       %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
     %li{role: 'presentation'}
       %a{href: '#go', data: { toggle: 'pill' }, role: 'tab'} go
+    %li{role: 'presentation'}
+      %a{href: '#https', data: { toggle: 'pill' }, role: 'tab'} https
   .tab-content.track-code-samples
     .tab-pane.active#nodejs{role: 'tabpanel'}
       %pre
@@ -73,4 +75,16 @@
                 client.Track(postBody)
               }
             })
+    .tab-pane#https{role: 'tabpanel'}
+      %pre#https
+        %code.hljs.bash
+          :preserve
+            # Botmetrics can also accept events over a HTTPS API.
+            # You can POST to this endpoint using the API_KEY and BOT_ID
+            # Be sure to escape the quotes in your JSON Payload
+            # ie. (\"object\" instead of "object")
 
+            curl -X POST \
+            -H "Authorization: #{current_user.api_key}" \
+            #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/events \
+            -d "format=json&event=json-message-payload"

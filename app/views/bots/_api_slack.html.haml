@@ -2,11 +2,12 @@
 %p.api
   You can add more instances to your bot via an HTTP API:
 %pre.api.pre-scrollable
-  :preserve
-    curl -X POST \
-    -H "Authorization: #{current_user.api_key}" \
-    #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/instances \
-    -d "format=json&instance[token]=my-bot-token"
+  %code.hljs.bash
+    :preserve
+      curl -X POST \
+      -H "Authorization: #{current_user.api_key}" \
+      #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/instances \
+      -d "format=json&instance[token]=my-bot-token"
 %h3.api Ruby
 %p.api
   You can also use the Rubygem
@@ -15,9 +16,10 @@
   = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
   Set the following environment variables in your app:
   %pre.api.pre-scrollable
-    :preserve
-      BOTMETRICS_BOT_ID=#{@bot.uid}
-      BOTMETRICS_API_KEY=#{current_user.api_key}
+    %code.hljs.ruby
+      :preserve
+        BOTMETRICS_BOT_ID=#{@bot.uid}
+        BOTMETRICS_API_KEY=#{current_user.api_key}
 %h3.api Node.JS
 %p.api
   You can also use the NPM module
@@ -26,9 +28,10 @@
   = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js'
   Set the following environment variables in your app:
   %pre.api.pre-scrollable
-    :preserve
-      BOTMETRICS_BOT_ID=#{@bot.uid}
-      BOTMETRICS_API_KEY=#{current_user.api_key}
+    %code.hljs.javascript
+      :preserve
+        BOTMETRICS_BOT_ID=#{@bot.uid}
+        BOTMETRICS_API_KEY=#{current_user.api_key}
 %p.api
   and follow along the
   = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
