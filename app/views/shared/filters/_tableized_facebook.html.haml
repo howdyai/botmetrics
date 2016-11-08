@@ -7,6 +7,7 @@
           %th Last Name
           %th Gender
           %th Timezone
+          %th Referrer
           %th Signed Up
           %th Last Interacted With Bot
       %tbody
@@ -16,6 +17,7 @@
             %td= bot_user.last_name
             %td= bot_user.gender
             %td= ActiveSupport::TimeZone[bot_user.timezone]
+            %td= bot_user.ref
             %td= "#{time_ago_in_words(bot_user.created_at)} ago"
             %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
     = will_paginate tableized, renderer: BootstrapPagination::Rails
