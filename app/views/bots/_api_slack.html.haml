@@ -1,38 +1,52 @@
-%h3.api cURL
-%p.api
-  You can add more instances to your bot via an HTTP API:
-%pre.api.pre-scrollable
-  :preserve
-    curl -X POST \
-    -H "Authorization: #{current_user.api_key}" \
-    #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/instances \
-    -d "format=json&instance[token]=my-bot-token"
-%h3.api Ruby
-%p.api
-  You can also use the Rubygem
-  %code botmetrics-rb
-  available at
-  = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
-  Set the following environment variables in your app:
-  %pre.api.pre-scrollable
-    :preserve
-      BOTMETRICS_BOT_ID=#{@bot.uid}
-      BOTMETRICS_API_KEY=#{current_user.api_key}
-%h3.api Node.JS
-%p.api
-  You can also use the NPM module
-  %code botmetrics.js
-  available at
-  = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js'
-  Set the following environment variables in your app:
-  %pre.api.pre-scrollable
-    :preserve
-      BOTMETRICS_BOT_ID=#{@bot.uid}
-      BOTMETRICS_API_KEY=#{current_user.api_key}
-%p.api
-  and follow along the
-  = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
-  for the rest of the instructions.
+.api
+  %ul.nav.nav-pills.nav-code{role: 'tablist'}
+    %li.active{role: 'presentation'}
+      %a{href: '#nodejs', data: { toggle: 'pill' }, role: 'tab'} node.js
+    %li{role: 'presentation'}
+      %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
+    %li{role: 'presentation'}
+      %a{href: '#https', data: { toggle: 'pill' }, role: 'tab'} https
+  .tab-content.track-code-samples
+    .tab-pane.active#nodejs{role: 'tabpanel'}
+      %p.api
+        You can use the Botmetrics NPM module
+        %code botmetrics.js
+        available at
+        = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js'
+        to add more instances to your bot.
+      %p.api
+        Set the following environment variables in your app and follow the
+        = link_to 'README', 'https://github.com/botmetrics/botmetrics.js#botmetrics'
+
+      %pre
+        %code.hljs.bash
+          :preserve
+            BOTMETRICS_BOT_ID=#{@bot.uid}
+            BOTMETRICS_API_KEY=#{current_user.api_key}
+    .tab-pane#ruby{role: 'tabpanel'}
+      %p.api
+        You can use the Botmetrics Rubygem
+        %code botmetrics-rb
+        available at
+        = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
+        to add more instances to your bot.
+      %p.api
+        Set the following environment variables in your app and follow the
+        = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
 
 
-
+      %pre
+        %code.hljs.bash
+          :preserve
+            BOTMETRICS_BOT_ID=#{@bot.uid}
+            BOTMETRICS_API_KEY=#{current_user.api_key}
+    .tab-pane#https{role: 'tabpanel'}
+      %p.api
+        You can easily add more instances to your bot via a HTTP API. 
+      %pre
+        %code.hljs.bash
+          :preserve
+            curl -X POST \
+            -H "Authorization: #{current_user.api_key}" \
+            #{Settings.rails_host || Setting.hostname}/bots/#{@bot.uid}/instances \
+            -d "format=json&instance[token]=my-bot-token"
