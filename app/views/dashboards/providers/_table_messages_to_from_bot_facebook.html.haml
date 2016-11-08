@@ -5,6 +5,7 @@
       %th Last Name
       %th Gender
       %th Timezone
+      %th Referrer
       %th Signed Up
       %th Bot Interactions
       %th Last Interacted with Bot
@@ -15,6 +16,7 @@
         %td= u.last_name
         %td= u.gender
         %td= ActiveSupport::TimeZone[u.timezone] if u.timezone.present?
+        %td= u.ref
         %td= "#{time_ago_in_words(u.created_at)} ago"
         %td= u.events_count
         %td= u.last_event_at.present? ? "#{time_ago_in_words(u.last_event_at)} ago" : 'no messages yet'
