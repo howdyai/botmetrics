@@ -34,7 +34,8 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
           provider: "facebook",
           created_at: Time.at(timestamp.to_f / 1000),
           event_attributes: {
-            payload: "USER_DEFINED_PAYLOAD"
+            payload: "USER_DEFINED_PAYLOAD",
+            referral: nil
           }},
         recip_info: {
           sender_id: "USER_ID", recipient_id: "PAGE_ID"

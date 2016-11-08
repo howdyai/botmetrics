@@ -91,8 +91,12 @@ class FacebookEventsService
   end
 
   def bot_user_params
+    user_attributes = fetch_user.slice(*AVAILABLE_USER_FIELDS)
+    ref = params.dig(:data, :event_attributes, :referral, :ref)
+    user_attributes.merge!(ref: ref) if ref.present?
+
     {
-      user_attributes: fetch_user.slice(*AVAILABLE_USER_FIELDS),
+      user_attributes: user_attributes,
       bot_instance_id: bot_instance.id,
       provider: 'facebook',
       membership_type: 'user'

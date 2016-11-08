@@ -501,6 +501,61 @@ RSpec.describe FacebookEventsService do
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
     end
+
+    context "with referral in the message payload" do
+      let(:events) do
+        {
+          "entry": [{
+            "id": "268855423495782",
+            "time": 1470403317713,
+            "messaging": [{
+              "sender":{
+                "id": fb_user_id
+              },
+              "recipient":{
+                "id": bot_user_id
+              },
+              "timestamp": timestamp,
+              "postback":{
+                "payload": "USER_DEFINED_PAYLOAD",
+                "referral": {
+                  "ref": "producthunt",
+                  "source": "SHORT_LINK",
+                  "type": "OPEN_THREAD"
+                }
+              }
+            }]
+          }]
+        }
+      end
+
+      context "bot user exists" do
+        it_behaves_like "should create an event as well as create the bot users"
+      end
+
+      context "bot user does not exist" do
+        it_behaves_like "should create an event but not create any bot users"
+      end
+
+      it "should create a new BotUser with the 'ref' set to 'producthunt' in user_attributes" do
+        expect {
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.users, :count).by(1)
+
+        user = bot_instance.users.last
+        expect(user.user_attributes['first_name']).to eql first_name
+        expect(user.user_attributes['last_name']).to eql last_name
+        expect(user.user_attributes['profile_pic']).to eql profile_pic
+        expect(user.user_attributes['locale']).to eql locale
+        expect(user.user_attributes['timezone']).to eql timezone
+        expect(user.user_attributes['gender']).to eql gender
+        expect(user.user_attributes['ref']).to eql 'producthunt'
+        expect(user.uid).to eql fb_user_id
+        expect(user.provider).to eql 'facebook'
+        expect(user.membership_type).to eql 'user'
+      end
+    end
   end
 
   describe '"account_linking" event' do
