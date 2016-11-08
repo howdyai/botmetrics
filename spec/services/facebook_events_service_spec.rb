@@ -594,10 +594,79 @@ RSpec.describe FacebookEventsService do
 
     context "bot user exists" do
       it_behaves_like "should create an event as well as create the bot users"
+
     end
 
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
+    end
+  end
+
+  describe '"messaging_referrals" event' do
+    let(:fb_user_id)    { "fb-user-id"          }
+    let(:bot_user_id)   { bot.uid               }
+    let(:text)          { nil                   }
+    let(:event_type)    { 'messaging_referrals' }
+    let(:is_from_bot)   { false }
+    let(:is_for_bot)    { false }
+    let(:is_im)         { false }
+    let(:required_event_attributes) {
+      {
+        "referral" => { "ref"=> "producthunt", "source"=> "SHORTLINK", "type" => "OPEN_THREAD" }
+      }
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "referral":{
+              "ref": "producthunt",
+              "source": "SHORTLINK",
+              "type": "OPEN_THREAD"
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should create a new BotUser and set 'ref' to 'producthunt' in user_attributes" do
+        expect {
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.users, :count).by(1)
+
+        user = bot_instance.users.last
+        expect(user.user_attributes['ref']).to eql 'producthunt'
+      end
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event but not create any bot users"
+
+      it "should create a new BotUser and set 'ref' to 'producthunt' in user_attributes" do
+        create :bot_user, provider: 'facebook', bot_instance: bot_instance, uid: fb_user_id
+
+        expect {
+          do_request
+          bot_instance.reload
+        }.to_not change(bot_instance.users, :count)
+
+        user = bot_instance.users.last
+        expect(user.user_attributes['ref']).to eql 'producthunt'
+      end
     end
   end
 end
