@@ -14,8 +14,6 @@ class RegistrationsController < Devise::RegistrationsController
       return
     end
 
-    subscribe_user = params[:user][:subscribe_to_updates_and_security_patches] == '1'
-
     super do |resource|
       if resource.persisted?
         resource.set_api_key!  if resource.api_key.blank?
@@ -23,9 +21,7 @@ class RegistrationsController < Devise::RegistrationsController
         resource.site_admin = true
         resource.save
 
-        if subscribe_user
-          SubscribeUserToUpdatesJob.perform_async(resource.id)
-        end
+        SubscribeUserToUpdatesJob.perform_async(resource.id)
       end
     end
   end
