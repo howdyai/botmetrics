@@ -13,6 +13,9 @@ class EventSerializer::Facebook::MessagingPostbacks < EventSerializer::Facebook:
   end
 
   def event_attributes
-    { payload: @data.dig(:postback, :payload) }
+    {
+      payload: @data.dig(:postback, :payload),
+      referral: @data.dig(:postback, :referral)
+    }
   end
 end

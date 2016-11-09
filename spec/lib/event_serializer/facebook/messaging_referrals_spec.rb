@@ -1,4 +1,4 @@
-RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
+RSpec.describe EventSerializer::Facebook::MessagingReferrals do
   let!(:timestamp)    { Time.now.to_i * 1000 }
 
   describe '.new' do
@@ -8,7 +8,7 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
   end
 
   describe '#serialize' do
-    subject { EventSerializer::Facebook::MessagingPostbacks.new(data).serialize }
+    subject { EventSerializer::Facebook::MessagingReferrals.new(data).serialize }
 
     let(:data) {
       {
@@ -19,24 +19,30 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
           "id":"PAGE_ID"
         },
         "timestamp":timestamp,
-        "postback":{
-          "payload":"USER_DEFINED_PAYLOAD"
+        "referral":{
+          "ref":"producthunt",
+          "source": "SHORTLINK",
+          "type": "OPEN_THREAD"
         }
       }
     }
     let(:serialized) {
       {
         data:  {
-          event_type: "messaging_postbacks",
-          is_for_bot: true,
-          is_im: true,
+          event_type: "messaging_referrals",
+          is_for_bot: false,
+          is_im: false,
           is_from_bot: false,
           provider: "facebook",
           created_at: Time.at(timestamp.to_f / 1000),
           event_attributes: {
-            payload: "USER_DEFINED_PAYLOAD",
-            referral: nil
-          }},
+            referral: {
+              ref: "producthunt",
+              source: "SHORTLINK",
+              type: "OPEN_THREAD"
+            }
+          }
+        },
         recip_info: {
           sender_id: "USER_ID", recipient_id: "PAGE_ID"
         }
@@ -46,3 +52,4 @@ RSpec.describe EventSerializer::Facebook::MessagingPostbacks do
     it { expect(subject).to eql serialized }
   end
 end
+

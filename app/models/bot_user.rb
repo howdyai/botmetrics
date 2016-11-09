@@ -77,7 +77,7 @@ class BotUser < ActiveRecord::Base
     where(created_at: min..max)
   end
 
-  store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender, :timezone
+  store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender, :timezone, :ref
 
   def self.with_bot_instances(instances, bot, start_time, end_time)
     created_at = bot.provider == 'slack' ? "bot_instances.created_at" : "bot_users.created_at"

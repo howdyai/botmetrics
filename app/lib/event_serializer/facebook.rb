@@ -6,7 +6,8 @@ class EventSerializer::Facebook
                       optin: 'MessagingOptins',
                       account_linking: 'AccountLinking',
                       delivery: 'MessageDeliveries',
-                      read: 'MessageReads'
+                      read: 'MessageReads',
+                      referral: 'MessagingReferrals'
                     }
 
   def initialize(data, bi_uid)

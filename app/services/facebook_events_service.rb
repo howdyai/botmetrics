@@ -26,7 +26,16 @@ class FacebookEventsService
         update_message_events!
       else
         @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
-        @bot_user.assign_attributes(bot_user_params) if @bot_user.new_record?
+        if @bot_user.new_record?
+          @bot_user.assign_attributes(bot_user_params)
+        else
+          ref = params.dig(:data, :event_attributes, :referral, :ref)
+          if ref.present?
+            @bot_user.user_attributes['ref'] = ref
+            @bot_user.save
+          end
+        end
+
         create_message_events!
       end
     end
@@ -91,8 +100,12 @@ class FacebookEventsService
   end
 
   def bot_user_params
+    user_attributes = fetch_user.slice(*AVAILABLE_USER_FIELDS)
+    ref = params.dig(:data, :event_attributes, :referral, :ref)
+    user_attributes.merge!(ref: ref) if ref.present?
+
     {
-      user_attributes: fetch_user.slice(*AVAILABLE_USER_FIELDS),
+      user_attributes: user_attributes,
       bot_instance_id: bot_instance.id,
       provider: 'facebook',
       membership_type: 'user'
