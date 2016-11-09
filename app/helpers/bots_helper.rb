@@ -40,7 +40,7 @@ module BotsHelper
 
   def dashboard_chartjs_opts
     {
-      height: '100px',
+      height: '60px',
       library: {
         elements: {
           point: {

@@ -126,11 +126,12 @@ body.retention.index
       margin-bottom: 0
       display: inline-block
   .growth
-    position: absolute
+    font-size: 12px
     top: 12px
-    right: 12px
+    right: 10px
     border: 1px solid #ccc
     border-radius: 4px
+    position: absolute
     padding: 2px 5px
     &.negative
       color: #d9534f
@@ -233,20 +234,36 @@ body.retention.index
     padding-top: 25px
     a
       color: #333
-      &:hover
+    .stat
+      &.active
         text-decoration: none
         color: #333
-        .stat
-          box-shadow: 0 4px 10px #ccc
-    .stat
+        box-shadow: 0 4px 10px #ccc
       h3
         margin-top: 0
+        font-size: 20px
       background-color: #fff
       border-radius: 5px
       box-shadow: 0 1px 1px #dae1e3
-      min-height: 120px
       padding: 1.25rem
       margin: 0 1em 2em 1em
+      min-height: 120px
+      form.button_to
+        padding: 0
+        visibility: hidden
+      .delete-dashboard
+        background-color: #e9573f
+        color: #fff
+        position: absolute
+        z-index: 9999
+        border: none
+        border-radius: 20px
+        opacity: 0.6
+        margin: 30px
+        right: -43px
+        top: -40px
+        &:hover
+          opacity: 1.0
       canvas
         opacity: 0.25
         margin-left: -40px
@@ -259,15 +276,13 @@ body.retention.index
         font-size: 64px
         z-index: 99999
       &.new-dashboard
+        height: 122px
         &.all-time
-          height: 122px
           h3
             padding-top: 0
         border: 2px dotted #ccc
-        height: 162px
         box-shadow: none
         h3
-          padding-top: 20px
           font-size: 40px
         h4
           font-size: 24px

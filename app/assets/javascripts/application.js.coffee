@@ -28,3 +28,4 @@
 #= require pages/bots/verifying_webhook
 #= require pages/insights/filter
 #= require pages/retention/index
+#= require pages/dashboards/index

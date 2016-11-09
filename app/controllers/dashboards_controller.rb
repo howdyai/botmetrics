@@ -44,6 +44,16 @@ class DashboardsController < ApplicationController
     @dashboard.init!
   end
 
+  def destroy
+    @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true, dashboard_type: 'custom')
+    @dashboard.update_attribute(:enabled, false)
+
+    respond_to do |format|
+      format.html { redirect_to bot_path(@bot) }
+      format.js   { render :destroy            }
+    end
+  end
+
   protected
   def init_detail_view!
     @group_by = params[:group_by].presence || 'day'
