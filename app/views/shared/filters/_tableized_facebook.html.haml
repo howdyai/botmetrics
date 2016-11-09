@@ -16,7 +16,7 @@
             %td= bot_user.first_name
             %td= bot_user.last_name
             %td= bot_user.gender
-            %td= ActiveSupport::TimeZone[bot_user.timezone]
+            %td= bot_user.timezone.present? ? ActiveSupport::TimeZone[bot_user.timezone] : ''
             %td= bot_user.ref
             %td= "#{time_ago_in_words(bot_user.created_at)} ago"
             %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
