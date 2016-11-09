@@ -31,21 +31,21 @@ class BotInstancesController < ApplicationController
   end
 
   def edit
-    if @bot.provider != 'facebook'
+    if @bot.provider == 'slack'
       redirect_to(bot_path(@bot)) && return
     end
 
-    @instance = @bot.instances.find(params[:id])
+    @instance = @bot.instances.first
   end
 
   def update
-    if @bot.provider != 'facebook'
+    if @bot.provider == 'slack'
       redirect_to(bot_path(@bot)) && return
     end
 
-    @instance = @bot.instances.find(params[:id])
+    @instance = @bot.instances.first
 
-    if @instance.update_attributes(update_instance_params)
+    if @instance.present? && @instance.update_attributes(update_instance_params)
       SetupBotJob.perform_async(@instance.id, current_user.id)
 
       respond_to do |format|

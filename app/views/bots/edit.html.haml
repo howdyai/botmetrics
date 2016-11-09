@@ -14,6 +14,19 @@
 
       = f.submit 'Save'
 
+    - if @bot.provider != 'slack' && (instance = @bot.instances.first).present?
+      %h2.teams
+        - if @bot.provider == 'facebook'
+          Update Page Access token
+        - elsif @bot.provider == 'kik'
+          Update API Key &amp; Username
+      %hr
+      = simple_form_for [@bot, instance], url: bot_instance_path(@bot, instance), as: :instance, method: :patch do |f|
+        - if @bot.provider == 'kik'
+          = f.input :uid, label: "Your Bot's Username", required: true
+        = f.input :token, label: new_instance_token_label(@bot), required: true
+        = f.submit 'Update Bot'
+
     %h2.teams Team
     %hr
       %ul
