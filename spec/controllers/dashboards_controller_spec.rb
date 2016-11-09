@@ -66,4 +66,28 @@ RSpec.describe DashboardsController do
       expect(response).to render_template :show
     end
   end
+
+  describe 'DELETE destroy' do
+    let!(:dashboard) { create :dashboard, bot: bot, dashboard_type: 'custom', regex: 'hello' }
+
+    def do_request
+      delete :destroy, bot_id: bot.uid, id: dashboard.uid
+    end
+
+    before do
+      sign_in user
+    end
+
+    it 'should disable the dashboard' do
+      expect {
+        do_request
+        dashboard.reload
+      }.to change(dashboard, :enabled).from(true).to(false)
+    end
+
+    it 'should redirect to bot_path' do
+      do_request
+      expect(response).to redirect_to bot_path(bot)
+    end
+  end
 end

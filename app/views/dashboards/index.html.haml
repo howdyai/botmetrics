@@ -18,17 +18,22 @@
 
 .stats.row
   - @dashboards.each do |dashboard|
-    = link_to bot_dashboard_path(@bot, dashboard) do
-      .stat.col-sm-6.col-md-3
-        %h3= dashboard.name
-        = formatted_growth(dashboard.growth)
-        %p.number= number_with_delimiter(dashboard.count)
-        - if @show_trends
-          = line_chart dashboard.data, dashboard_chartjs_opts
-  = link_to new_bot_dashboard_path(@bot) do
-    .stat.col-sm-6.col-md-3.new-dashboard{class: @group_by}
-      %h3.text-center
-        +
-      %h4.text-center
-        New Custom Dashboard
+    .stat.col-sm-6.col-md-3{class: dashboard.custom? ? 'custom' : '', id: "dashboard-#{dashboard.uid}", data: { ref: bot_dashboard_path(@bot, dashboard) }}
+      - if dashboard.custom?
+        = button_to bot_dashboard_path(@bot, dashboard), method: :delete, remote: true, class: 'delete-dashboard', data: { confirm: 'Are you sure you want to disable this dashboard?', disable_with: '...' } do
+          %i.fa.fa-trash
+      %h3= dashboard.name
+      = formatted_growth(dashboard.growth)
+      %p.number= number_with_delimiter(dashboard.count)
+      - if @show_trends
+        = line_chart dashboard.data, dashboard_chartjs_opts
+  .stat.col-sm-6.col-md-3.new-dashboard{class: @group_by, data: { ref: new_bot_dashboard_path(@bot) }}
+    %h3.text-center
+      +
+    %h4.text-center
+      New Custom Dashboard
 
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.DashboardsIndex();
+    App.page.run();
