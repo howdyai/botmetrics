@@ -69,6 +69,14 @@ class BotsController < ApplicationController
     redirect_to bot_dashboards_path(@bot)
   end
 
+  def destroy
+    @bot.update_attribute(:enabled, false)
+    session[:bot_id] = nil
+
+    flash[:info] = "'#{@bot.name}' has been deleted and metrics collection has been disabled"
+    redirect_to bots_path
+  end
+
   def verifying_webhook
     ValidateWebhookAndUpdatesJob.perform_in(0.5.seconds, @bot.id)
   end

@@ -48,6 +48,12 @@
           = f.input :bot_id, required: true, input_html: { value: @bot.uid }, as: :hidden
           = f.submit 'Invite Team Member'
 
+    %h2.api Disable Metrics Collection
+    %hr
+    %p.disable-metrics-collection
+      Disable metrics collection for this bot and remove from dashboard view
+      = button_to 'Delete Bot', bot_path(@bot), method: :delete, form_class: 'delete-bot', data: { confirm: "Are you sure you want to disable metrics collection for this bot?" }
+
     %h2.api How To Integrate
     %hr
     - if @bot.provider == 'slack'

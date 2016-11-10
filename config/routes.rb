@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   resources :settings, only: [:new, :create]
 
-  resources :bots, only: [:index, :show, :new, :create, :edit, :update] do
+  resources :bots do
     resources :events, only: [:create]
     resources :dashboards, only: [:index, :show, :new, :create, :destroy]
 
