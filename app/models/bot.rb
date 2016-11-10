@@ -24,6 +24,8 @@ class Bot < ActiveRecord::Base
   has_many :webhook_events
   has_many :dashboards
 
+  scope :enabled,     -> { where(enabled: true) }
+
   def build_instance(params)
     instance = instances.find_by(provider: provider)
     if instance.present? && instance.provider != 'slack'

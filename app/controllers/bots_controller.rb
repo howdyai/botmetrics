@@ -11,8 +11,8 @@ class BotsController < ApplicationController
   end
 
   def index
-    if(bot = current_user.bots.first).present?
-      redirect_to bot_path(current_user.bots.first)
+    if(bot = current_user.bots.enabled.first).present?
+      redirect_to bot_path(bot)
     else
       flash[:info] = "You need to create a bot first!"
       redirect_to new_bot_path
@@ -67,6 +67,14 @@ class BotsController < ApplicationController
     end
 
     redirect_to bot_dashboards_path(@bot)
+  end
+
+  def destroy
+    @bot.update_attribute(:enabled, false)
+    session[:bot_id] = nil
+
+    flash[:info] = "'#{@bot.name}' has been deleted and metrics collection has been disabled"
+    redirect_to bots_path
   end
 
   def verifying_webhook

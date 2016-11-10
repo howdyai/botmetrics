@@ -132,6 +132,30 @@ RSpec.describe BotsController do
     end
   end
 
+  describe 'DELETE destroy' do
+    before do
+      sign_in user
+    end
+
+    def do_request
+      delete :destroy, id: bot.to_param
+    end
+
+    it 'should disable the bot' do
+      expect {
+        do_request
+        bot.reload
+      }.to change(bot, :enabled)
+
+      expect(bot.enabled).to be_falsey
+    end
+
+    it 'should redirect to the bots path' do
+      do_request
+      expect(response).to redirect_to bots_path
+    end
+  end
+
   describe 'PATCH update' do
     before do
       sign_in user

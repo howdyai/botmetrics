@@ -10,6 +10,6 @@ class ApplicationController < ActionController::Base
   end
 
   def find_bot
-    @bot = current_user.bots.find_by!(uid: params[:bot_id] || params[:id])
+    @bot = current_user.bots.enabled.find_by!(uid: params[:bot_id] || params[:id])
   end
 end

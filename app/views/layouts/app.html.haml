@@ -24,7 +24,7 @@
               %h3.bot-name= truncate(@bot.name, length: 20)
               %span.caret
             %ul.dropdown-menu.dropdown-menu-left{role: 'menu', "data-no-turbolink" => true}
-              - if (bots = current_user.bots.where("bots.uid <> ?", @bot.uid)).present?
+              - if (bots = current_user.bots.enabled.where("bots.uid <> ?", @bot.uid)).present?
                 - bots.each do |b|
                   %li{role: 'presentation'}
                     = link_to b.name, bot_path(b)
