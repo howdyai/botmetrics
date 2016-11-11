@@ -43,6 +43,10 @@ class NewNotificationController < ApplicationController
 
       send_or_queue_and_redirect
     else
+      if (error = @notification.errors[:scheduled_at]).present?
+        flash[:error] = "The time you picked has already passed in some time zones"
+      end
+
       redirect_to step_3_bot_new_notification_index_path(@bot, params.slice(:notification))
     end
   end
