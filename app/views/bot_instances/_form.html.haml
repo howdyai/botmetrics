@@ -3,7 +3,7 @@
     - if @bot.provider == 'slack'
       %br
       .api-instructions
-        Use the Botmetrics API with Node.JS, Ruby, or https to start tracking your Slack Bots:
+        Use the Botmetrics API with Node.JS, Ruby, Go or https to start tracking your Slack Bots:
         = render partial: 'bots/api_slack'
       %hr
       You can also track a Single Bot by entering the Bot Token below:
@@ -15,7 +15,6 @@
       %p.disclaimer= new_instance_disclaimer(@bot)
       = f.submit new_instance_submit_text(@bot)
 
-    
   .col-md-7.onboarding-help
     = new_instance_onboarding_image(@bot)
     = raw(new_instance_tips(@bot))

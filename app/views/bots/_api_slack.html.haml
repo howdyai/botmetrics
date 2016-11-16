@@ -5,6 +5,8 @@
     %li{role: 'presentation'}
       %a{href: '#ruby', data: { toggle: 'pill' }, role: 'tab'} ruby
     %li{role: 'presentation'}
+      %a{href: '#go', data: { toggle: 'pill' }, role: 'tab'} go
+    %li{role: 'presentation'}
       %a{href: '#https', data: { toggle: 'pill' }, role: 'tab'} https
   .tab-content.track-code-samples
     .tab-pane.active#nodejs{role: 'tabpanel'}
@@ -12,37 +14,55 @@
         You can use the Botmetrics NPM module
         %code botmetrics.js
         available at
-        = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js'
+        = link_to 'botmetrics/botmetrics.js', 'https://github.com/botmetrics/botmetrics.js#usage-slack'
         to add more instances to your bot.
       %p.api
         Set the following environment variables in your app and follow the
-        = link_to 'README', 'https://github.com/botmetrics/botmetrics.js#botmetrics'
+        = link_to 'README', 'https://github.com/botmetrics/botmetrics.js#usage-slack'
 
       %pre
         %code.hljs.bash
           :preserve
             BOTMETRICS_BOT_ID=#{@bot.uid}
             BOTMETRICS_API_KEY=#{current_user.api_key}
+
     .tab-pane#ruby{role: 'tabpanel'}
       %p.api
         You can use the Botmetrics Rubygem
         %code botmetrics-rb
         available at
-        = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb'
+        = link_to 'botmetrics/botmetrics-rb', 'https://github.com/botmetrics/botmetrics-rb#usage-slack'
         to add more instances to your bot.
       %p.api
         Set the following environment variables in your app and follow the
-        = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb'
-
+        = link_to 'README', 'https://github.com/botmetrics/botmetrics-rb#usage-slack'
 
       %pre
         %code.hljs.bash
           :preserve
             BOTMETRICS_BOT_ID=#{@bot.uid}
             BOTMETRICS_API_KEY=#{current_user.api_key}
+
+    .tab-pane#go{role: 'tabpanel'}
+      %p.api
+        You can use the Botmetrics library
+        %code go-botmetrics
+        available at
+        = link_to 'botmetrics/go-botmetrics', 'https://github.com/botmetrics/go-botmetrics#usage-slack'
+        to add more instances to your bot.
+      %p.api
+        Set the following environment variables in your app and follow the
+        = link_to 'README', 'https://github.com/botmetrics/go-botmetrics#usage-slack'
+
+      %pre
+        %code.hljs.bash
+          :preserve
+            BOTMETRICS_BOT_ID=#{@bot.uid}
+            BOTMETRICS_API_KEY=#{current_user.api_key}
+
     .tab-pane#https{role: 'tabpanel'}
       %p.api
-        You can easily add more instances to your bot via a HTTP API. 
+        You can easily add more instances to your bot via a HTTP API.
       %pre
         %code.hljs.bash
           :preserve
