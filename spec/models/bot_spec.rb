@@ -7,8 +7,7 @@ RSpec.describe Bot do
 
     it { is_expected.to allow_value('slack').for(:provider) }
     it { is_expected.to allow_value('kik').for(:provider) }
-    it { is_expected.to allow_value('facebook').for(:provider) }
-    it { is_expected.to allow_value('telegram').for(:provider) }
+    it { is_expected.to allow_value('microsoft').for(:provider) }
     it { is_expected.to_not allow_value('test').for(:provider) }
 
     it { is_expected.to_not allow_value('1https://').for(:webhook_url) }

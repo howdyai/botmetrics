@@ -7,8 +7,7 @@ class Bot < ActiveRecord::Base
     'facebook' => true,
     'slack' => true,
     'kik' => true,
-    'telegram' => false,
-    'amazon' => false
+    'microsoft' => false
   }
 
   validates_inclusion_of :provider, in: PROVIDERS.keys
