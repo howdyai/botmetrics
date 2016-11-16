@@ -37,33 +37,16 @@ re-engagement notifications based on pre-selected criteria.
 
 ![Notifications](https://github.com/botmetrics/botmetrics/raw/master/app/assets/images/homepage/notifications.png)
 
-## Quick Installation
+## Installation
 
-You can deploy Botmetrics with one click to your Heroku account.
+* [Heroku](https://botmetrics.readme.io/docs/running-botmetrics-on-heroku#section-deploying-botmetrics-to-heroku)
+* [AWS](https://botmetrics.readme.io/docs/production-on-amazon-web-services#section-deploying-botmetrics-to-aws-with-convox)
+* [Linux](https://botmetrics.readme.io/docs/running-botmetrics-on-linux#section-installing-botmetrics-for-production-on-linux)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/botmetrics/botmetrics)
+## Updates
 
-One-click deployment to Amazon AWS, Google Cloud and Microsoft Azure is
-coming soon!
-
-## Updating your Heroku installation
-
-1. Clone the repo to your local computer.
-2. Setup a Heroku git remote for your local instance `heroku git:remote -a <your-app-name>`
-3. For the first time, you will need to run `git push -f heroku master`
-4. For subsequent updates, run `git pull --rebase origin master && git push heroku master`
-5. Run `heroku run rake db:migrate` for database migrations that need to
-   happen.
-
-## Installation on your own Linux server
-
-1. Make sure you have Ruby 2.3.1 installed along with Rubygems (make
-   sure you have `libxslt-dev`, `libxml2-dev`, `libpq-dev` installed on
-your machine).
-2. Setup the `.env` file by running `cp .env-example .env`
-3. Replace `JSON_WEB_TOKEN_SECRET` with your own randomized secret.
-4. Replace `DATABASE_URL` and `REDIS_URL` with URLs to your Postgres and Redis database URLs respectively. (Postgres and Redis can be on the same machine or different machines).
-5. Run `./script/server` to start the server.
+* [Heroku](https://botmetrics.readme.io/docs/running-botmetrics-on-linux#section-installing-botmetrics-for-production-on-linux)
+* [AWS](https://botmetrics.readme.io/docs/production-on-amazon-web-services#section-updating-your-aws-installation)
 
 ## Development
 
@@ -94,35 +77,8 @@ The Botmetrics Roadmap can be seen
 
 [![CircleCI](https://circleci.com/gh/botmetrics/botmetrics/tree/master.svg?style=svg)](https://circleci.com/gh/botmetrics/botmetrics/tree/master)
 
-## Running Botmetrics with Docker Compose
-
-1. [Install Docker](https://www.docker.com/products/overview#/install_the_platform/?utm_source=getbotmetrics.com&utm_campaign=github_docker)
-2. Edit `docker-compose.yml` to update all the instances of  `JSON_WEB_TOKEN_SECRET`, REDIS_URL and DATABASE_URL
-3. Get the database ready with `docker-compose run web bundle exec rake db:reset`
-4. Bring up the services with `docker-compose up` in the botmetrics project directory.
-5. Goto [localhost:3000](http://localhost:3000) Enjoy!
-
-## Deploying Botmetrics to AWS with Convox
-
-[Convox](https://www.convox.com) is an easy way to deploy dockerized applications to [AWS](http://www.aws.com)
-
-1. Sign up for Convox, Install a Rack and Convox CLI.
-2. In your botmetrics directory issue the following commands:
-   `convox apps create` to create an application called botmetrics
-3. `convox services create postgres && convox services create redis` this will provision a Postgres and Redis Service on AWS (Go get a coffee.)
-4. Once convox has finished creating the app you can start you first deploy with `convox deploy`
-5. Set the environment variables for Redis and Postgres
-   1. `convox services` will list the names of the postgres and redis service instances.
-   2. `convox service info <service name>` will provide the URL for each service.
-   3. Use `convox env set REDIS_URL=<url_from_redis_service>` and `convox env set DATABASE_URL=<url_from_redis_service>`
-   4. Note the final release ID
-6. After convox deploy from step 5 has finished promote the release with the ENV variables with `convox releases promote <release_id>`
-7. Setup your database for the first time with `convox run web rake db:structure:load db:seed`
-8. Get the public URL for your app with `convox apps info` it's the one that's on `port 80`
-9. Browse to the URL and Enjoy!
-
 ## Stay Connected
 
 Follow [Botmetrics on Twitter](https://www.twitter.com/getbotmetrics/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) to get the latest updates.
 
-Read the [Botmetrics Blog](http://blog.getbotmetrics.com/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) for more How tos, success stories and more. 
+Read the [Botmetrics Blog](http://blog.getbotmetrics.com/?utm_source=github&utm_campaign=repo&utm_keyword=botmetrics_repo) for more How tos, success stories and more.
