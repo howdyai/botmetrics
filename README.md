@@ -43,7 +43,7 @@ re-engagement notifications based on pre-selected criteria.
 * [AWS](https://botmetrics.readme.io/docs/production-on-amazon-web-services#section-deploying-botmetrics-to-aws-with-convox)
 * [Linux](https://botmetrics.readme.io/docs/running-botmetrics-on-linux#section-installing-botmetrics-for-production-on-linux)
 
-## Updates
+## Updating your Installation
 
 * [Heroku](https://botmetrics.readme.io/docs/running-botmetrics-on-linux#section-installing-botmetrics-for-production-on-linux)
 * [AWS](https://botmetrics.readme.io/docs/production-on-amazon-web-services#section-updating-your-aws-installation)
