@@ -25,12 +25,15 @@ class RelaxService
         Rails.logger.error "couldn't find bot instance for #{event.inspect}"
       end
 
+      event_attributes = {
+        channel: event.channel_uid,
+        timestamp: event.timestamp
+      }
+      event_attributes[:attachments] = event.attachments if event.attachments.present?
+
       e = bi.events.create(
         user: user,
-        event_attributes: {
-          channel: event.channel_uid,
-          timestamp: event.timestamp
-        },
+        event_attributes: event_attributes,
         is_for_bot: is_for_bot?(event),
         is_im: event.im,
         is_from_bot: event.relax_bot_uid == event.user_uid,
