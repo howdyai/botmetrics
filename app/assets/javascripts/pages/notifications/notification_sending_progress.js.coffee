@@ -3,7 +3,7 @@
 window.App ||= {}
 
 class App.NotificationSendingProgress extends App.AppBase
-  constructor: (@notificationId, @pusherAPIKey) ->
+  constructor: (@botId, @notificationId, @pusherAPIKey) ->
     super()
 
   run: ->
@@ -27,16 +27,28 @@ class App.NotificationSendingProgress extends App.AppBase
       # Set Progress Bar on Page Load
       set_progress_bar()
 
-      pusher = new Pusher(self.pusherAPIKey)
-      channel = pusher.subscribe "notification"
-      channel.bind "notification-#{self.notificationId}", (data) ->
-        d = JSON.parse(data.message)
-
-        if d.ok
-          set_sent_count(d.sent)
+      poll = ->
+        $.getJSON "/bots/#{self.botId}/notifications/#{self.notificationId}", (data, success) ->
+          set_sent_count(data.sent)
           set_progress_bar()
-        else
-          $('.failures ul').append("<li>Failed to send message to #{d.recipient}</li>")
+          total = parseInt($('.progress-bar').data('total'))
+          if data.sent < total
+            setTimeout ->
+              poll()
+            , 1000
+
+      if self.pusherAPIKey != ""
+        pusher = new Pusher(self.pusherAPIKey)
+        channel = pusher.subscribe "notification"
+        channel.bind "notification-#{self.notificationId}", (data) ->
+          d = JSON.parse(data.message)
+
+          if d.ok
+            set_sent_count(d.sent)
+            set_progress_bar()
+          else
+            $('.failures ul').append("<li>Failed to send message to #{d.recipient}</li>")
+      poll()
 
   redirect_to_notifications: ->
     uri = new Uri(window.location.href)
