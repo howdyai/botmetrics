@@ -18,6 +18,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :users, controller: "bot_users", only: [:update], as: :users
+
     resources :retention, only: [:index]
 
     resources :notifications, except: [:new, :create, :edit, :update]
