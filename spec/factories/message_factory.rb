@@ -16,5 +16,10 @@ FactoryGirl.define do
       message_attributes({user: 'U1234'})
       text 'ok!'
     end
+
+    trait :to_kik do
+      message_attributes({user: 'U1234'})
+      text 'ok!'
+    end
   end
 end

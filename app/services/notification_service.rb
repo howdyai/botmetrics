@@ -34,8 +34,9 @@ class NotificationService
 
     bot_users.each do |bot_user|
       message_object = case bot_user.provider
-                       when 'slack' then Messages::Slack.new(message_params(bot_user))
+                       when 'slack'    then Messages::Slack.new(message_params(bot_user))
                        when 'facebook' then Messages::Facebook.new(message_params(bot_user))
+                       when 'kik'      then Messages::Kik.new(message_params(bot_user))
                        end
       message_model  = message_object.save_for(bot_user.bot_instance, notification_params(bot_user))
 
