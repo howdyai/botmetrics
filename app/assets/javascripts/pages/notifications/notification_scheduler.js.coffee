@@ -16,6 +16,8 @@ class App.NotificationScheduler extends App.AppBase
         $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
         $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
         $('input[name="notification[recurring]"]').val(false)
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('required')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').removeAttr('required')
 
       $('input[id=send_later_once]').on 'click', ->
         $('.scheduler-options.once input[name="notification[scheduled_at]"]').removeAttr('readonly')
@@ -23,12 +25,16 @@ class App.NotificationScheduler extends App.AppBase
         $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').removeAttr('disabled')
         $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
         $('input[name="notification[recurring]"]').val(false)
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('required')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').attr('required', 'true')
 
       $('input[id=send_later_recurring]').on 'click', ->
         $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('readonly', 'readonly')
         $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('readonly')
         $('.scheduler-options.once input[name="notification[scheduled_at]"]').val('').attr('disabled', 'disabled')
         $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').removeAttr('disabled')
+        $('.scheduler-options.recurring input[name="notification[scheduled_at]"]').attr('required', 'true')
+        $('.scheduler-options.once input[name="notification[scheduled_at]"]').removeAttr('required')
 
         $('input[name="notification[recurring]"]').val(true)
 
