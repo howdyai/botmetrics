@@ -15,5 +15,11 @@ FactoryGirl.define do
         create :facebook_query, query_set: qs
       end
     end
+
+    trait :with_kik_queries do
+      after :create do |qs|
+        create :kik_query, query_set: qs
+      end
+    end
   end
 end

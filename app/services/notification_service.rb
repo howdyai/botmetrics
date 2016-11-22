@@ -86,6 +86,7 @@ class NotificationService
       notification.scheduled_at.in_time_zone(time_zone)
     else
       Rails.logger.warn "[FAILED NOTIFICATION::TimeZone] Failed to schedule Notification #{notification.id} for BotUser #{bot_user.inspect}"
+      notification.scheduled_at.in_time_zone('GMT')
     end
   end
 end
