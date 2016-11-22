@@ -13,6 +13,11 @@ class NotificationsController < ApplicationController
 
   def show
     @send_count = FilterBotUsersService.new(@notification.query_set).scope.size
+
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: { sent: @notification.messages.sent.count } }
+    end
   end
 
   def destroy

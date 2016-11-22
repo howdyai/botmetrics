@@ -25,5 +25,5 @@
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.NotificationSendingProgress(#{@notification.id.to_json}, #{Pusher.key.to_json});
+    App.page = new App.NotificationSendingProgress(#{@bot.uid.to_json}, #{@notification.uid.to_json}, #{Pusher.key.to_json});
     App.page.run();

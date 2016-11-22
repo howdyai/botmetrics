@@ -33,7 +33,7 @@ class MessageService
   def ping_pusher_for_new_message_notification
     PusherJob.perform_async(
       "notification",
-      "notification-#{notification.id}",
+      "notification-#{notification.uid}",
       {
         ok: success,
         recipient: (user || channel),
