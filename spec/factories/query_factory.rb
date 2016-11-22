@@ -22,4 +22,12 @@ FactoryGirl.define do
     add_attribute :method, 'contains'
     add_attribute :value, 'win'
   end
+
+  factory :kik_query, class: Query do
+    association :query_set, factory: :query_set
+    provider 'kik'
+    add_attribute :field, 'first_name'
+    add_attribute :method, 'contains'
+    add_attribute :value, 'win'
+  end
 end

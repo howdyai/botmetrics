@@ -33,5 +33,15 @@ FactoryGirl.define do
         }
       end
     end
+
+    trait :with_kik_attributes do
+      user_attributes do
+        {
+          'first_name'           => Faker::Name.first_name,
+          'last_name'            => Faker::Name.last_name,
+          'profile_pic_url'      => Faker::Avatar.image
+        }
+      end
+    end
   end
 end
