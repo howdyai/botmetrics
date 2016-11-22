@@ -38,7 +38,16 @@
 
             .scheduler-options.once
               = f.input :scheduled_at, label: false, placeholder: 'Choose a Date & Time', input_html: { readonly: :readonly }
-
+              - if @bot.provider == 'kik'
+                %p.disclaimer
+                  Kik does not provide timezone information for users, so messages will be sent in
+                  %strong GMT
+                  timezone
+              - else
+                %p.disclaimer
+                  For users for whom timezone information is not available, messages will be sent in
+                  %strong GMT
+                  timezone
             %hr
 
             .radio
@@ -52,6 +61,17 @@
                 %span.input-group-addon every day at
                 = f.input :scheduled_at, label: false, placeholder: 'Choose a Time', input_html: { readonly: :readonly }
               = f.input :recurring, as: :hidden
+
+              - if @bot.provider == 'kik'
+                %p.disclaimer
+                  Kik does not provide timezone information for users, so messages will be sent in
+                  %strong GMT
+                  timezone
+              - else
+                %p.disclaimer
+                  For users for whom timezone information is not available, messages will be sent in
+                  %strong GMT
+                  timezone
 
     .steps-navigation
       = link_to 'Previous', step_2_bot_new_notification_index_path(@bot, params.slice(:notification)), class: 'btn btn-lg btn-warning'
