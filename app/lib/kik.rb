@@ -11,7 +11,6 @@ class Kik
 
   def call(kik_api, method, params = {}, &block)
     params = params.select { |k,v| v.present? }
-    encoded_params = URI.encode_www_form(params)
     auth_token = Base64.urlsafe_encode64("#{@username}:#{@token}")
     opts = {
       omit_default_port: true,
@@ -25,10 +24,10 @@ class Kik
     url = "#{API_URL}/#{kik_api}"
 
     if method.to_s.downcase == 'get'
-      url = "#{url}?#{encoded_params}"
+      url = "#{url}?#{URI.encode_www_form(params)}"
     else
-      opts[:body] = encoded_params
-      opts[:headers].merge("Content-Type": "application/x-www-form-urlencoded")
+      opts[:body] = params.to_json
+      opts[:headers].merge!({"Content-Type" => "application/json"})
     end
 
     if !block_given?

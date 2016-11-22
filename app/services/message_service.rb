@@ -20,8 +20,9 @@ class MessageService
   delegate :notification, :success, :user, :channel, to: :message
   def service
     @_service ||= case message.provider
-                  when 'slack' then PostMessageToSlackService.new(message, bot_instance.token)
+                  when 'slack'    then PostMessageToSlackService.new(message, bot_instance.token)
                   when 'facebook' then PostMessageToFacebookService.new(message, bot_instance.token)
+                  when 'kik'      then PostMessageToKikService.new(message, bot_instance.token, bot_instance.uid)
                   end
   end
 
