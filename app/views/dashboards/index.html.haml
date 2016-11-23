@@ -8,14 +8,6 @@
       = link_to 'This Month', bot_dashboards_path(@bot, group_by: 'this-month'), class: (@group_by == 'this-month' ? 'btn active' : 'btn')
       = link_to 'All Time', bot_dashboards_path(@bot, group_by: 'all-time'), class: (@group_by == 'all-time' ? 'btn active' : 'btn')
 
-- if @bot.events.count == 0
-  .row.integrate-cta.alert-danger
-    %p
-      We haven't received any events from your bot yet.
-      Add the
-      = link_to 'Botmetrics SDK', edit_bot_path(@bot), target: '_blank'
-      to your codebase in less than 5 minutes!
-
 .stats.row
   - @dashboards.each do |dashboard|
     .stat.col-sm-6.col-md-3{class: dashboard.custom? ? 'custom' : '', id: "dashboard-#{dashboard.uid}", data: { ref: bot_dashboard_path(@bot, dashboard) }}
