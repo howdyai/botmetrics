@@ -1,6 +1,7 @@
 RSpec.describe ReportsMailer do
   let!(:bot1)  { create :bot, name: 'Slack Bot', provider: 'slack' }
   let!(:bot2)  { create :bot, name: 'Facebook Bot', provider: 'facebook' }
+  let!(:bot3)  { create :bot, name: 'Facebook Bot 2', provider: 'facebook', enabled: false }
 
   let!(:enabled1) { create(:bot_instance, :with_attributes, uid: 'B123', bot: bot1, state: 'enabled') }
   let!(:enabled2) { create(:bot_instance, :with_attributes, uid: 'B345', bot: bot2, state: 'enabled') }
@@ -16,6 +17,7 @@ RSpec.describe ReportsMailer do
     let!(:user) { create :user, timezone: 'Singapore' }
     let!(:bc1) { create :bot_collaborator, bot: bot1, user: user }
     let!(:bc2) { create :bot_collaborator, bot: bot2, user: user }
+    let!(:bc3) { create :bot_collaborator, bot: bot3, user: user }
 
     it 'sends email to bot owners' do
       mail = ReportsMailer.daily_summary(user.id)
@@ -25,6 +27,7 @@ RSpec.describe ReportsMailer do
 
       expect(mail.body.encoded).to match bot1.name
       expect(mail.body.encoded).to match bot2.name
+      expect(mail.body.encoded).to_not match bot3.name
     end
 
     context 'weekly summary' do
