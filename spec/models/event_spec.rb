@@ -31,16 +31,8 @@ RSpec.describe Event do
       let!(:event) { build :event, event_type: 'message', user: user, event_attributes: { sub_type: 'text' }, provider: 'kik' }
 
       context 'event_attributes' do
-        it "should be invalid if event_type = 'message' and mid is NULL" do
+        it "should be invalid if event_type = 'message' and id is NULL" do
           event.event_type = 'message'
-          event.event_attributes['id'] = 'id-1'
-          expect(event).to_not be_valid
-          expect(event.errors[:event_attributes]).to eql ["chat_id can't be blank"]
-        end
-
-        it "should be invalid if event_type = 'message' and seq is NULL" do
-          event.event_type = 'message'
-          event.event_attributes['chat_id'] = 'chat_id-1'
           expect(event).to_not be_valid
           expect(event.errors[:event_attributes]).to eql ["id can't be blank"]
         end
