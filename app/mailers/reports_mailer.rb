@@ -7,14 +7,14 @@ class ReportsMailer < ApplicationMailer
       if monday_in_time_zone?(@user.timezone)
         @weekly_dashboarders = []
 
-        @user.bots.each do |bot|
+        @user.bots.enabled.each do |bot|
           @weekly_dashboarders << bot
         end
       end
 
       @daily_dashboarders = []
 
-      @user.bots.each do |bot|
+      @user.bots.enabled.each do |bot|
         @daily_dashboarders << bot
       end
 
