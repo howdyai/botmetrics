@@ -285,7 +285,7 @@ CREATE TABLE events (
     text text,
     has_been_delivered boolean DEFAULT false,
     has_been_read boolean DEFAULT false,
-    CONSTRAINT valid_event_type_on_events CHECK ((((((event_type)::text = ANY (ARRAY[('user_added'::character varying)::text, ('bot_disabled'::character varying)::text, ('added_to_channel'::character varying)::text, ('message'::character varying)::text, ('message_reaction'::character varying)::text])) AND ((provider)::text = 'slack'::text)) OR ((((event_type)::text = ANY (ARRAY[('message'::character varying)::text, ('messaging_postbacks'::character varying)::text, ('messaging_optins'::character varying)::text, ('account_linking'::character varying)::text, ('messaging_referrals'::character varying)::text])) AND ((provider)::text = 'facebook'::text)) AND (bot_user_id IS NOT NULL))) OR ((((event_type)::text = 'message'::text) AND ((provider)::text = 'kik'::text)) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_event_type_on_events CHECK ((((((event_type)::text = ANY ((ARRAY['user_added'::character varying, 'bot_disabled'::character varying, 'added_to_channel'::character varying, 'message'::character varying, 'message_reaction'::character varying])::text[])) AND ((provider)::text = 'slack'::text)) OR ((((event_type)::text = ANY ((ARRAY['message'::character varying, 'messaging_postbacks'::character varying, 'messaging_optins'::character varying, 'account_linking'::character varying, 'messaging_referrals'::character varying, 'message:image-uploaded'::character varying, 'message:audio-uploaded'::character varying, 'message:video-uploaded'::character varying, 'message:file-uploaded'::character varying, 'message:location-sent'::character varying])::text[])) AND ((provider)::text = 'facebook'::text)) AND (bot_user_id IS NOT NULL))) OR ((((event_type)::text = 'message'::text) AND ((provider)::text = 'kik'::text)) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text)) OR ((provider)::text = 'facebook'::text)) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT validate_attributes_channel CHECK ((((((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0)) AND ((provider)::text = 'slack'::text)) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR ((((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text))) AND (event_attributes IS NOT NULL))) OR ((provider)::text = ANY (ARRAY[('facebook'::character varying)::text, ('kik'::character varying)::text])))),
     CONSTRAINT validate_attributes_id CHECK (((((((event_attributes ->> 'id'::text) IS NOT NULL) AND (length((event_attributes ->> 'id'::text)) > 0)) AND ((provider)::text = 'kik'::text)) AND ((event_type)::text = 'message'::text)) OR ((provider)::text = ANY (ARRAY[('facebook'::character varying)::text, ('slack'::character varying)::text])))),
@@ -1378,4 +1378,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161108234028');
 INSERT INTO schema_migrations (version) VALUES ('20161110174157');
 
 INSERT INTO schema_migrations (version) VALUES ('20161127201529');
+
+INSERT INTO schema_migrations (version) VALUES ('20161128001426');
+
+INSERT INTO schema_migrations (version) VALUES ('20161128001912');
 
