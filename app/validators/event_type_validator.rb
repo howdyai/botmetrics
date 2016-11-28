@@ -1,6 +1,6 @@
 class EventTypeValidator < ActiveModel::Validator
   SLACK_EVENT_TYPES = %w(user_added bot_disabled added_to_channel message message_reaction)
-  FACEBOOK_EVENT_TYPES = %w(message messaging_optins messaging_postbacks account_linking messaging_referrals)
+  FACEBOOK_EVENT_TYPES = %w(message message:image-uploaded message:video-uploaded message:audio-uploaded message:file-uploaded message:location-sent messaging_optins messaging_postbacks account_linking messaging_referrals)
   KIK_EVENT_TYPES = %w(message)
 
   def validate(record)

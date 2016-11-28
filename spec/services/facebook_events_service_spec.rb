@@ -59,7 +59,9 @@ RSpec.describe FacebookEventsService do
       expect(event.provider).to eql 'facebook'
       expect(event.user).to eql BotUser.find_by(uid: fb_user_id)
       expect(event.event_attributes.slice(*required_event_attributes.keys)).to eql required_event_attributes
-      expect(event.text).to eql text
+      if text.present?
+        expect(event.text).to eql text
+      end
       expect(event.created_at.to_i).to eql timestamp / 1000
       expect(event.is_from_bot).to be is_from_bot
       expect(event.is_im).to be is_im
@@ -124,7 +126,9 @@ RSpec.describe FacebookEventsService do
       expect(event.provider).to eql 'facebook'
       expect(event.user).to eql user
       expect(event.event_attributes.slice(*required_event_attributes.keys)).to eql required_event_attributes
-      expect(event.text).to eql text
+      if text.present?
+        expect(event.text).to eql text
+      end
       expect(event.created_at.to_i).to eql timestamp / 1000
       expect(event.is_from_bot).to be is_from_bot
       expect(event.is_im).to be is_im
@@ -227,6 +231,344 @@ RSpec.describe FacebookEventsService do
     context "bot user does not exist" do
       it_behaves_like "should create an event but not create any bot users"
       it_behaves_like "associates event with custom dashboard if custom dashboards exist"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+  end
+
+  describe '"messages" event with "image" attachment' do
+    let(:fb_user_id)    { "fb-user-id"                 }
+    let(:bot_user_id)   { bot.uid                      }
+    let(:mid)           { "mid-1"                      }
+    let(:seq)           { 8888                         }
+    let(:text)          { nil                          }
+    let(:event_type)    { 'message:image-uploaded'     }
+    let(:is_from_bot)   { false                        }
+    let(:is_for_bot)    { true                         }
+    let(:is_im)         { true                         }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", 8888]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "message":{
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
+              "attachments": [
+                {
+                  "type": "image",
+                  "payload": "IMAGE_URL"
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+  end
+
+  describe '"messages" event with "video" attachment' do
+    let(:fb_user_id)    { "fb-user-id"                 }
+    let(:bot_user_id)   { bot.uid                      }
+    let(:mid)           { "mid-1"                      }
+    let(:seq)           { 8888                         }
+    let(:text)          { nil                          }
+    let(:event_type)    { 'message:video-uploaded'     }
+    let(:is_from_bot)   { false                        }
+    let(:is_for_bot)    { true                         }
+    let(:is_im)         { true                         }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", 8888]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "message":{
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
+              "attachments": [
+                {
+                  "type": "video",
+                  "payload": "VIDEO_URL"
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+  end
+
+  describe '"messages" event with "audio" attachment' do
+    let(:fb_user_id)    { "fb-user-id"                 }
+    let(:bot_user_id)   { bot.uid                      }
+    let(:mid)           { "mid-1"                      }
+    let(:seq)           { 8888                         }
+    let(:text)          { nil                          }
+    let(:event_type)    { 'message:audio-uploaded'     }
+    let(:is_from_bot)   { false                        }
+    let(:is_for_bot)    { true                         }
+    let(:is_im)         { true                         }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", 8888]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "message":{
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
+              "attachments": [
+                {
+                  "type": "audio",
+                  "payload": "AUDIO_URL"
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+  end
+
+  describe '"messages" event with "file" attachment' do
+    let(:fb_user_id)    { "fb-user-id"                 }
+    let(:bot_user_id)   { bot.uid                      }
+    let(:mid)           { "mid-1"                      }
+    let(:seq)           { 8888                         }
+    let(:text)          { nil                          }
+    let(:event_type)    { 'message:file-uploaded'      }
+    let(:is_from_bot)   { false                        }
+    let(:is_for_bot)    { true                         }
+    let(:is_im)         { true                         }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", 8888]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "message":{
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
+              "attachments": [
+                {
+                  "type": "file",
+                  "payload": "FILE_URL"
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+  end
+
+  describe '"messages" event with "location" attachment' do
+    let(:fb_user_id)    { "fb-user-id"                 }
+    let(:bot_user_id)   { bot.uid                      }
+    let(:mid)           { "mid-1"                      }
+    let(:seq)           { 8888                         }
+    let(:text)          { nil                          }
+    let(:event_type)    { 'message:location-sent'      }
+    let(:is_from_bot)   { false                        }
+    let(:is_for_bot)    { true                         }
+    let(:is_im)         { true                         }
+    let(:required_event_attributes) {
+      Hash["mid", "mid-1", "seq", 8888]
+    }
+
+    let(:events) do
+      {
+        "entry": [{
+          "id": "268855423495782",
+          "time": 1470403317713,
+          "messaging": [{
+            "sender":{
+              "id": fb_user_id
+            },
+            "recipient":{
+              "id": bot_user_id
+            },
+            "timestamp": timestamp,
+            "message":{
+              "mid": required_event_attributes['mid'],
+              "seq": required_event_attributes['seq'],
+              "attachments": [
+                {
+                  "type": "location",
+                  "payload": {
+                    "coordinates.lat": "LAT",
+                    "coordinates.lng": "LNG"
+                  }
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    end
+
+    context "bot user exists" do
+      it_behaves_like "should create an event as well as create the bot users"
+
+      it "should succeed if the same call is called more than once" do
+        expect {
+          do_request
+          do_request
+          bot_instance.reload
+        }.to change(bot_instance.events, :count).by(1)
+      end
+    end
+
+    context "bot user does not exist" do
+      it_behaves_like "should create an event but not create any bot users"
 
       it "should succeed if the same call is called more than once" do
         expect {

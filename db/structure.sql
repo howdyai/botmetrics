@@ -836,7 +836,7 @@ CREATE UNIQUE INDEX events_id_kik ON events USING btree (((event_attributes -> '
 -- Name: events_mid_seq_facebook; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
-CREATE UNIQUE INDEX events_mid_seq_facebook ON events USING btree (((event_attributes -> 'mid'::text)), ((event_attributes -> 'seq'::text))) WHERE (((provider)::text = 'facebook'::text) AND ((event_type)::text = 'message'::text));
+CREATE UNIQUE INDEX events_mid_seq_facebook ON events USING btree (((event_attributes -> 'mid'::text)), ((event_attributes -> 'seq'::text))) WHERE (((provider)::text = 'facebook'::text) AND (((((((event_type)::text = 'message'::text) OR ((event_type)::text = 'message:image-uploaded'::text)) OR ((event_type)::text = 'message:video-uploaded'::text)) OR ((event_type)::text = 'message:file-uploaded'::text)) OR ((event_type)::text = 'message:location-sent'::text)) OR ((event_type)::text = 'message:audio-uploaded'::text)));
 
 
 --
@@ -1382,4 +1382,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161127201529');
 INSERT INTO schema_migrations (version) VALUES ('20161128001426');
 
 INSERT INTO schema_migrations (version) VALUES ('20161128001912');
+
+INSERT INTO schema_migrations (version) VALUES ('20161128033354');
 
