@@ -6,6 +6,8 @@ class Dashboard < ActiveRecord::Base
   DEFAULT_KIK_DASHBOARDS      = %w(new-users messages-to-bot messages-from-bot image-uploaded video-uploaded link-uploaded scanned-data sticker-uploaded friend-picker-chosen)
 
   validates_presence_of :name, :bot_id, :user_id, :provider, :dashboard_type
+  validates_presence_of :event_type, if: Proc.new { |d| d.dashboard_type != 'custom' }
+
   validates_uniqueness_of :uid
   validates_uniqueness_of :name, scope: :bot_id
   validates_presence_of :regex, if: Proc.new { |d| d.dashboard_type == 'custom' }
@@ -153,6 +155,34 @@ class Dashboard < ActiveRecord::Base
     when 'user-actions'         then 'Clicked Button'
     else name
     end
+  end
+
+  def set_event_type_and_query_options!
+    self.event_type = case self.dashboard_type
+                        when 'audio-uploaded'       then 'audio-uploaded'
+                        when 'bots-installed'       then 'bot-installed'
+                        when 'bots-uninstalled'     then 'bot_disabled'
+                        when 'file-uploaded'        then 'file-uploaded'
+                        when 'friend-picker-chosen' then 'friend-picker-chosen'
+                        when 'image-uploaded'       then 'image-uploaded'
+                        when 'link-uploaded'        then 'link-uploaded'
+                        when 'location-sent'        then 'location-sent'
+                        when 'messages'             then 'message'
+                        when 'messages-from-bot'    then 'message'
+                        when 'messages-to-bot'      then 'message'
+                        when 'new-users'            then 'user-added'
+                        when 'scanned-data'         then 'scanned-data'
+                        when 'sticker-uploaded'     then 'sticker-uploaded'
+                        when 'user-actions'         then 'messaging_postbacks'
+                        when 'video-uploaded'       then 'video-uploaded'
+                      end
+    self.query_options = if self.dashboard_type == 'messages-from-bot'
+                      {is_from_bot: true}
+                    elsif self.dashboard_type == 'messages-to-bot'
+                      {is_for_bot: true}
+                    else
+                      {}
+                    end
   end
 
   private
@@ -376,4 +406,5 @@ class Dashboard < ActiveRecord::Base
     when 'location-sent'        then 'location'
     end
   end
+
 end

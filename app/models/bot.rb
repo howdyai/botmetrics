@@ -41,7 +41,7 @@ class Bot < ActiveRecord::Base
   def create_default_dashboards_with!(owner)
     Dashboard.const_get(:"DEFAULT_#{self.provider.upcase}_DASHBOARDS").each do |type|
       if self.dashboards.find_by(dashboard_type: type).blank?
-        self.dashboards.create!(
+        dashboard = self.dashboards.new(
           name: Dashboard.name_for(type),
           dashboard_type: type,
           bot: self,
@@ -49,6 +49,8 @@ class Bot < ActiveRecord::Base
           provider: self.provider,
           default: true
         )
+        dashboard.set_event_type_and_query_options!
+        dashboard.save!
       end
     end
   end

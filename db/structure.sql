@@ -245,6 +245,9 @@ CREATE TABLE dashboards (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     dashboard_type character varying NOT NULL,
+    event_type character varying DEFAULT '{}'::jsonb,
+    query_options jsonb,
+    CONSTRAINT check_if_event_type_is_null CHECK ((((event_type IS NOT NULL) AND ((dashboard_type)::text <> 'custom'::text)) OR ((dashboard_type)::text = 'custom'::text))),
     CONSTRAINT regex_not_null_when_dashboard_type_custom CHECK (((((dashboard_type)::text = 'custom'::text) AND ((regex IS NOT NULL) AND ((regex)::text <> ''::text))) OR ((dashboard_type)::text <> 'custom'::text))),
     CONSTRAINT valid_dashboard_type_on_dashboards CHECK (((((provider)::text = 'slack'::text) AND (((dashboard_type)::text = 'bots-installed'::text) OR ((dashboard_type)::text = 'bots-uninstalled'::text) OR ((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'custom'::text))) OR (((provider)::text = 'facebook'::text) AND (((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'user-actions'::text) OR ((dashboard_type)::text = 'get-started'::text) OR ((dashboard_type)::text = 'image-uploaded'::text) OR ((dashboard_type)::text = 'audio-uploaded'::text) OR ((dashboard_type)::text = 'video-uploaded'::text) OR ((dashboard_type)::text = 'file-uploaded'::text) OR ((dashboard_type)::text = 'location-sent'::text) OR ((dashboard_type)::text = 'custom'::text))) OR (((provider)::text = 'kik'::text) AND (((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'image-uploaded'::text) OR ((dashboard_type)::text = 'link-uploaded'::text) OR ((dashboard_type)::text = 'video-uploaded'::text) OR ((dashboard_type)::text = 'scanned-data'::text) OR ((dashboard_type)::text = 'sticker-uploaded'::text) OR ((dashboard_type)::text = 'friend-picker-chosen'::text) OR ((dashboard_type)::text = 'custom'::text))) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT valid_provider_on_dashboards CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text)))
@@ -927,6 +930,13 @@ CREATE INDEX index_dashboards_on_bot_id ON dashboards USING btree (bot_id);
 
 
 --
+-- Name: index_dashboards_on_bot_id_and_event_type_and_query_options; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dashboards_on_bot_id_and_event_type_and_query_options ON dashboards USING btree (bot_id, event_type, query_options);
+
+
+--
 -- Name: index_dashboards_on_name_and_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1409,6 +1419,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161128053359');
 INSERT INTO schema_migrations (version) VALUES ('20161128181940');
 
 INSERT INTO schema_migrations (version) VALUES ('20161128201958');
+
+INSERT INTO schema_migrations (version) VALUES ('20161129222856');
 
 INSERT INTO schema_migrations (version) VALUES ('20161130014858');
 
