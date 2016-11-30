@@ -83,7 +83,7 @@ class BotUser < ActiveRecord::Base
 
   def create_user_added_event
     begin
-      self.bot_instance.events.create!(event_type: 'user-added', user: self, provider: self.provider)
+      self.bot_instance.events.create!(event_type: 'user-added', user: self, provider: self.provider, created_at: self.created_at)
     rescue ActiveRecord::RecordNotUnique => e
       Rails.logger.error "Could not create 'user-added' event for instance #{bot.uid} #{e.inspect}"
     end
