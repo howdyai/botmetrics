@@ -113,6 +113,54 @@ END;
 $$;
 
 
+--
+-- Name: flush_rolledup_event_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION flush_rolledup_event_queue() RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_inserts int;
+    v_prunes int;
+BEGIN
+    IF NOT pg_try_advisory_xact_lock('rolledup_event_queue'::regclass::oid::bigint) THEN
+         RAISE NOTICE 'skipping queue flush';
+         RETURN false;
+    END IF;
+
+    WITH
+    aggregated_queue AS (
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, SUM(diff) AS value
+        FROM data_daily_counts_queue
+        GROUP BY created_at, bot_instance_id, bot_user_id
+    ),
+    perform_inserts AS (
+        INSERT INTO rolledup_events(created_at, dashboard_id, bot_instance_id, count)
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, value AS count
+        FROM aggregated_queue
+        ON CONFLICT (created_at, dashboard_id, bot_instance_id, bot_user_id) DO UPDATE SET
+        count = rolledup_events.count + EXCLUDED.count
+
+        RETURNING 1
+    ),
+    perform_prune AS (
+        DELETE FROM rolledup_event_queue
+        RETURNING 1
+    )
+
+    SELECT
+        (SELECT count(*) FROM perform_inserts) inserts,
+        (SELECT count(*) FROM perform_prune) prunes
+    INTO v_inserts, v_prunes;
+
+    RAISE NOTICE 'performed queue (hourly) flush: % prunes, % inserts', v_prunes, v_inserts;
+
+    RETURN true;
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;

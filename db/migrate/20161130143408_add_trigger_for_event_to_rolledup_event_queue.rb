@@ -6,6 +6,7 @@ RETURNS bool
 LANGUAGE plpgsql
 AS $body$
 DECLARE
+    v_inserts int;
     v_prunes int;
 BEGIN
     IF NOT pg_try_advisory_xact_lock('rolledup_event_queue'::regclass::oid::bigint) THEN
@@ -24,7 +25,7 @@ BEGIN
         SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, value AS count
         FROM aggregated_queue
         ON CONFLICT (created_at, dashboard_id, bot_instance_id, bot_user_id) DO UPDATE SET
-        count = rolledup_events.count + EXCLUDED.count;
+        count = rolledup_events.count + EXCLUDED.count
 
         RETURNING 1
     ),
@@ -32,11 +33,13 @@ BEGIN
         DELETE FROM rolledup_event_queue
         RETURNING 1
     )
-    SELECT
-        (SELECT count(*) FROM perform_prune) prunes
-    INTO v_prunes;
 
-    RAISE NOTICE 'performed queue (hourly) flush: % prunes', v_prunes;
+    SELECT
+        (SELECT count(*) FROM perform_inserts) inserts,
+        (SELECT count(*) FROM perform_prune) prunes
+    INTO v_inserts, v_prunes;
+
+    RAISE NOTICE 'performed queue (hourly) flush: % prunes, % inserts', v_prunes, v_inserts;
 
     RETURN true;
 END;
@@ -120,10 +123,10 @@ SQL
   def down
     execute <<-SQL
 DROP TRIGGER IF EXISTS event_insert ON events;
-DROP TRIGGER IF EXISTS custom_event_insert ON events;
+DROP FUNCTION IF EXISTS append_to_rolledup_events_queue();
 
-DROP FUNCTION IF EXISTS append_to_rolledup_events_queue()
-DROP FUNCTION IF EXISTS custom_append_to_rolledup_events_queue()
+DROP TRIGGER IF EXISTS custom_event_insert ON dashboard_events;
+DROP FUNCTION IF EXISTS custom_append_to_rolledup_events_queue();
 SQL
   end
 end
