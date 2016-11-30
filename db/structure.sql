@@ -633,7 +633,8 @@ CREATE TABLE rolledup_events (
     bot_user_id integer,
     bot_instance_id integer NOT NULL,
     dashboard_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    bot_instance_id_bot_user_id character varying NOT NULL
 );
 
 
@@ -1288,6 +1289,13 @@ CREATE UNIQUE INDEX index_users_on_invitation_token ON users USING btree (invita
 --
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
+
+
+--
+-- Name: rolledup_events_unique_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX rolledup_events_unique_key ON rolledup_events USING btree (bot_instance_id_bot_user_id, dashboard_id, created_at);
 
 
 --
