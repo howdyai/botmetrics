@@ -127,6 +127,7 @@ class Dashboard < ActiveRecord::Base
 
   def events_tableized
     events = self.events.where("events.created_at" => @start_time.utc..@end_time.utc)
+
     case self.dashboard_type
     when 'bots-installed', 'bots-uninstalled'
       BotInstance.with_events(events.select(:bot_instance_id), events.pluck(:id))

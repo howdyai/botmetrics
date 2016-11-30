@@ -37,7 +37,6 @@ class BotInstance < ActiveRecord::Base
     order("last_event_at DESC")
   end
 
-
   def self.membership_type_from_hash(user_hash)
     membership_type = nil
 

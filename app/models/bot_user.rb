@@ -89,13 +89,6 @@ class BotUser < ActiveRecord::Base
     end
   end
 
-  def self.with_bot_instances(instances, bot, start_time, end_time)
-    created_at = bot.provider == 'slack' ? "bot_instances.created_at" : "bot_users.created_at"
-
-    where(bot_instance_id: instances.select(:id)).joins(:bot_instance).
-      where(created_at => start_time..end_time)
-  end
-
   def self.with_events(associated_bot_user_ids, event_ids)
     events_condition = sanitize_sql_hash_for_conditions("events.id" => event_ids)
 
