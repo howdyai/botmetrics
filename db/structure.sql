@@ -473,6 +473,72 @@ ALTER SEQUENCE query_sets_id_seq OWNED BY query_sets.id;
 
 
 --
+-- Name: rolledup_event_queue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rolledup_event_queue (
+    id integer NOT NULL,
+    diff bigint DEFAULT 1,
+    bot_user_id integer,
+    bot_instance_id integer NOT NULL,
+    dashboard_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: rolledup_event_queue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rolledup_event_queue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rolledup_event_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rolledup_event_queue_id_seq OWNED BY rolledup_event_queue.id;
+
+
+--
+-- Name: rolledup_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rolledup_events (
+    id integer NOT NULL,
+    count bigint DEFAULT 0,
+    bot_user_id integer,
+    bot_instance_id integer NOT NULL,
+    dashboard_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: rolledup_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rolledup_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rolledup_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rolledup_events_id_seq OWNED BY rolledup_events.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -695,6 +761,20 @@ ALTER TABLE ONLY settings ALTER COLUMN id SET DEFAULT nextval('settings_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY rolledup_event_queue ALTER COLUMN id SET DEFAULT nextval('rolledup_event_queue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_events ALTER COLUMN id SET DEFAULT nextval('rolledup_events_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -799,6 +879,22 @@ ALTER TABLE ONLY query_sets
 
 ALTER TABLE ONLY settings
     ADD CONSTRAINT settings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rolledup_event_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_event_queue
+    ADD CONSTRAINT rolledup_event_queue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rolledup_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_events
+    ADD CONSTRAINT rolledup_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -1423,4 +1519,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161128201958');
 INSERT INTO schema_migrations (version) VALUES ('20161129222856');
 
 INSERT INTO schema_migrations (version) VALUES ('20161130014858');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130140356');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130140846');
 
