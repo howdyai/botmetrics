@@ -243,11 +243,9 @@ RSpec.describe Event do
         let!(:dashboard) { create(:dashboard, dashboard_type: 'custom', regex: 'abc', bot: bot, user: owner) }
 
         it 'should create an entry in the RolledupEventQueue with the hour' do
-          Event.transaction do
-            @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
-            puts "e1: #{@e1.inspect}"
-            @dc1 = create(:dashboard_event, dashboard: dashboard, event: @e1)
-          end
+          @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
+          @dc1 = create(:dashboard_event, dashboard: dashboard, event: @e1)
+
           @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
           expect(@rolled_up_entry).to_not be_nil
           expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
