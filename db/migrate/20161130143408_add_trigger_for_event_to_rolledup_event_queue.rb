@@ -1,6 +1,48 @@
 class AddTriggerForEventToRolledupEventQueue < ActiveRecord::Migration
   def up
     execute <<-SQL
+CREATE OR REPLACE FUNCTION flush_rolledup_event_queue()
+RETURNS bool
+LANGUAGE plpgsql
+AS $body$
+DECLARE
+    v_prunes int;
+BEGIN
+    IF NOT pg_try_advisory_xact_lock('rolledup_event_queue'::regclass::oid::bigint) THEN
+         RAISE NOTICE 'skipping queue flush';
+         RETURN false;
+    END IF;
+
+    WITH
+    aggregated_queue AS (
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, SUM(diff) AS value
+        FROM data_daily_counts_queue
+        GROUP BY created_at, bot_instance_id, bot_user_id
+    ),
+    perform_inserts AS (
+        INSERT INTO rolledup_events(created_at, dashboard_id, bot_instance_id, count)
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, value AS count
+        FROM aggregated_queue
+        ON CONFLICT (created_at, dashboard_id, bot_instance_id, bot_user_id) DO UPDATE SET
+        count = rolledup_events.count + EXCLUDED.count;
+
+        RETURNING 1
+    ),
+    perform_prune AS (
+        DELETE FROM rolledup_event_queue
+        RETURNING 1
+    )
+    SELECT
+        (SELECT count(*) FROM perform_prune) prunes
+    INTO v_prunes;
+
+    RAISE NOTICE 'performed queue (hourly) flush: % prunes', v_prunes;
+
+    RETURN true;
+END;
+$body$;
+
+
 CREATE OR REPLACE FUNCTION custom_append_to_rolledup_events_queue()
 RETURNS TRIGGER LANGUAGE plpgsql
 AS $body$
