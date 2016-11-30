@@ -134,7 +134,7 @@ RSpec.describe BotUser do
         let!(:event_5) { create :facebook_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago }
 
         before do
-          dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded')
+          dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
         end
 
         describe '.dashboard_betw' do
@@ -170,7 +170,7 @@ RSpec.describe BotUser do
         let!(:event_5) { create :kik_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago }
 
         before do
-          dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded')
+          dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
         end
 
         describe '.dashboard_betw' do

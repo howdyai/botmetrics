@@ -96,51 +96,11 @@ class BotUser < ActiveRecord::Base
       where(created_at => start_time..end_time)
   end
 
-  def self.with_messages_to_bot(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_messages_from_bot(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 't' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_messaging_postbacks(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'messaging_postbacks' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_message_subtype(associated_bot_instance_ids, type, provider)
-    case provider
-    when 'facebook'
-      select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-      joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' " +
-            "AND (event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = '#{type}' " +
-            "GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-      where("bot_users.bot_instance_id IN (?)", associated_bot_instance_ids).
-      order("last_event_at DESC NULLS LAST")
-    when 'kik'
-      select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-      joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' " +
-            "AND (event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = '#{type}' " +
-            "GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-      where("bot_users.bot_instance_id IN (?)", associated_bot_instance_ids).
-      order("last_event_at DESC NULLS LAST")
-    end
-  end
-
   def self.with_events(associated_bot_user_ids, event_ids)
     events_condition = sanitize_sql_hash_for_conditions("events.id" => event_ids)
 
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE #{events_condition} GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
+    select("bot_users.*, e.c_at AS last_event_at").
+    joins("LEFT JOIN (SELECT bot_user_id, MAX(events.created_at) AS c_at FROM events WHERE #{events_condition} GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
     where("bot_users.id IN (?)", associated_bot_user_ids).
     order("last_event_at DESC NULLS LAST")
   end

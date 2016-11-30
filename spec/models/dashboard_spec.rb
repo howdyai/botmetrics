@@ -56,8 +56,11 @@ RSpec.describe Dashboard, type: :model do
         let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled' }
         let!(:i3) { create :bot_instance }
 
+        let!(:e1) { create :new_bot_event, bot_instance: i1, created_at: i1.created_at }
+        let!(:e2) { create :new_bot_event, bot_instance: i2, created_at: i2.created_at }
+
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
         end
 
         it 'should return all installed bots' do
@@ -76,7 +79,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e3) { create :event, event_type: 'bot_disabled', bot_instance: i3 }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack', event_type: 'bot_disabled')
         end
 
         it 'should return all uninstalled bots' do
@@ -98,7 +101,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:u6) { create :bot_user, :with_attributes, bot_instance: i3 }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack', event_type: 'user-added')
         end
 
         it 'should return all users' do
@@ -120,7 +123,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :all_messages_event, bot_instance: i3 }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack', event_type: 'message')
         end
 
         it 'should return all messages' do
@@ -142,7 +145,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :messages_to_bot_event, bot_instance: i3 }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack', event_type: 'message', query_options: { is_for_bot: true })
         end
 
         it 'should return all messages from the bot' do
@@ -164,7 +167,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :messages_from_bot_event, bot_instance: i3 }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack', event_type: 'message', query_options: { is_from_bot: true })
         end
 
         it 'should return all messages from the bot' do
@@ -195,8 +198,16 @@ RSpec.describe Dashboard, type: :model do
         let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.days.ago }
         let!(:i9) { create :bot_instance }
 
+        let!(:e1) { create :new_bot_event, bot_instance: i1, created_at: i1.created_at }
+        let!(:e2) { create :new_bot_event, bot_instance: i2, created_at: i2.created_at }
+        let!(:e3) { create :new_bot_event, bot_instance: i3, created_at: i3.created_at }
+        let!(:e4) { create :new_bot_event, bot_instance: i4, created_at: i4.created_at }
+        let!(:e5) { create :new_bot_event, bot_instance: i5, created_at: i5.created_at }
+        let!(:e6) { create :new_bot_event, bot_instance: i6, created_at: i6.created_at }
+        let!(:e7) { create :new_bot_event, bot_instance: i7, created_at: i7.created_at }
+
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
         end
 
         it 'should return all installed bots in the last week' do
@@ -227,7 +238,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e7) { create :event, event_type: 'bot_disabled', bot_instance: i7, created_at: 2.days.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack', event_type: 'bot_disabled')
         end
 
         it 'should return all uninstalled bots' do
@@ -259,7 +270,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:u8) { create :bot_user, :with_attributes, bot_instance: i3, created_at: 3.days.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack', event_type: 'user-added')
         end
 
         it 'should return all users' do
@@ -292,7 +303,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :all_messages_event, bot_instance: i3, created_at: 3.days.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack', event_type: 'message')
         end
 
         it 'should return all messages' do
@@ -325,7 +336,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_to_bot_event, bot_instance: i3, created_at: 3.days.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack', event_type: 'message', query_options: { is_for_bot: true })
         end
 
         it 'should return all messages' do
@@ -358,7 +369,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_from_bot_event, bot_instance: i3, created_at: 3.days.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack', event_type: 'message', query_options: { is_from_bot: true })
         end
 
         it 'should return all messages' do
@@ -394,8 +405,16 @@ RSpec.describe Dashboard, type: :model do
         let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.weeks.ago }
         let!(:i9) { create :bot_instance }
 
+        let!(:e1) { create :new_bot_event, bot_instance: i1, created_at: i1.created_at }
+        let!(:e2) { create :new_bot_event, bot_instance: i2, created_at: i2.created_at }
+        let!(:e3) { create :new_bot_event, bot_instance: i3, created_at: i3.created_at }
+        let!(:e4) { create :new_bot_event, bot_instance: i4, created_at: i4.created_at }
+        let!(:e5) { create :new_bot_event, bot_instance: i5, created_at: i5.created_at }
+        let!(:e6) { create :new_bot_event, bot_instance: i6, created_at: i6.created_at }
+        let!(:e7) { create :new_bot_event, bot_instance: i7, created_at: i7.created_at }
+
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
         end
 
         it 'should return all installed bots in the last week' do
@@ -426,7 +445,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e7) { create :event, event_type: 'bot_disabled', bot_instance: i7, created_at: 2.weeks.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack', event_type: 'bot_disabled')
         end
 
         it 'should return all uninstalled bots' do
@@ -458,7 +477,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:u8) { create :bot_user, :with_attributes, bot_instance: i3, created_at: 3.weeks.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack', event_type: 'user-added')
         end
 
         it 'should return all users' do
@@ -491,7 +510,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :all_messages_event, bot_instance: i3, created_at: 3.weeks.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack', event_type: 'message')
         end
 
         it 'should return all messages' do
@@ -524,7 +543,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_to_bot_event, bot_instance: i3, created_at: 3.weeks.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack', event_type: 'message', query_options: {is_for_bot: true})
         end
 
         it 'should return all messages' do
@@ -557,7 +576,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_from_bot_event, bot_instance: i3, created_at: 3.weeks.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack', event_type: 'message', query_options: {is_from_bot: true})
         end
 
         it 'should return all messages' do
@@ -585,6 +604,7 @@ RSpec.describe Dashboard, type: :model do
       describe 'bots-installed' do
         let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now }
         let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now }
+
         # i3-i5 is Sunday
         let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.month.ago }
         let!(:i4) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.month.ago }
@@ -593,8 +613,16 @@ RSpec.describe Dashboard, type: :model do
         let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.months.ago }
         let!(:i9) { create :bot_instance }
 
+        let!(:e1) { create :new_bot_event, bot_instance: i1, created_at: i1.created_at }
+        let!(:e2) { create :new_bot_event, bot_instance: i2, created_at: i2.created_at }
+        let!(:e3) { create :new_bot_event, bot_instance: i3, created_at: i3.created_at }
+        let!(:e4) { create :new_bot_event, bot_instance: i4, created_at: i4.created_at }
+        let!(:e5) { create :new_bot_event, bot_instance: i5, created_at: i5.created_at }
+        let!(:e6) { create :new_bot_event, bot_instance: i6, created_at: i6.created_at }
+        let!(:e7) { create :new_bot_event, bot_instance: i7, created_at: i7.created_at }
+
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
         end
 
         it 'should return all installed bots in the last week' do
@@ -626,7 +654,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e7) { create :event, event_type: 'bot_disabled', bot_instance: i7, created_at: 2.months.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'bots-uninstalled', provider: 'slack', event_type: 'bot_disabled')
         end
 
         it 'should return all uninstalled bots' do
@@ -658,7 +686,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:u8) { create :bot_user, :with_attributes, bot_instance: i3, created_at: 3.months.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'new-users', provider: 'slack', event_type: 'user-added')
         end
 
         it 'should return all users' do
@@ -691,7 +719,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :all_messages_event, bot_instance: i3, created_at: 4.months.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages', provider: 'slack', event_type: 'message')
         end
 
         it 'should return all messages' do
@@ -724,7 +752,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_to_bot_event, bot_instance: i3, created_at: 4.months.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-to-bot', provider: 'slack', event_type: 'message', query_options: {is_for_bot: true})
         end
 
         it 'should return all messages' do
@@ -757,7 +785,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:e9) { create :messages_from_bot_event, bot_instance: i3, created_at: 4.months.ago }
 
         before do
-          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack')
+          dashboard.update_attributes(dashboard_type: 'messages-from-bot', provider: 'slack', event_type: 'message', query_options: { is_from_bot: true })
         end
 
         it 'should return all messages' do

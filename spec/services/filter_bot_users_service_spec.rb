@@ -86,7 +86,7 @@ RSpec.describe FilterBotUsersService do
               let!(:event_2)        { create :facebook_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user }
 
               before do
-                dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded')
+                dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
                 @query.update_attribute(:provider, 'facebook')
               end
 
@@ -102,7 +102,7 @@ RSpec.describe FilterBotUsersService do
               let!(:event_2)        { create :kik_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user }
 
               before do
-                dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded')
+                dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
                 @query.update_attribute(:provider, 'kik')
               end
 

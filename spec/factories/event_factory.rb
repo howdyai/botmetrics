@@ -44,7 +44,7 @@ FactoryGirl.define do
   end
 
   factory :facebook_image_event, parent: :event do
-    event_type          { 'message' }
+    event_type          { 'message:image-uploaded' }
     is_for_bot          { true }
     association :user,   factory: :bot_user
     provider            'facebook'
@@ -58,7 +58,7 @@ FactoryGirl.define do
   end
 
   factory :kik_image_event, parent: :event do
-    event_type          { 'message' }
+    event_type          { 'message:image-uploaded' }
     is_for_bot          { true }
     association :user,   factory: :bot_user
     provider            'kik'
