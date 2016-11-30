@@ -43,6 +43,76 @@ COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQ
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: append_to_rolledup_events_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION append_to_rolledup_events_queue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  __bot_id int;
+  __dashboard_id int;
+BEGIN
+    CASE TG_OP
+    WHEN 'INSERT' THEN
+      SELECT bot_instances.bot_id INTO __bot_id FROM bot_instances WHERE bot_instances.id = NEW.bot_instance_id LIMIT 1;
+      IF NOT FOUND THEN
+        RETURN NULL;
+      END IF;
+
+      IF NEW.event_type = 'message' AND NEW.is_from_bot = 't' THEN
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot';
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      ELSIF NEW.event_type = 'message' AND NEW.is_for_bot = 't' THEN
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot';
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      ELSE
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.event_type = NEW.event_type AND dashboards.bot_id = __bot_id;
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      END IF;
+
+      INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
+        VALUES (NEW.bot_instance_id, NEW.bot_user_id, __dashboard_id, +1, date_trunc('hour', NEW.created_at));
+    END CASE;
+
+    RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: custom_append_to_rolledup_events_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION custom_append_to_rolledup_events_queue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  __bot_instance_id int;
+  __bot_user_id int;
+  __created_at timestamp;
+BEGIN
+    CASE TG_OP
+    WHEN 'INSERT' THEN
+      SELECT events.bot_instance_id, events.bot_user_id, events.created_at INTO __bot_instance_id, __bot_user_id, __created_at FROM events WHERE events.id = NEW.event_id LIMIT 1;
+      IF NOT FOUND THEN
+        RETURN NULL;
+      END IF;
+      INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
+        VALUES (__bot_instance_id, __bot_user_id, NEW.dashboard_id, +1, date_trunc('hour', __created_at));
+    END CASE;
+    RETURN NULL;
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -1187,6 +1257,20 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 
 
 --
+-- Name: custom_event_insert; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER custom_event_insert AFTER INSERT ON dashboard_events FOR EACH ROW EXECUTE PROCEDURE custom_append_to_rolledup_events_queue();
+
+
+--
+-- Name: event_insert; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER event_insert AFTER INSERT ON events FOR EACH ROW EXECUTE PROCEDURE append_to_rolledup_events_queue();
+
+
+--
 -- Name: fk_rails_03b178e1df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1523,4 +1607,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161130014858');
 INSERT INTO schema_migrations (version) VALUES ('20161130140356');
 
 INSERT INTO schema_migrations (version) VALUES ('20161130140846');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130143408');
 

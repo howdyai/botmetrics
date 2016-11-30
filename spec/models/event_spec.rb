@@ -176,6 +176,87 @@ RSpec.describe Event do
     end
   end
 
+  # These callbacks are handled by postgres triggers
+  # so you won't find anything in the Ruby code
+  context 'callbacks' do
+    context 'event insert' do
+      let!(:bot)    { create :bot, provider: 'slack' }
+      let!(:owner)  { create :user }
+      let!(:bc1)    { create :bot_collaborator, bot: bot, user: owner       }
+      let!(:bi)     { create :bot_instance, bot: bot, provider: 'slack'     }
+      let!(:user)   { create :bot_user, bot_instance: bi, provider: 'slack' }
+
+      before do
+        bot.create_default_dashboards_with!(owner)
+        @now = Time.now.utc
+      end
+
+      context 'bot installed event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'bots-installed') }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:new_bot_event, bot_instance: bi, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'message event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages') }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:all_messages_event, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'message to bot event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages-to-bot') }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:messages_to_bot_event, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'message from bot event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages-from-bot') }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'custom dashboard' do
+        let!(:dashboard) { create(:dashboard, dashboard_type: 'custom', regex: 'abc', bot: bot, user: owner) }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          Event.transaction do
+            @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
+            puts "e1: #{@e1.inspect}"
+            @dc1 = create(:dashboard_event, dashboard: dashboard, event: @e1)
+          end
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+    end
+  end
+
   context 'scope' do
     let(:disabled_bi)          { create :bot_instance }
     let(:all_message_bi)       { create :bot_instance }
