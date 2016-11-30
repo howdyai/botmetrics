@@ -131,15 +131,15 @@ BEGIN
 
     WITH
     aggregated_queue AS (
-        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, SUM(diff) AS value
-        FROM data_daily_counts_queue
-        GROUP BY created_at, bot_instance_id, bot_user_id
+        SELECT created_at, dashboard_id, bot_user_id, bot_instance_id, (bot_instance_id::text || ':' || bot_user_id::text) AS bot_instance_id_bot_user_id, SUM(diff) AS value
+        FROM rolledup_event_queue
+        GROUP BY created_at, bot_instance_id, bot_user_id, dashboard_id
     ),
     perform_inserts AS (
-        INSERT INTO rolledup_events(created_at, dashboard_id, bot_instance_id, count)
-        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, value AS count
+        INSERT INTO rolledup_events(created_at, dashboard_id, bot_instance_id, bot_user_id, bot_instance_id_bot_user_id, count)
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, (bot_instance_id || ':' || coalesce(bot_user_id, 0)::text), value AS count
         FROM aggregated_queue
-        ON CONFLICT (created_at, dashboard_id, bot_instance_id, bot_user_id) DO UPDATE SET
+        ON CONFLICT (dashboard_id, bot_instance_id_bot_user_id, created_at) DO UPDATE SET
         count = rolledup_events.count + EXCLUDED.count
 
         RETURNING 1
