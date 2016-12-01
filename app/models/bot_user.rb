@@ -46,15 +46,15 @@ class BotUser < ActiveRecord::Base
   end
 
   scope :dashboard_betw, ->(query, min, max) do
-    where(id: query.dashboard.events.where("events.created_at" => min..max).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at" => min..max).select(:bot_user_id))
   end
 
   scope :dashboard_gt, ->(query, days_ago) do
-    where(id: query.dashboard.events.where("events.created_at < ?", days_ago).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at < ?", days_ago).select(:bot_user_id))
   end
 
   scope :dashboard_lt, ->(query, days_ago) do
-    where(id: query.dashboard.events.where("events.created_at > ?", days_ago).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at > ?", days_ago).select(:bot_user_id))
   end
 
   scope :interacted_at_lt, ->(query, days_ago) do
