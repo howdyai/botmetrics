@@ -121,18 +121,18 @@ class Dashboard < ActiveRecord::Base
   end
 
   def events_tableized
-    events = self.events.where("events.created_at" => @start_time.utc..@end_time.utc)
+    events = self.events.where("rolledup_events.created_at" => @start_time.utc..@end_time.utc)
 
     case self.dashboard_type
     when 'bots-installed', 'bots-uninstalled'
-      BotInstance.with_events(events.select(:bot_instance_id), events.pluck(:id))
+      BotInstance.with_events(events.select(:id))
     else
       if ((self.dashboard_type == 'messages' ||
            self.dashboard_type == 'messages-to-bot' ||
            self.dashboard_type == 'messages-from-bot') && self.provider == 'slack')
-        BotInstance.with_events(events.select(:bot_instance_id), events.pluck(:id))
+        BotInstance.with_events(events.select(:id))
       else
-        BotUser.with_events(events.select(:bot_user_id), events.pluck(:id))
+        BotUser.with_events(events.select(:id))
       end
     end
   end

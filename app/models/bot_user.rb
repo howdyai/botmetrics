@@ -89,12 +89,9 @@ class BotUser < ActiveRecord::Base
     end
   end
 
-  def self.with_events(associated_bot_user_ids, event_ids)
-    events_condition = sanitize_sql_hash_for_conditions("events.id" => event_ids)
-
+  def self.with_events(events_relation)
     select("bot_users.*, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, MAX(events.created_at) AS c_at FROM events WHERE #{events_condition} GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.id IN (?)", associated_bot_user_ids).
+    joins("INNER JOIN (SELECT bot_user_id, MAX(rolledup_events.created_at) AS c_at FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
     order("last_event_at DESC NULLS LAST")
   end
 
