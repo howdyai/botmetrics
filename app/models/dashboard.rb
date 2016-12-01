@@ -19,6 +19,7 @@ class Dashboard < ActiveRecord::Base
   belongs_to :bot
   belongs_to :user
   has_many :dashboard_events
+  has_many :rolledup_events
 
   scope :custom, -> { where("dashboards.dashboard_type" => 'custom') }
   scope :enabled, -> { where("dashboards.enabled" => true) }
@@ -55,7 +56,7 @@ class Dashboard < ActiveRecord::Base
   end
 
   def all_count(events)
-    events.count
+    rolledup_events.sum(:count)
   end
 
   def action_name
@@ -63,13 +64,7 @@ class Dashboard < ActiveRecord::Base
   end
 
   def events
-    if custom?
-      Event.where(id: self.dashboard_events.select(:event_id))
-    else
-      relation = self.bot.events.where("events.event_type" => self.event_type)
-      relation = relation.where(self.query_options) if self.query_options.present?
-      relation
-    end
+    self.rolledup_events
   end
 
   def custom?
@@ -143,19 +138,19 @@ class Dashboard < ActiveRecord::Base
   end
 
   def group_by_day(collection, group_col = :created_at)
-    collection.group_by_day(group_col, params).count
+    collection.group_by_day(group_col, params).sum(:count)
   end
 
   def group_by_hour(collection, group_col = :created_at)
-    collection.group_by_hour(group_col, params).count
+    collection.group_by_hour(group_col, params).sum(:count)
   end
 
   def group_by_week(collection, group_col = :created_at)
-    collection.group_by_week(group_col, params).count
+    collection.group_by_week(group_col, params).sum(:count)
   end
 
   def group_by_month(collection, group_col = :created_at)
-    collection.group_by_month(group_col, params).count
+    collection.group_by_month(group_col, params).sum(:count)
   end
 
   def count_for(var)
