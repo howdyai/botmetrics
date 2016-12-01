@@ -80,11 +80,11 @@ BEGIN
 
       INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
         VALUES (NEW.bot_instance_id, NEW.bot_user_id, __dashboard_id, +1, date_trunc('hour', NEW.created_at));
-    END CASE;
 
-    IF random() < 0.0001 THEN  /* 1/10,000 probability */
-       PERFORM flush_rolledup_event_queue();
-    END IF;
+      IF random() < 0.0001 THEN  /* 1/10,000 probability */
+         PERFORM flush_rolledup_event_queue();
+      END IF;
+    END CASE;
 
     RETURN NULL;
 END;
@@ -146,8 +146,7 @@ BEGIN
         ON CONFLICT (dashboard_id, bot_instance_id_bot_user_id, created_at) DO UPDATE SET
         count = rolledup_events.count + EXCLUDED.count
 
-        RETURNING 1
-    ),
+        RETURNING 1),
     perform_prune AS (
         DELETE FROM rolledup_event_queue
         RETURNING 1
@@ -1208,7 +1207,7 @@ CREATE INDEX index_events_on_event_type ON events USING btree (event_type);
 -- Name: index_events_on_event_type_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY ((ARRAY['bot-installed'::character varying, 'bot_disabled'::character varying])::text[]));
+CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY (ARRAY[('bot-installed'::character varying)::text, ('bot_disabled'::character varying)::text]));
 
 
 --
