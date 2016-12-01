@@ -11,39 +11,6 @@ class Event < ActiveRecord::Base
 
   store_accessor :event_attributes, :mid, :seq
 
-  def self.with_disabled_bots(instances, start_time, end_time)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'bot_disabled',
-          created_at: start_time..end_time)
-  end
-
-  def self.with_all_messages(instances, start_time, end_time)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'message',
-          is_from_bot: false,
-          created_at: start_time..end_time)
-  end
-
-  def self.with_messages_to_bot(instances, start_time, end_time)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'message',
-          is_for_bot: true,
-          created_at: start_time..end_time)
-  end
-
-  def self.with_messages_from_bot(instances, start_time, end_time)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'message',
-          is_from_bot: true,
-          created_at: start_time..end_time)
-  end
-
-  def self.with_messaging_postbacks(instances, start_time, end_time)
-    where(bot_instance_id: instances.select(:id),
-          event_type: 'messaging_postbacks',
-          created_at: start_time..end_time)
-  end
-
   def self.rollup!
     Event.connection.execute(<<-SQL
 CREATE OR REPLACE FUNCTION custom_append_to_rolledup_events_queue_on_update()
