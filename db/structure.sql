@@ -82,6 +82,10 @@ BEGIN
         VALUES (NEW.bot_instance_id, NEW.bot_user_id, __dashboard_id, +1, date_trunc('hour', NEW.created_at));
     END CASE;
 
+    IF random() < 0.0001 THEN  /* 1/10,000 probability */
+       PERFORM flush_rolledup_event_queue();
+    END IF;
+
     RETURN NULL;
 END;
 $$;
