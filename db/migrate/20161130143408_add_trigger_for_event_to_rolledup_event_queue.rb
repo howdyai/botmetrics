@@ -81,12 +81,12 @@ BEGIN
       END IF;
 
       IF NEW.event_type = 'message' AND NEW.is_from_bot = 't' THEN
-        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot';
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot' AND dashboards.bot_id = __bot_id;
         IF NOT FOUND THEN
           RETURN NULL;
         END IF;
       ELSIF NEW.event_type = 'message' AND NEW.is_for_bot = 't' THEN
-        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot';
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot' AND dashboards.bot_id = __bot_id;
         IF NOT FOUND THEN
           RETURN NULL;
         END IF;
