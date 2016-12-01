@@ -20,6 +20,7 @@ class Dashboard < ActiveRecord::Base
   belongs_to :user
   has_many :dashboard_events
   has_many :rolledup_events
+  has_many :raw_events, through: :dashboard_events, source: :event
 
   scope :custom, -> { where("dashboards.dashboard_type" => 'custom') }
   scope :enabled, -> { where("dashboards.enabled" => true) }
@@ -56,7 +57,7 @@ class Dashboard < ActiveRecord::Base
   end
 
   def all_count(events)
-    rolledup_events.sum(:count)
+    events.sum(:count).to_i
   end
 
   def action_name
@@ -138,19 +139,19 @@ class Dashboard < ActiveRecord::Base
   end
 
   def group_by_day(collection, group_col = :created_at)
-    collection.group_by_day(group_col, params).sum(:count)
+    collection.group_by_day(group_col, params).sum(:count).map { |k,v| [k, v.to_i] }.to_h
   end
 
   def group_by_hour(collection, group_col = :created_at)
-    collection.group_by_hour(group_col, params).sum(:count)
+    collection.group_by_hour(group_col, params).sum(:count).map { |k,v| [k, v.to_i] }.to_h
   end
 
   def group_by_week(collection, group_col = :created_at)
-    collection.group_by_week(group_col, params).sum(:count)
+    collection.group_by_week(group_col, params).sum(:count).map { |k,v| [k, v.to_i] }.to_h
   end
 
   def group_by_month(collection, group_col = :created_at)
-    collection.group_by_month(group_col, params).sum(:count)
+    collection.group_by_month(group_col, params).sum(:count).map { |k,v| [k, v.to_i] }.to_h
   end
 
   def count_for(var)

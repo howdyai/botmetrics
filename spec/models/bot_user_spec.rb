@@ -78,8 +78,8 @@ RSpec.describe BotUser do
     let!(:query_set)  { create :query_set, bot: bot }
     let!(:query)      { build  :query, query_set: query_set, field: "dashboard:#{dashboard.uid}" }
 
-    before { travel_to Time.current }
-    after { travel_back }
+    before  { travel_to Time.current.beginning_of_hour }
+    after   { travel_back }
 
     let!(:user_1) { create(:bot_user) }
     let!(:user_2) { create(:bot_user) }
@@ -100,9 +100,13 @@ RSpec.describe BotUser do
       let!(:dashboard_event_4) { create :dashboard_event, dashboard: dashboard, event: event_4 }
       let!(:dashboard_event_5) { create :dashboard_event, dashboard: dashboard, event: event_5 }
 
+      before do
+        RolledupEventQueue.flush!
+      end
+
       describe '.dashboard_betw' do
         it 'return users that performed events connected to a given dashboard between the time range' do
-          result = BotUser.dashboard_betw(query, 3.days.ago - 1.second, 3.days.ago + 1.second).map(&:id)
+          result = BotUser.dashboard_betw(query, 3.days.ago, 3.days.ago).map(&:id)
 
           expect(result).to match_array [user_3.id]
         end
@@ -127,19 +131,20 @@ RSpec.describe BotUser do
 
     describe 'image events' do
       context 'facebook' do
-        let!(:event_1) { create :facebook_image_event, bot_instance: instance, user: user_1, created_at: 1.day.ago }
-        let!(:event_2) { create :facebook_image_event, bot_instance: instance, user: user_2, created_at: 2.days.ago }
-        let!(:event_3) { create :facebook_image_event, bot_instance: instance, user: user_3, created_at: 3.days.ago }
-        let!(:event_4) { create :facebook_image_event, bot_instance: instance, user: user_4, created_at: 4.days.ago }
-        let!(:event_5) { create :facebook_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago }
-
         before do
           dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
+          create :facebook_image_event, bot_instance: instance, user: user_1, created_at: 1.day.ago
+          create :facebook_image_event, bot_instance: instance, user: user_2, created_at: 2.days.ago
+          create :facebook_image_event, bot_instance: instance, user: user_3, created_at: 3.days.ago
+          create :facebook_image_event, bot_instance: instance, user: user_4, created_at: 4.days.ago
+          create :facebook_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago
+
+          RolledupEventQueue.flush!
         end
 
         describe '.dashboard_betw' do
           it 'return users that performed events connected to a given dashboard between the time range' do
-            result = BotUser.dashboard_betw(query, 3.days.ago - 1.second, 3.days.ago + 1.second).map(&:id)
+            result = BotUser.dashboard_betw(query, 3.days.ago, 3.days.ago).map(&:id)
 
             expect(result).to match_array [user_3.id]
           end
@@ -163,19 +168,21 @@ RSpec.describe BotUser do
       end
 
       context 'kik' do
-        let!(:event_1) { create :kik_image_event, bot_instance: instance, user: user_1, created_at: 1.day.ago }
-        let!(:event_2) { create :kik_image_event, bot_instance: instance, user: user_2, created_at: 2.days.ago }
-        let!(:event_3) { create :kik_image_event, bot_instance: instance, user: user_3, created_at: 3.days.ago }
-        let!(:event_4) { create :kik_image_event, bot_instance: instance, user: user_4, created_at: 4.days.ago }
-        let!(:event_5) { create :kik_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago }
-
         before do
           dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
+
+          create :kik_image_event, bot_instance: instance, user: user_1, created_at: 1.day.ago
+          create :kik_image_event, bot_instance: instance, user: user_2, created_at: 2.days.ago
+          create :kik_image_event, bot_instance: instance, user: user_3, created_at: 3.days.ago
+          create :kik_image_event, bot_instance: instance, user: user_4, created_at: 4.days.ago
+          create :kik_image_event, bot_instance: instance, user: user_5, created_at: 5.days.ago
+
+          RolledupEventQueue.flush!
         end
 
         describe '.dashboard_betw' do
           it 'return users that performed events connected to a given dashboard between the time range' do
-            result = BotUser.dashboard_betw(query, 3.days.ago - 1.second, 3.days.ago + 1.second).map(&:id)
+            result = BotUser.dashboard_betw(query, 3.days.ago, 3.days.ago).map(&:id)
 
             expect(result).to match_array [user_3.id]
           end
