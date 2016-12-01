@@ -46,6 +46,27 @@ class Event < ActiveRecord::Base
 
   def self.rollup!
     Event.connection.execute(<<-SQL
+CREATE OR REPLACE FUNCTION custom_append_to_rolledup_events_queue_on_update()
+RETURNS TRIGGER LANGUAGE plpgsql
+AS $body$
+DECLARE
+  __bot_instance_id int;
+  __bot_user_id int;
+  __created_at timestamp;
+BEGIN
+    CASE TG_OP
+    WHEN 'UPDATE' THEN
+      SELECT events.bot_instance_id, events.bot_user_id, events.created_at INTO __bot_instance_id, __bot_user_id, __created_at FROM events WHERE events.id = NEW.event_id LIMIT 1;
+      IF NOT FOUND THEN
+        RETURN NULL;
+      END IF;
+      INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
+        VALUES (__bot_instance_id, __bot_user_id, NEW.dashboard_id, +1, date_trunc('hour', __created_at));
+    END CASE;
+    RETURN NULL;
+END;
+$body$;
+
 CREATE OR REPLACE FUNCTION append_to_rolledup_events_queue_on_update()
 RETURNS TRIGGER LANGUAGE plpgsql
 AS $body$
@@ -94,6 +115,12 @@ CREATE TRIGGER event_update after
 UPDATE
 ON events FOR each row
 EXECUTE PROCEDURE append_to_rolledup_events_queue_on_update();
+
+DROP TRIGGER IF EXISTS custom_event_update ON dashboard_events;
+CREATE TRIGGER custom_event_update after
+UPDATE
+ON dashboard_events FOR each row
+EXECUTE PROCEDURE custom_append_to_rolledup_events_queue_on_update();
 SQL
                             )
     months = ["2016-04-01", "2016-05-01", "2016-06-01", "2016-07-01", "2016-08-01", "2016-09-01", "2016-10-01"]
@@ -124,18 +151,15 @@ SQL
     end
 
     Event.connection.execute("DROP TRIGGER IF EXISTS event_update ON events;")
-  end
+    Event.connection.execute("DROP FUNCTION IF EXISTS append_to_rolledup_events_queue_on_update() CASCADE;")
 
-  def self.with_message_subtype(instances, start_time, end_time, type, provider)
-    relation = where(bot_instance_id: instances.select(:id),
-                     event_type: 'message',
-                     created_at: start_time..end_time)
-    case provider
-    when 'facebook'
-      relation.where("(event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = ?", type)
-    when 'kik'
-      relation.where("(event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = ?", type)
-    end
+    puts Benchmark.measure {
+      DashboardEvent.update_all(updated_at: Time.now)
+      RolledupEventQueue.connection.execute("SELECT flush_rolledup_event_queue();")
+    }
+
+    Event.connection.execute("DROP TRIGGER IF EXISTS custom_event_update ON events;")
+    Event.connection.execute("DROP FUNCTION IF EXISTS custom_append_to_rolledup_events_queue_on_update() CASCADE;")
   end
 
   def created_at_string
