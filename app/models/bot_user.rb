@@ -90,9 +90,8 @@ class BotUser < ActiveRecord::Base
   end
 
   def self.with_events(events_relation)
-    select("bot_users.*, e.c_at AS last_event_at").
-    joins("INNER JOIN (SELECT bot_user_id, MAX(rolledup_events.created_at) AS c_at FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    order("last_event_at DESC NULLS LAST")
+    select("bot_users.*").
+    joins("INNER JOIN (SELECT bot_user_id FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id")
   end
 
   def self.by_cohort(bot, start_time: 8.weeks.ago, end_time: Time.current, group_by: 'week')

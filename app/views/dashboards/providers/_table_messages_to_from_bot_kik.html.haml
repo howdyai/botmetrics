@@ -11,6 +11,4 @@
         %td= u.first_name
         %td= u.last_name
         %td= "#{time_ago_in_words(u.created_at)} ago"
-        %td= u.last_event_at.present? ? "#{time_ago_in_words(u.last_event_at)} ago" : 'no messages yet'
-
-
+        %td= u.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(u.last_interacted_with_bot_at)} ago" : 'no messages yet'
