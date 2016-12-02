@@ -90,8 +90,7 @@ class BotUser < ActiveRecord::Base
   end
 
   def self.with_events(events_relation)
-    select("bot_users.*").
-    joins("INNER JOIN (SELECT bot_user_id FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id")
+    where("bot_users.id" => events_relation.select("rolledup_events.bot_user_id").group("rolledup_events.bot_user_id"))
   end
 
   def self.by_cohort(bot, start_time: 8.weeks.ago, end_time: Time.current, group_by: 'week')

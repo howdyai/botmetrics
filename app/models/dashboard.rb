@@ -133,7 +133,7 @@ class Dashboard < ActiveRecord::Base
            self.dashboard_type == 'messages-from-bot') && self.provider == 'slack')
         BotInstance.with_events(events.select(:id))
       else
-        relation = BotUser.with_events(events.select(:id))
+        relation = BotUser.with_events(events)
         if self.dashboard_type == 'new-users'
           relation.order("created_at DESC")
         else
