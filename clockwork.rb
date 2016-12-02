@@ -3,6 +3,11 @@ require './config/boot'
 require './config/environment'
 
 module Clockwork
+  every(5.minutes, 'RolledupEventQueue.flush') do
+    sleep(rand(0.1))
+    RolledupEventQueue.flush!
+  end
+
   every(2.minutes, 'Messages.Send') do
     SendScheduledMessageJob.perform_async
   end
