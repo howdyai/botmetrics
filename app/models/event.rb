@@ -109,7 +109,7 @@ SQL
     Event.where("events.created_at" => start.beginning_of_day..end_time.end_of_day).update_all(updated_at: Time.now)
     RolledupEventQueue.connection.execute("SELECT flush_rolledup_event_queue();")
 
-    Date.parse("2016-11-21").upto(Date.parse("2016-12-01")) do |date|
+    Date.parse("2016-11-21").upto(Date.parse("2016-12-10")) do |date|
       puts "Starting day: #{date}"
       puts Benchmark.measure {
         Event.where("events.created_at" => date.beginning_of_day..date.end_of_day).update_all(updated_at: Time.now)
