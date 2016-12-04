@@ -27,7 +27,7 @@ gem 'kramdown',                 '~> 1.11.1'
 
 # Dashboard stuff
 gem 'groupdate',                '~> 2.5.3'
-gem 'chartkick',                github: 'botmetrics/chartkick', ref: 'fd3918c0113fe75ddff3b0bc4dea446b56364ca6'
+gem 'chartkick',                github: 'botmetrics/chartkick', ref: '92cc9566c0b4fe2c2db36da20b4d4f2599f23e3d'
 
 # Auth
 gem 'devise',                   '~> 3.5.10'

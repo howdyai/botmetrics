@@ -10,6 +10,7 @@
 #= require jquery-timepicker-1.11.1/jquery.timepicker
 #= require chart.js-2.0.0-beta2/Chart
 #= require cornelius-24d9358/cornelius
+#= require numeral-js-b50f4c9/numeral
 #= require chartkick
 #= require jsUri/Uri
 #= require cocoon

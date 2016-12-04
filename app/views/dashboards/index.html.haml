@@ -10,15 +10,13 @@
 
 .stats.row
   - @dashboards.each do |dashboard|
-    .stat.col-sm-6.col-md-3{class: dashboard.custom? ? 'custom' : '', id: "dashboard-#{dashboard.uid}", data: { ref: bot_dashboard_path(@bot, dashboard) }}
+    .stat.col-sm-6.col-md-3.loading{class: dashboard.custom? ? 'custom' : '', id: "dashboard-#{dashboard.uid}", data: { ref: bot_dashboard_path(@bot, dashboard) }}
       - if dashboard.custom?
         = button_to bot_dashboard_path(@bot, dashboard), method: :delete, remote: true, class: 'delete-dashboard', data: { confirm: 'Are you sure you want to disable this dashboard?', disable_with: '...' } do
           %i.fa.fa-trash
       %h3= dashboard.name
-      = formatted_growth(dashboard.growth)
-      %p.number= number_with_delimiter(dashboard.count)
       - if @show_trends
-        = line_chart dashboard.data, dashboard_chartjs_opts
+        %div{id: "chart-#{dashboard.uid}", style: "height: 60px; width: 100%; text-align: center; color: #999; line-height: 60px; font-size: 14px; font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, Arial, Helvetica, sans-serif;"}
   .stat.col-sm-6.col-md-3.new-dashboard{class: @group_by, data: { ref: new_bot_dashboard_path(@bot) }}
     %h3.text-center
       +
@@ -27,5 +25,5 @@
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.DashboardsIndex();
+    App.page = new App.DashboardsIndex(#{@bot.uid.to_json}, #{@dashboards.pluck(:uid).to_json}, #{@group_by.to_json});
     App.page.run();
