@@ -67,6 +67,31 @@ RSpec.describe DashboardsController do
     end
   end
 
+  describe 'GET load_async' do
+    let!(:dashboard) { create :dashboard, bot: bot }
+
+    def do_request
+      get :load_async, bot_id: bot.uid, id: dashboard.uid, format: :json
+    end
+
+    before do
+      sign_in user
+    end
+
+    it 'should respond with success' do
+      do_request
+      expect(response).to have_http_status :ok
+    end
+
+    it 'should respond with JSON' do
+      do_request
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response['growth']).to be_nil
+      expect(parsed_response['count']).to eql 0
+      expect(parsed_response['data']).to be_a(Hash)
+    end
+  end
+
   describe 'DELETE destroy' do
     let!(:dashboard) { create :dashboard, bot: bot, dashboard_type: 'custom', regex: 'hello' }
 

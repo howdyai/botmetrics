@@ -44,6 +44,19 @@ class DashboardsController < ApplicationController
     @dashboard.init!
   end
 
+  def load_async
+    @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true)
+    @group_by = params[:group_by].presence || 'today'
+    @show_trends = (@group_by != 'all-time')
+
+    @dashboard.group_by = @group_by
+    @dashboard.init!
+
+    respond_to do |format|
+      format.json { render json: { growth: @dashboard.growth, count: @dashboard.count, data: @dashboard.data } }
+    end
+  end
+
   def destroy
     @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true, dashboard_type: 'custom')
     @dashboard.update_attribute(:enabled, false)

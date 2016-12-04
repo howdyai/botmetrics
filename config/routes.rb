@@ -7,7 +7,11 @@ Rails.application.routes.draw do
 
   resources :bots do
     resources :events, only: [:create]
-    resources :dashboards, only: [:index, :show, :new, :create, :destroy]
+    resources :dashboards, only: [:index, :show, :new, :create, :destroy] do
+      member do
+        get :load_async
+      end
+    end
 
     get :verifying_webhook
     get :webhook_events, on: :member
