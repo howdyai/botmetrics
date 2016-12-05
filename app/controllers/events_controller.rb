@@ -1,4 +1,5 @@
 class EventsController < ApplicationController
+  before_filter :disable_devise_tracking
   before_filter :authenticate_user!
   before_action :find_bot
 
@@ -39,6 +40,10 @@ class EventsController < ApplicationController
         raise BadEventError
       end
     end
+  end
+
+  def disable_devise_tracking
+    request.env["devise.skip_trackable"] = true
   end
 
   def bad_event

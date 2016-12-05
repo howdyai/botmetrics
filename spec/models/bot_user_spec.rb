@@ -257,9 +257,10 @@ RSpec.describe BotUser do
   end
 
   describe '.by_cohort' do
-    let!(:bot) { create :bot }
-    let!(:bi1) { create :bot_instance, bot: bot }
-    let!(:bi2) { create :bot_instance, bot: bot }
+    let!(:bot) { create :bot, provider: 'slack' }
+    let!(:bi1) { create :bot_instance, bot: bot, provider: 'slack' }
+    let!(:bi2) { create :bot_instance, bot: bot, provider: 'slack' }
+    let!(:dasboard) { create :dashboard, bot: bot, provider: 'facebook', dashboard_type: 'messages-to-bot', event_type: 'message' }
 
     context 'weekly retention' do
       before do
@@ -296,6 +297,8 @@ RSpec.describe BotUser do
             count += 1
           end
         end
+
+        RolledupEventQueue.flush!
       end
 
       after { travel_back }
@@ -342,6 +345,8 @@ RSpec.describe BotUser do
             count += 1
           end
         end
+
+        RolledupEventQueue.flush!
       end
 
       after { travel_back }
@@ -388,6 +393,8 @@ RSpec.describe BotUser do
             count += 1
           end
         end
+
+        RolledupEventQueue.flush!
       end
 
       after { travel_back }

@@ -126,10 +126,12 @@ class BotUser < ActiveRecord::Base
     start_time_string = start_time.strftime('%Y-%m-%d %H:%M:%S.%N')
     first_cohort_end_string = first_cohort_end.strftime('%Y-%m-%d %H:%M:%S.%N')
 
+    dashboard = bot.dashboards.find_by(dashboard_type: 'messages-to-bot')
+
     bot_instance_ids = bot.instances.pluck("bot_instances.id")
     first_cohort = sanitize_sql_for_conditions(["esub.created_at BETWEEN :start_time AND :end_time", start_time: start_time_string, end_time: first_cohort_end_string])
     users_condition = sanitize_sql_for_conditions(["bot_users.created_at BETWEEN :start_time AND :end_time AND bot_users.bot_instance_id IN (:bot_instances)", start_time: start_time_string, end_time: first_cohort_end_string, bot_instances: bot_instance_ids])
-    bot_condition = sanitize_sql_for_conditions(["esub.bot_instance_id IN (?)", bot_instance_ids])
+    bot_condition = sanitize_sql_for_conditions(["esub.dashboard_id IN (?)", dashboard.id])
 
     counts = []
     periods.times { |i| counts << "COUNT(DISTINCT e#{i+1}.bot_user_id)" }
@@ -139,12 +141,11 @@ class BotUser < ActiveRecord::Base
     sql << "FROM"
     sql << """
     (
-      SELECT * FROM events esub
+      SELECT * FROM rolledup_events esub
       INNER JOIN bot_users ON bot_users.id = esub.bot_user_id
       WHERE #{first_cohort}
       AND #{bot_condition}
       AND #{users_condition}
-      AND esub.is_for_bot = 't'
     ) e1
     """
 
@@ -164,11 +165,10 @@ class BotUser < ActiveRecord::Base
       next_cohort = sanitize_sql_for_conditions(["esub.created_at BETWEEN :start_time AND :end_time", start_time: next_start, end_time: next_end])
       sql << """
         LEFT OUTER JOIN LATERAL (
-         SELECT * FROM events esub
+         SELECT * FROM rolledup_events esub
          WHERE esub.bot_user_id = e#{i-1}.bot_user_id
          AND #{next_cohort}
          AND #{bot_condition}
-         AND esub.is_for_bot = 't'
          LIMIT 1
         ) e#{i}
         ON true
