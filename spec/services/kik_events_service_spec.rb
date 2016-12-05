@@ -45,9 +45,9 @@ RSpec.describe KikEventsService do
       expect {
         do_request
         bot_instance.reload
-      }.to change(bot_instance.events, :count).by(1)
+      }.to change(bot_instance.events, :count).by(2)
 
-      event = bot_instance.events.last
+      event = bot_instance.events.find_by(event_type: event_type)
 
       expect(event.event_type).to eql event_type
       expect(event.provider).to eql 'kik'
@@ -74,6 +74,18 @@ RSpec.describe KikEventsService do
       expect(user.uid).to eql kik_user_id
       expect(user.provider).to eql 'kik'
       expect(user.membership_type).to eql 'user'
+    end
+
+    it 'should create a user-added event' do
+      expect {
+        do_request
+        bot_instance.reload
+      }.to change(bot_instance.events, :count).by(2)
+
+      user = bot_instance.users.last
+      event = bot_instance.events.find_by(event_type: 'user-added')
+      expect(event.user).to eql user
+      expect(event.provider).to eql 'kik'
     end
 
     it 'should increment bot_interaction_count if is_for_bot, otherwise do not increment' do

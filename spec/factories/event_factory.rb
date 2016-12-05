@@ -10,8 +10,11 @@ FactoryGirl.define do
 
   factory :event do
     bot_instance
-    event_type 'user_added'
+
+    event_type 'message'
     provider   'slack'
+    event_attributes
+    association :user,   factory: :bot_user
 
     trait :facebook do
       provider 'facebook'
@@ -19,9 +22,7 @@ FactoryGirl.define do
   end
 
   factory :new_bot_event, parent: :event do
-    event_type { 'message' }
-    is_for_bot { true }
-    event_attributes
+    event_type { 'bot-installed' }
   end
 
   factory :disabled_bots_event, parent: :event do

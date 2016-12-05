@@ -88,11 +88,11 @@ RSpec.describe BotUser do
     let!(:user_5) { create(:bot_user) }
 
     describe 'custom dashboards' do
-      let!(:event_1) { create :event, user: user_1, created_at: 1.day.ago }
-      let!(:event_2) { create :event, user: user_2, created_at: 2.days.ago }
-      let!(:event_3) { create :event, user: user_3, created_at: 3.days.ago }
-      let!(:event_4) { create :event, user: user_4, created_at: 4.days.ago }
-      let!(:event_5) { create :event, user: user_5, created_at: 5.days.ago }
+      let!(:event_1) { create :event, event_type: 'bot-installed', user: user_1, created_at: 1.day.ago }
+      let!(:event_2) { create :event, event_type: 'bot-installed', user: user_2, created_at: 2.days.ago }
+      let!(:event_3) { create :event, event_type: 'bot-installed', user: user_3, created_at: 3.days.ago }
+      let!(:event_4) { create :event, event_type: 'bot-installed', user: user_4, created_at: 4.days.ago }
+      let!(:event_5) { create :event, event_type: 'bot-installed', user: user_5, created_at: 5.days.ago }
 
       let!(:dashboard_event_1) { create :dashboard_event, dashboard: dashboard, event: event_1 }
       let!(:dashboard_event_2) { create :dashboard_event, dashboard: dashboard, event: event_2 }
@@ -291,15 +291,15 @@ RSpec.describe BotUser do
         @users.each_with_index do |sub_users, index|
           # Every user is active in the first week
           sub_users.each do |user|
-            create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.weeks + 1.hour)
-            create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.weeks + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.weeks + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.weeks + 1.hour)
           end
           count = 1
           (index+1...9).each do |j|
             (0...sub_users.length-count).each do |idx|
               user = sub_users[idx]
-              create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.weeks + 1.hour)
-              create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.weeks + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.weeks + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.weeks + 1.hour)
             end
             count += 1
           end
@@ -337,15 +337,15 @@ RSpec.describe BotUser do
         @users.each_with_index do |sub_users, index|
           # Every user is active in the first week
           sub_users.each do |user|
-            create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.days + 1.hour)
-            create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.days + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.days + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.days + 1.hour)
           end
           count = 1
           (index+1...9).each do |j|
             (0...sub_users.length-count).each do |idx|
               user = sub_users[idx]
-              create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.days + 1.hour)
-              create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.days + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.days + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.days + 1.hour)
             end
             count += 1
           end
@@ -383,15 +383,15 @@ RSpec.describe BotUser do
         @users.each_with_index do |sub_users, index|
           # Every user is active in the first week
           sub_users.each do |user|
-            create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.months + 1.hour)
-            create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.months + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + index.months + 1.hour)
+            create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + index.months + 1.hour)
           end
           count = 1
           (index+1...9).each do |j|
             (0...sub_users.length-count).each do |idx|
               user = sub_users[idx]
-              create(:event, bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.months + 1.hour)
-              create(:event, bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.months + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: true, user: user, created_at: @start_time + j.months + 1.hour)
+              create(:event, event_type: 'message', bot_instance: bi1, is_for_bot: false, user: user, created_at: @start_time + j.months + 1.hour)
             end
             count += 1
           end

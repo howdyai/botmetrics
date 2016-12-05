@@ -49,6 +49,12 @@ class SetupBotJob < Job
       sleep(1)
       PusherJob.perform_async("setup-bot", "setup-bot-#{@instance.id}", {ok: false, error: auth_info['error']}.to_json)
     end
+
+    begin
+      @instance.events.create!(event_type: 'bot-installed', provider: @instance.provider, created_at: @instance.created_at)
+    rescue ActiveRecord::RecordNotUnique => e
+      Rails.logger.error "Could not create event 'bot-installed' for instance #{bot.uid} #{e.inspect}"
+    end
   end
 
   def setup_facebook_bot!

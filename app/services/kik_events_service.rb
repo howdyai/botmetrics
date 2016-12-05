@@ -24,9 +24,6 @@ class KikEventsService
       if UPDATE_EVENTS.has_value?(@event_type)
         update_message_events!
       else
-        @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
-        @bot_user.assign_attributes(bot_user_params) if @bot_user.new_record?
-
         create_message_events!
       end
     end
@@ -36,18 +33,26 @@ class KikEventsService
   attr_accessor :events, :bot_id, :params
 
   def update_message_events!
-    query_params = [params.dig(:data, :event_attributes, :message_ids), false]
-    case @event_type
-    when UPDATE_EVENTS[:deliver]
-      bot.events.where("event_attributes->>'id' IN (?) AND has_been_delivered = ?", *query_params).update_all(has_been_delivered: true)
-    when UPDATE_EVENTS[:read]
-      bot.events.where("event_attributes->>'id' IN (?) AND has_been_read = ?", *query_params).update_all(has_been_read: true)
-    end
+    #query_params = [params.dig(:data, :event_attributes, :message_ids), false]
+    #case @event_type
+    #when UPDATE_EVENTS[:deliver]
+      #bot.events.where("event_attributes->>'id' IN (?) AND has_been_delivered = ?", *query_params).update_all(has_been_delivered: true)
+    #when UPDATE_EVENTS[:read]
+      #bot.events.where("event_attributes->>'id' IN (?) AND has_been_read = ?", *query_params).update_all(has_been_read: true)
+    #end
   end
 
   def create_message_events!
-    ActiveRecord::Base.transaction do
-      @bot_user.save!
+    BotUser.with_advisory_lock("bot-user-#{@bot.uid}-#{bot_user_uid}") do
+      @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
+
+      if @bot_user.new_record?
+        @bot_user.assign_attributes(bot_user_params)
+        @bot_user.save!
+      end
+    end
+
+    begin
       event = @bot_user.events.create!(event_params)
 
       if event.is_for_bot?
@@ -63,6 +68,8 @@ class KikEventsService
       end
 
       bot.update_first_received_event_at!
+    rescue ActiveRecord::RecordNotUnique => e
+      Rails.logger.error "Could not create event for instance #{bot.uid} #{e.inspect}"
     end
   end
 

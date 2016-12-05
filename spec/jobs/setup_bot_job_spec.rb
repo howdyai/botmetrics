@@ -99,6 +99,15 @@ RSpec.describe SetupBotJob do
           expect(bi.instance_attributes['team_url']).to eql 'https://myteam.slack.com/'
         end
 
+        it 'should create a new event' do
+          expect {
+            SetupBotJob.new.perform(bi.id, user.id)
+            bi.reload
+          }.to change(bi.events, :count)
+
+          expect(bi.events.find_by(event_type: 'bot-installed', provider: 'slack')).to_not be_nil
+        end
+
         context 'an existing bot instance exists that is enabled with the same uid and team_id' do
           let!(:existing_bi) { create :bot_instance, bot: bi.bot, uid: 'U12345', state: 'enabled', token: 'old-token', instance_attributes: { team_id: 'T12345', team_name: 'My Team', team_url: 'https://myteam.slack.com' } }
 
@@ -257,6 +266,15 @@ RSpec.describe SetupBotJob do
           SetupBotJob.new.perform(bi.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"invalid_token\"}")
         end
+
+        it 'should create a new event' do
+          expect {
+            SetupBotJob.new.perform(bi.id, user.id)
+            bi.reload
+          }.to change(bi.events, :count)
+
+          expect(bi.events.find_by(event_type: 'bot-installed', provider: 'slack')).to_not be_nil
+        end
       end
 
       context 'when token is for a disabled bot' do
@@ -278,16 +296,24 @@ RSpec.describe SetupBotJob do
           expect {
             SetupBotJob.new.perform(bi.id, user.id)
             bi.reload
-          }.to change(bi.events, :count).by(1)
+          }.to change(bi.events, :count)
 
-          event = bi.events.last
-          expect(event.event_type).to eql 'bot_disabled'
-          expect(event.provider).to eql 'slack'
+          expect(bi.events.find_by(event_type: 'bot-installed', provider: 'slack')).to_not be_nil
+          expect(bi.events.find_by(event_type: 'bot_disabled', provider: 'slack')).to_not be_nil
         end
 
         it 'should send a message to Pusher' do
           SetupBotJob.new.perform(bi.id, user.id)
           expect(PusherJob).to have_received(:perform_async).with("setup-bot", "setup-bot-#{bi.id}", "{\"ok\":false,\"error\":\"account_inactive\"}")
+        end
+
+        it 'should create a new event' do
+          expect {
+            SetupBotJob.new.perform(bi.id, user.id)
+            bi.reload
+          }.to change(bi.events, :count)
+
+          expect(bi.events.find_by(event_type: 'bot-installed', provider: 'slack')).to_not be_nil
         end
       end
     end
@@ -396,7 +422,7 @@ RSpec.describe SetupBotJob do
 
         before do
           stub_request(:get, "#{kik_api}/config").
-            with(:headers => {'Authorization'=>"Basic #{auth_token}", 'Host'=>'api.kik.com'}).
+            with(:headers => {'Authorization'=>"Basic #{auth_token}"}).
             to_return(status: 200, body: auth_test_response.to_json)
 
           allow(PusherJob).to receive(:perform_async)

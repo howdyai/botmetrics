@@ -25,17 +25,6 @@ class FacebookEventsService
       if UPDATE_EVENTS.has_key?(@event_type)
         update_message_events!
       else
-        @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
-        if @bot_user.new_record?
-          @bot_user.assign_attributes(bot_user_params)
-        else
-          ref = params.dig(:data, :event_attributes, :referral, :ref)
-          if ref.present?
-            @bot_user.user_attributes['ref'] = ref
-            @bot_user.save
-          end
-        end
-
         create_message_events!
       end
     end
@@ -47,25 +36,35 @@ class FacebookEventsService
   def update_message_events!
     query_params = ['message', false, params.dig(:data, :watermark)]
 
-    case @event_type
-    when :message_deliveries
-      bot.events.where("event_type = ? AND has_been_delivered = ? AND created_at <= ?", *query_params).update_all(has_been_delivered: true)
-    when :message_reads
-      bot.events.where("event_type = ? AND has_been_read = ? AND created_at <= ?", *query_params).update_all(has_been_read: true)
-    end
+    #case @event_type
+    #when :message_deliveries
+      #bot.events.where("event_type = ? AND has_been_delivered = ? AND created_at <= ?", *query_params).update_all(has_been_delivered: true)
+    #when :message_reads
+      #bot.events.where("event_type = ? AND has_been_read = ? AND created_at <= ?", *query_params).update_all(has_been_read: true)
+    #end
   end
 
   def create_message_events!
-    ActiveRecord::Base.transaction do
-      @bot_user.save!
-      params = event_params
-      mid, seq = params.dig(:event_attributes, :mid), params.dig(:event_attributes, :seq)
+    @bot_user = nil
 
-      if mid && seq && @bot_instance.events.where("event_attributes->>'mid' = ? AND " +
-                                                  "event_attributes->>'seq' = CAST(? as TEXT)", mid, seq).count > 0
-        return
+    BotUser.with_advisory_lock("bot-user-#{bot_user_uid}") do
+      @bot_user = bot_instance.users.find_by(uid: bot_user_uid) || BotUser.new(uid: bot_user_uid)
+
+      if @bot_user.new_record?
+        @bot_user.assign_attributes(bot_user_params)
+        @bot_user.save!
       end
 
+      ref = params.dig(:data, :event_attributes, :referral, :ref)
+      if ref.present?
+        @bot_user.user_attributes['ref'] = ref
+        @bot_user.save!
+      end
+    end
+
+    params = event_params
+
+    begin
       event = @bot_user.events.create!(params)
 
       if event.is_for_bot?
@@ -81,6 +80,8 @@ class FacebookEventsService
       end
 
       bot.update_first_received_event_at!
+    rescue ActiveRecord::RecordNotUnique => e
+      Rails.logger.error "Could not create event for instance #{bot.uid} #{e.inspect}"
     end
   end
 

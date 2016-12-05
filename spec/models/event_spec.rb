@@ -18,7 +18,7 @@ RSpec.describe Event do
       it { should allow_value('telegram').for(:provider) }
       it { should_not allow_value('test').for(:provider) }
 
-      it { should allow_value('user_added').for(:event_type) }
+      it { should allow_value('user-added').for(:event_type) }
       it { should allow_value('bot_disabled').for(:event_type) }
       it { should allow_value('added_to_channel').for(:event_type) }
       it { should allow_value('message').for(:event_type) }
@@ -107,7 +107,7 @@ RSpec.describe Event do
 
     context 'slack' do
       let!(:user)  { create :bot_user }
-      let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
+      let!(:event) { create :event, event_type: 'bot-installed', user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
 
       context 'bot_user_id' do
         it "should be invalid if bot_user_id is nil" do
@@ -118,7 +118,7 @@ RSpec.describe Event do
         end
 
         it "should be valid if bot_user_id is nil but event_type is not message or message_reaction" do
-          event.event_type = 'user_added'
+          event.event_type = 'user-added'
           event.bot_user_id = nil
           expect(event).to be_valid
         end
@@ -146,7 +146,7 @@ RSpec.describe Event do
 
         context 'channel is not null' do
           let!(:user)  { create :bot_user }
-          let!(:event) { create :event, user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
+          let!(:event) { create :event, event_type: 'bot-installed', user: user, event_attributes: { 'timestamp': '123456789.0' }, provider: 'slack' }
 
           it "should be invalid if event_type = 'message' and channel IS NULL" do
             event.event_type = 'message'
