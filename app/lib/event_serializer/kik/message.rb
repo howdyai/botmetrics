@@ -4,7 +4,7 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
 
   def data
     {
-      event_type: 'message',
+      event_type: event_type,
       is_for_bot: @data[:from] != bi_uid,
       is_from_bot: @data[:from] == bi_uid,
       is_im: @data[:participants].count == 1 && @data[:participants].first == bi_uid,
@@ -23,6 +23,21 @@ class EventSerializer::Kik::Message < EventSerializer::Kik::Base
     }
     event_attributes.merge!(secondary_attributes)
     event_attributes
+  end
+
+  def event_type
+    case @data[:type]
+      when 'text' then 'message'
+      when 'picture'        then 'message:image-uploaded'
+      when 'video'          then 'message:video-uploaded'
+      when 'link'           then 'message:link-uploaded'
+      when 'sticker'        then 'message:sticker-uploaded'
+      when 'scan-data'      then 'message:scanned-data'
+      when 'friend-picker'  then 'message:friend-picker-chosen'
+      when 'start-chatting' then 'message:start-chatting'
+      when 'is-typing'      then 'message:is-typing'
+      else 'message'
+    end
   end
 
   def secondary_attributes
