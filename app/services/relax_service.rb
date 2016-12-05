@@ -11,7 +11,6 @@ class RelaxService
     case event.type
     when 'team_joined'
       ImportUsersForBotInstanceJob.perform_async(bi.id)
-      bi.events.create!(event_type: 'user_added', provider: bi.provider)
     when 'disable_bot'
       if bi.state == 'enabled'
         bi.update_attribute(:state, 'disabled')

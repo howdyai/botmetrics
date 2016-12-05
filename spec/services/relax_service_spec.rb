@@ -40,17 +40,6 @@ RSpec.describe RelaxService do
         expect(ImportUsersForBotInstanceJob).to have_received(:perform_async).with(bi.id)
       end
 
-      it 'should create a new event' do
-        expect {
-          RelaxService.handle(event)
-          bi.reload
-        }.to change(bi.events, :count).by(1)
-
-        e = bi.events.last
-        expect(e.event_type).to eql 'user_added'
-        expect(e.provider).to eql 'slack'
-      end
-
       it_behaves_like "calls the webhook if it is setup and doesn't if it is not"
     end
 

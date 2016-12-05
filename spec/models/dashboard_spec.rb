@@ -72,7 +72,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:i3) { create :bot_instance }
 
         let!(:e1) { create :event, event_type: 'bot_disabled', bot_instance: i1 }
-        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i1 }
+        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i2 }
         let!(:e3) { create :event, event_type: 'bot_disabled', bot_instance: i3 }
 
         before do
@@ -219,7 +219,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:i8) { create :bot_instance }
 
         let!(:e1) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
-        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
+        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i2, created_at: Time.now }
         let!(:e3) { create :event, event_type: 'bot_disabled', bot_instance: i3, created_at: 1.day.ago }
         let!(:e4) { create :event, event_type: 'bot_disabled', bot_instance: i4, created_at: 1.day.ago }
         let!(:e5) { create :event, event_type: 'bot_disabled', bot_instance: i5, created_at: 1.day.ago }
@@ -418,7 +418,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:i8) { create :bot_instance }
 
         let!(:e1) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
-        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
+        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i2, created_at: Time.now }
         let!(:e3) { create :event, event_type: 'bot_disabled', bot_instance: i3, created_at: 1.day.ago }
         let!(:e4) { create :event, event_type: 'bot_disabled', bot_instance: i4, created_at: 1.day.ago }
         let!(:e5) { create :event, event_type: 'bot_disabled', bot_instance: i5, created_at: 1.day.ago }
@@ -618,7 +618,7 @@ RSpec.describe Dashboard, type: :model do
         let!(:i9) { create :bot_instance }
 
         let!(:e1) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
-        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i1, created_at: Time.now }
+        let!(:e2) { create :event, event_type: 'bot_disabled', bot_instance: i2, created_at: Time.now }
         let!(:e3) { create :event, event_type: 'bot_disabled', bot_instance: i3, created_at: 1.month.ago }
         let!(:e4) { create :event, event_type: 'bot_disabled', bot_instance: i4, created_at: 1.month.ago }
         let!(:e5) { create :event, event_type: 'bot_disabled', bot_instance: i5, created_at: 1.month.ago }

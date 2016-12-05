@@ -106,22 +106,22 @@ RSpec.describe BotInstance do
   end
 
   describe '.with_new_bots' do
-    let(:start_time) { Time.current }
-    let(:end_time) { Time.current + 6.days }
-    let(:bi) { create :bot_instance }
-    let(:bu) { create :bot_user, bot_instance: bi }
-    let(:new_bi) { create :bot_instance, created_at: Time.current + 1.days }
+    let!(:start_time)  { Time.current }
+    let!(:end_time)    { Time.current + 6.days }
+    let!(:bi)          { create :bot_instance }
+    let!(:bu)          { create :bot_user, bot_instance: bi }
+    let!(:new_bi)      { create :bot_instance, created_at: Time.current + 1.days }
 
     before do
       travel_to Time.new(2016, 05, 01)
 
       create(:new_bot_event, bot_user_id: bu.id, bot_instance_id: bi.id)
-      new_bi
 
       # not in range
-      create :bot_instance, created_at: Time.current - 7.days
-      create :bot_instance, created_at: Time.current + 7.days
+      outside_bi1 = create :bot_instance, created_at: Time.current - 7.days
+      outside_bi2 = create :bot_instance, created_at: Time.current + 7.days
     end
+
     after { travel_back }
 
     it 'returns instances within correct ranges and order by created at' do

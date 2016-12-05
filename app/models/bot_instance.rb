@@ -30,7 +30,7 @@ class BotInstance < ActiveRecord::Base
   def self.with_new_bots(start_time, end_time)
     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
+    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'bot-installed' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
     where("bot_instances.created_at" => start_time..end_time).
     order("bot_instances.created_at DESC")
   end

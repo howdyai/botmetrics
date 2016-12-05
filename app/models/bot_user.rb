@@ -6,6 +6,8 @@ class BotUser < ActiveRecord::Base
   validates_uniqueness_of :uid, scope: :bot_instance_id
   validates_inclusion_of  :provider, in: %w(slack kik facebook telegram)
 
+  after_create :create_user_added_event
+
   scope :user_attributes_eq, ->(field, value) do
     where(
       "bot_users.user_attributes->>:field = :value",
@@ -78,6 +80,14 @@ class BotUser < ActiveRecord::Base
   end
 
   store_accessor :user_attributes, :nickname, :email, :full_name, :first_name, :last_name, :gender, :timezone, :ref
+
+  def create_user_added_event
+    begin
+      self.bot_instance.events.create!(event_type: 'user-added', user: self, provider: self.provider)
+    rescue ActiveRecord::RecordNotUnique => e
+      Rails.logger.error "Could not create 'user-added' event for instance #{bot.uid} #{e.inspect}"
+    end
+  end
 
   def self.with_bot_instances(instances, bot, start_time, end_time)
     created_at = bot.provider == 'slack' ? "bot_instances.created_at" : "bot_users.created_at"

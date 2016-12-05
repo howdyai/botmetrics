@@ -289,10 +289,10 @@ CREATE TABLE events (
     text text,
     has_been_delivered boolean DEFAULT false,
     has_been_read boolean DEFAULT false,
-    CONSTRAINT valid_event_type_on_events CHECK (((((event_type)::text = ANY ((ARRAY['user_added'::character varying, 'bot_disabled'::character varying, 'added_to_channel'::character varying, 'message'::character varying, 'message_reaction'::character varying])::text[])) AND ((provider)::text = 'slack'::text)) OR (((event_type)::text = ANY ((ARRAY['message'::character varying, 'messaging_postbacks'::character varying, 'messaging_optins'::character varying, 'account_linking'::character varying, 'messaging_referrals'::character varying, 'message:image-uploaded'::character varying, 'message:audio-uploaded'::character varying, 'message:video-uploaded'::character varying, 'message:file-uploaded'::character varying, 'message:location-sent'::character varying])::text[])) AND ((provider)::text = 'facebook'::text) AND (bot_user_id IS NOT NULL)) OR (((event_type)::text = ANY ((ARRAY['message'::character varying, 'message:image-uploaded'::character varying, 'message:video-uploaded'::character varying, 'message:link-uploaded'::character varying, 'message:scanned-data'::character varying, 'message:sticker-uploaded'::character varying, 'message:friend-picker-chosen'::character varying, 'message:is-typing'::character varying, 'message:start-chatting'::character varying])::text[])) AND ((provider)::text = 'kik'::text) AND (bot_user_id IS NOT NULL)))),
+    CONSTRAINT valid_event_type_on_events CHECK (((((event_type)::text = ANY ((ARRAY['user-added'::character varying, 'bot-installed'::character varying, 'bot_disabled'::character varying, 'added_to_channel'::character varying, 'message'::character varying, 'message_reaction'::character varying])::text[])) AND ((provider)::text = 'slack'::text)) OR (((event_type)::text = ANY ((ARRAY['user-added'::character varying, 'message'::character varying, 'messaging_postbacks'::character varying, 'messaging_optins'::character varying, 'account_linking'::character varying, 'messaging_referrals'::character varying, 'message:image-uploaded'::character varying, 'message:audio-uploaded'::character varying, 'message:video-uploaded'::character varying, 'message:file-uploaded'::character varying, 'message:location-sent'::character varying])::text[])) AND ((provider)::text = 'facebook'::text) AND (bot_user_id IS NOT NULL)) OR (((event_type)::text = ANY ((ARRAY['user-added'::character varying, 'message'::character varying, 'message:image-uploaded'::character varying, 'message:video-uploaded'::character varying, 'message:link-uploaded'::character varying, 'message:scanned-data'::character varying, 'message:sticker-uploaded'::character varying, 'message:friend-picker-chosen'::character varying, 'message:is-typing'::character varying, 'message:start-chatting'::character varying])::text[])) AND ((provider)::text = 'kik'::text) AND (bot_user_id IS NOT NULL)))),
     CONSTRAINT valid_provider_on_events CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT validate_attributes_channel CHECK (((((event_attributes ->> 'channel'::text) IS NOT NULL) AND (length((event_attributes ->> 'channel'::text)) > 0) AND ((provider)::text = 'slack'::text) AND (((event_type)::text = 'message'::text) OR ((event_type)::text = 'message_reaction'::text))) OR (((provider)::text = 'slack'::text) AND (((event_type)::text <> 'message'::text) AND ((event_type)::text <> 'message_reaction'::text)) AND (event_attributes IS NOT NULL)) OR ((provider)::text = ANY (ARRAY[('facebook'::character varying)::text, ('kik'::character varying)::text])))),
-    CONSTRAINT validate_attributes_id CHECK (((((event_attributes ->> 'id'::text) IS NOT NULL) AND (length((event_attributes ->> 'id'::text)) > 0) AND ((provider)::text = 'kik'::text)) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'slack'::character varying])::text[])))),
+    CONSTRAINT validate_attributes_id CHECK (((((event_attributes ->> 'id'::text) IS NOT NULL) AND (length((event_attributes ->> 'id'::text)) > 0) AND ((provider)::text = 'kik'::text)) OR ((provider)::text = ANY ((ARRAY['facebook'::character varying, 'slack'::character varying, 'kik'::character varying])::text[])))),
     CONSTRAINT validate_attributes_mid CHECK (((((event_attributes ->> 'mid'::text) IS NOT NULL) AND (length((event_attributes ->> 'mid'::text)) > 0) AND ((provider)::text = 'facebook'::text) AND ((event_type)::text = 'message'::text)) OR (((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text) AND (event_attributes IS NOT NULL)) OR ((provider)::text = ANY (ARRAY[('slack'::character varying)::text, ('kik'::character varying)::text])))),
     CONSTRAINT validate_attributes_reaction CHECK (((((event_attributes ->> 'reaction'::text) IS NOT NULL) AND (length((event_attributes ->> 'reaction'::text)) > 0) AND ((provider)::text = 'slack'::text) AND ((event_type)::text = 'message_reaction'::text)) OR (((provider)::text = 'slack'::text) AND ((event_type)::text <> 'message_reaction'::text) AND (event_attributes IS NOT NULL)) OR ((provider)::text = ANY (ARRAY[('facebook'::character varying)::text, ('kik'::character varying)::text])))),
     CONSTRAINT validate_attributes_seq CHECK (((((event_attributes ->> 'seq'::text) IS NOT NULL) AND (length((event_attributes ->> 'seq'::text)) > 0) AND ((provider)::text = 'facebook'::text) AND ((event_type)::text = 'message'::text)) OR (((provider)::text = 'facebook'::text) AND ((event_type)::text <> 'message'::text) AND (event_attributes IS NOT NULL)) OR ((provider)::text = ANY (ARRAY[('slack'::character varying)::text, ('kik'::character varying)::text])))),
@@ -976,6 +976,13 @@ CREATE INDEX index_events_on_event_type ON events USING btree (event_type);
 
 
 --
+-- Name: index_events_on_event_type_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY ((ARRAY['bot-installed'::character varying, 'bot_disabled'::character varying])::text[]));
+
+
+--
 -- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1057,6 +1064,13 @@ CREATE UNIQUE INDEX index_users_on_invitation_token ON users USING btree (invita
 --
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
+
+
+--
+-- Name: unique-bot-user-id-user-added; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX "unique-bot-user-id-user-added" ON events USING btree (bot_user_id) WHERE ((event_type)::text = 'user-added'::text);
 
 
 --
@@ -1391,4 +1405,10 @@ INSERT INTO schema_migrations (version) VALUES ('20161128033354');
 INSERT INTO schema_migrations (version) VALUES ('20161128052628');
 
 INSERT INTO schema_migrations (version) VALUES ('20161128053359');
+
+INSERT INTO schema_migrations (version) VALUES ('20161128181940');
+
+INSERT INTO schema_migrations (version) VALUES ('20161128201958');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130014858');
 
