@@ -1267,6 +1267,13 @@ CREATE UNIQUE INDEX index_settings_on_key ON settings USING btree (key);
 
 
 --
+-- Name: index_rolledup_events_on_bot_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rolledup_events_on_bot_user_id ON rolledup_events USING btree (bot_user_id);
+
+
+--
 -- Name: index_rolledup_events_on_dashboard_id_and_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1677,4 +1684,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161130140846');
 INSERT INTO schema_migrations (version) VALUES ('20161130143408');
 
 INSERT INTO schema_migrations (version) VALUES ('20161201051941');
+
+INSERT INTO schema_migrations (version) VALUES ('20161202193453');
 
