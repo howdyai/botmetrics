@@ -27,43 +27,10 @@ class BotInstance < ActiveRecord::Base
     bot_instance.presence || (raise ActiveRecord::RecordNotFound)
   end
 
-  def self.with_new_bots(start_time, end_time)
-    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'bot-installed' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-    where("bot_instances.created_at" => start_time..end_time).
-    order("bot_instances.created_at DESC")
-  end
-
-  def self.with_disabled_bots(associated_bot_instances_ids)
+  def self.with_events(events_relation)
     select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, e.c_at AS last_event_at").
     joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("INNER JOIN (SELECT bot_instance_id, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'bot_disabled' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-    where("bot_instances.id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC")
-  end
-
-  def self.with_all_messages(associated_bot_instances_ids)
-    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 'f' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-    where("bot_instances.id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC")
-  end
-
-  def self.with_messages_to_bot(associated_bot_instances_ids)
-    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-    where("bot_instances.id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC")
-  end
-
-  def self.with_messages_from_bot(associated_bot_instances_ids)
-    select("bot_instances.*, COALESCE(users.cnt, 0) AS users_count, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt FROM bot_users GROUP BY bot_instance_id) users on users.bot_instance_id = bot_instances.id").
-    joins("LEFT JOIN (SELECT bot_instance_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 't' GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
-    where("bot_instances.id IN (?)", associated_bot_instances_ids).
+    joins("INNER JOIN (SELECT bot_instance_id, MAX(rolledup_events.created_at) AS c_at FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_instance_id) e ON e.bot_instance_id = bot_instances.id").
     order("last_event_at DESC")
   end
 

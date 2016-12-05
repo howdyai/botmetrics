@@ -43,6 +43,127 @@ COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQ
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: append_to_rolledup_events_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION append_to_rolledup_events_queue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  __bot_id int;
+  __dashboard_id int;
+BEGIN
+    CASE TG_OP
+    WHEN 'INSERT' THEN
+      SELECT bot_instances.bot_id INTO __bot_id FROM bot_instances WHERE bot_instances.id = NEW.bot_instance_id LIMIT 1;
+      IF NOT FOUND THEN
+        RETURN NULL;
+      END IF;
+
+      IF NEW.event_type = 'message' AND NEW.is_from_bot = 't' THEN
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot' AND dashboards.bot_id = __bot_id;
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      ELSIF NEW.event_type = 'message' AND NEW.is_for_bot = 't' THEN
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot' AND dashboards.bot_id = __bot_id;
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      ELSE
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.event_type = NEW.event_type AND dashboards.bot_id = __bot_id;
+        IF NOT FOUND THEN
+          RETURN NULL;
+        END IF;
+      END IF;
+
+      INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
+        VALUES (NEW.bot_instance_id, NEW.bot_user_id, __dashboard_id, +1, date_trunc('hour', NEW.created_at));
+
+      IF random() < 0.0001 THEN  /* 1/10,000 probability */
+         PERFORM flush_rolledup_event_queue();
+      END IF;
+    END CASE;
+
+    RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: custom_append_to_rolledup_events_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION custom_append_to_rolledup_events_queue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  __bot_instance_id int;
+  __bot_user_id int;
+  __created_at timestamp;
+BEGIN
+    CASE TG_OP
+    WHEN 'INSERT' THEN
+      SELECT events.bot_instance_id, events.bot_user_id, events.created_at INTO __bot_instance_id, __bot_user_id, __created_at FROM events WHERE events.id = NEW.event_id LIMIT 1;
+      IF NOT FOUND THEN
+        RETURN NULL;
+      END IF;
+      INSERT INTO rolledup_event_queue(bot_instance_id, bot_user_id, dashboard_id, diff, created_at)
+        VALUES (__bot_instance_id, __bot_user_id, NEW.dashboard_id, +1, date_trunc('hour', __created_at));
+    END CASE;
+    RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: flush_rolledup_event_queue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION flush_rolledup_event_queue() RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_inserts int;
+    v_prunes int;
+BEGIN
+    IF NOT pg_try_advisory_xact_lock('rolledup_event_queue'::regclass::oid::bigint) THEN
+         RAISE NOTICE 'skipping queue flush';
+         RETURN false;
+    END IF;
+
+    WITH
+    aggregated_queue AS (
+        SELECT created_at, dashboard_id, bot_user_id, bot_instance_id, (bot_instance_id::text || ':' || bot_user_id::text) AS bot_instance_id_bot_user_id, SUM(diff) AS value
+        FROM rolledup_event_queue
+        GROUP BY created_at, bot_instance_id, bot_user_id, dashboard_id
+    ),
+    perform_inserts AS (
+        INSERT INTO rolledup_events(created_at, dashboard_id, bot_instance_id, bot_user_id, bot_instance_id_bot_user_id, count)
+        SELECT created_at, dashboard_id, bot_instance_id, bot_user_id, (bot_instance_id || ':' || coalesce(bot_user_id, 0)::text), value AS count
+        FROM aggregated_queue
+        ON CONFLICT (dashboard_id, bot_instance_id_bot_user_id, created_at) DO UPDATE SET
+        count = rolledup_events.count + EXCLUDED.count
+
+        RETURNING 1),
+    perform_prune AS (
+        DELETE FROM rolledup_event_queue
+        RETURNING 1
+    )
+
+    SELECT
+        (SELECT count(*) FROM perform_inserts) inserts,
+        (SELECT count(*) FROM perform_prune) prunes
+    INTO v_inserts, v_prunes;
+
+    RAISE NOTICE 'performed queue (hourly) flush: % prunes, % inserts', v_prunes, v_inserts;
+
+    RETURN true;
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -245,6 +366,9 @@ CREATE TABLE dashboards (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     dashboard_type character varying NOT NULL,
+    event_type character varying DEFAULT '{}'::jsonb,
+    query_options jsonb,
+    CONSTRAINT check_if_event_type_is_null CHECK ((((event_type IS NOT NULL) AND ((dashboard_type)::text <> 'custom'::text)) OR ((dashboard_type)::text = 'custom'::text))),
     CONSTRAINT regex_not_null_when_dashboard_type_custom CHECK (((((dashboard_type)::text = 'custom'::text) AND ((regex IS NOT NULL) AND ((regex)::text <> ''::text))) OR ((dashboard_type)::text <> 'custom'::text))),
     CONSTRAINT valid_dashboard_type_on_dashboards CHECK (((((provider)::text = 'slack'::text) AND (((dashboard_type)::text = 'bots-installed'::text) OR ((dashboard_type)::text = 'bots-uninstalled'::text) OR ((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'custom'::text))) OR (((provider)::text = 'facebook'::text) AND (((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'user-actions'::text) OR ((dashboard_type)::text = 'get-started'::text) OR ((dashboard_type)::text = 'image-uploaded'::text) OR ((dashboard_type)::text = 'audio-uploaded'::text) OR ((dashboard_type)::text = 'video-uploaded'::text) OR ((dashboard_type)::text = 'file-uploaded'::text) OR ((dashboard_type)::text = 'location-sent'::text) OR ((dashboard_type)::text = 'custom'::text))) OR (((provider)::text = 'kik'::text) AND (((dashboard_type)::text = 'new-users'::text) OR ((dashboard_type)::text = 'messages-to-bot'::text) OR ((dashboard_type)::text = 'messages-from-bot'::text) OR ((dashboard_type)::text = 'image-uploaded'::text) OR ((dashboard_type)::text = 'link-uploaded'::text) OR ((dashboard_type)::text = 'video-uploaded'::text) OR ((dashboard_type)::text = 'scanned-data'::text) OR ((dashboard_type)::text = 'sticker-uploaded'::text) OR ((dashboard_type)::text = 'friend-picker-chosen'::text) OR ((dashboard_type)::text = 'custom'::text))) OR ((provider)::text = 'telegram'::text))),
     CONSTRAINT valid_provider_on_dashboards CHECK ((((provider)::text = 'slack'::text) OR ((provider)::text = 'kik'::text) OR ((provider)::text = 'facebook'::text) OR ((provider)::text = 'telegram'::text)))
@@ -470,6 +594,73 @@ ALTER SEQUENCE query_sets_id_seq OWNED BY query_sets.id;
 
 
 --
+-- Name: rolledup_event_queue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rolledup_event_queue (
+    id integer NOT NULL,
+    diff bigint DEFAULT 1,
+    bot_user_id integer,
+    bot_instance_id integer NOT NULL,
+    dashboard_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: rolledup_event_queue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rolledup_event_queue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rolledup_event_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rolledup_event_queue_id_seq OWNED BY rolledup_event_queue.id;
+
+
+--
+-- Name: rolledup_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rolledup_events (
+    id integer NOT NULL,
+    count bigint DEFAULT 0,
+    bot_user_id integer,
+    bot_instance_id integer NOT NULL,
+    dashboard_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    bot_instance_id_bot_user_id character varying NOT NULL
+);
+
+
+--
+-- Name: rolledup_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rolledup_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rolledup_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rolledup_events_id_seq OWNED BY rolledup_events.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -692,6 +883,20 @@ ALTER TABLE ONLY settings ALTER COLUMN id SET DEFAULT nextval('settings_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY rolledup_event_queue ALTER COLUMN id SET DEFAULT nextval('rolledup_event_queue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_events ALTER COLUMN id SET DEFAULT nextval('rolledup_events_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -796,6 +1001,22 @@ ALTER TABLE ONLY query_sets
 
 ALTER TABLE ONLY settings
     ADD CONSTRAINT settings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rolledup_event_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_event_queue
+    ADD CONSTRAINT rolledup_event_queue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rolledup_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolledup_events
+    ADD CONSTRAINT rolledup_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -927,6 +1148,13 @@ CREATE INDEX index_dashboards_on_bot_id ON dashboards USING btree (bot_id);
 
 
 --
+-- Name: index_dashboards_on_bot_id_and_event_type_and_query_options; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dashboards_on_bot_id_and_event_type_and_query_options ON dashboards USING btree (bot_id, event_type, query_options);
+
+
+--
 -- Name: index_dashboards_on_name_and_bot_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -979,7 +1207,7 @@ CREATE INDEX index_events_on_event_type ON events USING btree (event_type);
 -- Name: index_events_on_event_type_and_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY ((ARRAY['bot-installed'::character varying, 'bot_disabled'::character varying])::text[]));
+CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY (ARRAY[('bot-installed'::character varying)::text, ('bot_disabled'::character varying)::text]));
 
 
 --
@@ -1039,6 +1267,13 @@ CREATE UNIQUE INDEX index_settings_on_key ON settings USING btree (key);
 
 
 --
+-- Name: index_rolledup_events_on_dashboard_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rolledup_events_on_dashboard_id_and_created_at ON rolledup_events USING btree (dashboard_id, created_at);
+
+
+--
 -- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1067,6 +1302,13 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (re
 
 
 --
+-- Name: rolledup_events_unique_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX rolledup_events_unique_key ON rolledup_events USING btree (bot_instance_id_bot_user_id, dashboard_id, created_at);
+
+
+--
 -- Name: unique-bot-user-id-user-added; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1078,6 +1320,20 @@ CREATE UNIQUE INDEX "unique-bot-user-id-user-added" ON events USING btree (bot_u
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
+
+
+--
+-- Name: custom_event_insert; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER custom_event_insert AFTER INSERT ON dashboard_events FOR EACH ROW EXECUTE PROCEDURE custom_append_to_rolledup_events_queue();
+
+
+--
+-- Name: event_insert; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER event_insert AFTER INSERT ON events FOR EACH ROW EXECUTE PROCEDURE append_to_rolledup_events_queue();
 
 
 --
@@ -1410,5 +1666,15 @@ INSERT INTO schema_migrations (version) VALUES ('20161128181940');
 
 INSERT INTO schema_migrations (version) VALUES ('20161128201958');
 
+INSERT INTO schema_migrations (version) VALUES ('20161129222856');
+
 INSERT INTO schema_migrations (version) VALUES ('20161130014858');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130140356');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130140846');
+
+INSERT INTO schema_migrations (version) VALUES ('20161130143408');
+
+INSERT INTO schema_migrations (version) VALUES ('20161201051941');
 

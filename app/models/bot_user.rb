@@ -46,15 +46,15 @@ class BotUser < ActiveRecord::Base
   end
 
   scope :dashboard_betw, ->(query, min, max) do
-    where(id: query.dashboard.events.where("events.created_at" => min..max).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at" => min..max).select(:bot_user_id))
   end
 
   scope :dashboard_gt, ->(query, days_ago) do
-    where(id: query.dashboard.events.where("events.created_at < ?", days_ago).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at < ?", days_ago).select(:bot_user_id))
   end
 
   scope :dashboard_lt, ->(query, days_ago) do
-    where(id: query.dashboard.events.where("events.created_at > ?", days_ago).select(:bot_user_id))
+    where(id: query.dashboard.events.where("rolledup_events.created_at > ?", days_ago).select(:bot_user_id))
   end
 
   scope :interacted_at_lt, ->(query, days_ago) do
@@ -83,66 +83,15 @@ class BotUser < ActiveRecord::Base
 
   def create_user_added_event
     begin
-      self.bot_instance.events.create!(event_type: 'user-added', user: self, provider: self.provider)
+      self.bot_instance.events.create!(event_type: 'user-added', user: self, provider: self.provider, created_at: self.created_at)
     rescue ActiveRecord::RecordNotUnique => e
       Rails.logger.error "Could not create 'user-added' event for instance #{bot.uid} #{e.inspect}"
     end
   end
 
-  def self.with_bot_instances(instances, bot, start_time, end_time)
-    created_at = bot.provider == 'slack' ? "bot_instances.created_at" : "bot_users.created_at"
-
-    where(bot_instance_id: instances.select(:id)).joins(:bot_instance).
-      where(created_at => start_time..end_time)
-  end
-
-  def self.with_messages_to_bot(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_for_bot = 't' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_messages_from_bot(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' AND events.is_from_bot = 't' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_messaging_postbacks(associated_bot_instances_ids)
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'messaging_postbacks' GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.bot_instance_id IN (?)", associated_bot_instances_ids).
-    order("last_event_at DESC NULLS LAST")
-  end
-
-  def self.with_message_subtype(associated_bot_instance_ids, type, provider)
-    case provider
-    when 'facebook'
-      select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-      joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' " +
-            "AND (event_attributes->>'attachments')::text IS NOT NULL AND (event_attributes->'attachments'->0->>'type')::text = '#{type}' " +
-            "GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-      where("bot_users.bot_instance_id IN (?)", associated_bot_instance_ids).
-      order("last_event_at DESC NULLS LAST")
-    when 'kik'
-      select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-      joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE events.event_type = 'message' " +
-            "AND (event_attributes->>'sub_type')::text IS NOT NULL AND (event_attributes->>'sub_type')::text = '#{type}' " +
-            "GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-      where("bot_users.bot_instance_id IN (?)", associated_bot_instance_ids).
-      order("last_event_at DESC NULLS LAST")
-    end
-  end
-
-  def self.with_events(associated_bot_user_ids, event_ids)
-    events_condition = sanitize_sql_hash_for_conditions("events.id" => event_ids)
-
-    select("bot_users.*, COALESCE(e.cnt, 0) AS events_count, e.c_at AS last_event_at").
-    joins("LEFT JOIN (SELECT bot_user_id, COUNT(*) AS cnt, MAX(events.created_at) AS c_at FROM events WHERE #{events_condition} GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id").
-    where("bot_users.id IN (?)", associated_bot_user_ids).
-    order("last_event_at DESC NULLS LAST")
+  def self.with_events(events_relation)
+    select("bot_users.*").
+    joins("INNER JOIN (SELECT bot_user_id FROM rolledup_events WHERE rolledup_events.id IN (#{events_relation.to_sql}) GROUP by bot_user_id) e ON e.bot_user_id = bot_users.id")
   end
 
   def self.by_cohort(bot, start_time: 8.weeks.ago, end_time: Time.current, group_by: 'week')

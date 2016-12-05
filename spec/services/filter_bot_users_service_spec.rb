@@ -74,6 +74,7 @@ RSpec.describe FilterBotUsersService do
             let!(:de2)            { create :dashboard_event, dashboard: dashboard, event: event_2 }
 
             it 'returns filtered' do
+              RolledupEventQueue.flush!
               expect(service.scope.map(&:id)).to match_array [included_user.id]
             end
           end
@@ -82,12 +83,14 @@ RSpec.describe FilterBotUsersService do
             context 'facebook' do
               let!(:included_user)  { create :bot_user, bot_instance: instance_1 }
               let!(:excluded_user)  { create :bot_user, bot_instance: instance_1 }
-              let!(:event_1)        { create :facebook_image_event, bot_instance: instance_1, created_at: 3.days.ago, user: included_user }
-              let!(:event_2)        { create :facebook_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user }
 
               before do
-                dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded')
+                dashboard.update_attributes(provider: 'facebook', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
+                create :facebook_image_event, bot_instance: instance_1, created_at: 3.days.ago, user: included_user
+                create :facebook_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user
+
                 @query.update_attribute(:provider, 'facebook')
+                RolledupEventQueue.flush!
               end
 
               it 'returns filtered' do
@@ -98,12 +101,14 @@ RSpec.describe FilterBotUsersService do
             context 'kik' do
               let!(:included_user)  { create :bot_user, bot_instance: instance_1 }
               let!(:excluded_user)  { create :bot_user, bot_instance: instance_1 }
-              let!(:event_1)        { create :kik_image_event, bot_instance: instance_1, created_at: 3.days.ago, user: included_user }
-              let!(:event_2)        { create :kik_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user }
 
               before do
-                dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded')
+                dashboard.update_attributes(provider: 'kik', dashboard_type: 'image-uploaded', event_type: 'message:image-uploaded')
+                create :kik_image_event, bot_instance: instance_1, created_at: 3.days.ago, user: included_user
+                create :kik_image_event, bot_instance: instance_1, created_at: 5.days.ago, user: excluded_user
                 @query.update_attribute(:provider, 'kik')
+
+                RolledupEventQueue.flush!
               end
 
               it 'returns filtered' do

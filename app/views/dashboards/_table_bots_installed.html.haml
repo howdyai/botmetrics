@@ -5,7 +5,6 @@
       %th URL
       %th Members
       %th Created
-      %th Bot Interactions
       %th Last Interacted with Bot
   %tbody
     - tableized.each do |b|
@@ -16,5 +15,4 @@
         %td= _url.present? ? link_to(_url, _url) : ''
         %td= b.users_count
         %td= "#{time_ago_in_words(b.created_at)} ago"
-        %td= b.events_count
         %td= b.last_event_at.present? ? "#{time_ago_in_words(b.last_event_at)} ago" : 'no messages yet'

@@ -176,48 +176,81 @@ RSpec.describe Event do
     end
   end
 
-  context 'scope' do
-    let(:disabled_bi)          { create :bot_instance }
-    let(:all_message_bi)       { create :bot_instance }
-    let(:messages_to_bot_bi)   { create :bot_instance }
-    let(:messages_from_bot_bi) { create :bot_instance }
+  # These callbacks are handled by postgres triggers
+  # so you won't find anything in the Ruby code
+  context 'callbacks' do
+    context 'event insert' do
+      let!(:bot)    { create :bot, provider: 'slack' }
+      let!(:owner)  { create :user }
+      let!(:bc1)    { create :bot_collaborator, bot: bot, user: owner       }
+      let!(:bi)     { create :bot_instance, bot: bot, provider: 'slack'     }
+      let!(:user)   { create :bot_user, bot_instance: bi, provider: 'slack' }
 
-    before do
-      disabled_bi.events.create(event_type: 'bot_disabled')
-      all_message_bi.events.create(event_type: 'message', is_from_bot: false)
-      messages_to_bot_bi.events.create(event_type: 'message', is_for_bot: true)
-      messages_from_bot_bi.events.create(event_type: 'message', is_from_bot: true)
-    end
-
-    describe '.with_disabled_bots' do
-      it 'works' do
-        events = Event.with_disabled_bots(BotInstance.all, Time.current.yesterday, Time.zone.tomorrow)
-
-        expect(events.map(&:id)).to eq disabled_bi.events.ids
+      before do
+        bot.create_default_dashboards_with!(owner)
+        @now = Time.now.utc
       end
-    end
 
-    describe '.with_all_messages' do
-      it 'works' do
-        events = Event.with_all_messages(BotInstance.all, Time.current.yesterday, Time.zone.tomorrow)
+      context 'bot installed event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'bots-installed') }
 
-        expect(events.map(&:id)).to eq all_message_bi.events.ids
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:new_bot_event, bot_instance: bi, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
       end
-    end
 
-    describe '.with_messages_to_bot' do
-      it 'works' do
-        events = Event.with_messages_to_bot(BotInstance.all, Time.current.yesterday, Time.zone.tomorrow)
+      context 'message event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages') }
 
-        expect(events.map(&:id)).to eq messages_to_bot_bi.events.ids
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:all_messages_event, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
       end
-    end
 
-    describe '.with_messages_from_bot' do
-      it 'works' do
-        events = Event.with_messages_from_bot(BotInstance.all, Time.current.yesterday, Time.zone.tomorrow)
+      context 'message to bot event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages-to-bot') }
 
-        expect(events.map(&:id)).to eq messages_from_bot_bi.events.ids
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:messages_to_bot_event, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'message from bot event' do
+        let!(:dashboard) { bot.dashboards.find_by(dashboard_type: 'messages-from-bot') }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
+      end
+
+      context 'custom dashboard' do
+        let!(:dashboard) { create(:dashboard, dashboard_type: 'custom', regex: 'abc', bot: bot, user: owner) }
+
+        it 'should create an entry in the RolledupEventQueue with the hour' do
+          @e1 = create(:all_messages_event, is_from_bot: true, bot_instance: bi, user: user, created_at: @now)
+          @dc1 = create(:dashboard_event, dashboard: dashboard, event: @e1)
+
+          @rolled_up_entry = RolledupEventQueue.find_by(dashboard_id: dashboard.id, bot_instance_id: bi.id, bot_user_id: user.id)
+          expect(@rolled_up_entry).to_not be_nil
+          expect(@rolled_up_entry.created_at).to eql @now.beginning_of_hour
+          expect(@rolled_up_entry.diff).to eql 1
+        end
       end
     end
   end

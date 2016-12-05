@@ -166,9 +166,9 @@ RSpec.describe RelaxService do
         dashboard1.reload; dashboard2.reload; dashboard3.reload
         e = bi.events.last
 
-        expect(dashboard1.events.to_a).to eql [e]
-        expect(dashboard2.events.to_a).to eql [e]
-        expect(dashboard3.events.to_a).to be_empty
+        expect(dashboard1.raw_events.to_a).to eql [e]
+        expect(dashboard2.raw_events.to_a).to eql [e]
+        expect(dashboard3.raw_events.to_a).to be_empty
       end
     end
 
