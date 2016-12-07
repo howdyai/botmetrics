@@ -1345,10 +1345,10 @@ CREATE INDEX index_rolledup_events_on_bot_user_id ON rolledup_events USING btree
 
 
 --
--- Name: index_rolledup_events_on_dashboard_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_rolledup_events_on_created_at_and_dashboard_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_rolledup_events_on_dashboard_id_and_created_at ON rolledup_events USING btree (dashboard_id, created_at);
+CREATE INDEX index_rolledup_events_on_created_at_and_dashboard_id ON rolledup_events USING btree (created_at, dashboard_id);
 
 
 --
@@ -1775,4 +1775,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161201051941');
 INSERT INTO schema_migrations (version) VALUES ('20161202193453');
 
 INSERT INTO schema_migrations (version) VALUES ('20161205181556');
+
+INSERT INTO schema_migrations (version) VALUES ('20161207205554');
 
