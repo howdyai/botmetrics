@@ -3,6 +3,7 @@
     %table.table.table-striped.tableized
       %thead
         %tr
+          %th
           %th First Name
           %th Last Name
           %th Gender
@@ -13,6 +14,7 @@
       %tbody
         - tableized.each do |bot_user|
           %tr{class: bot_user.id}
+            %td= image_tag(bot_user.profile_image_url, width: '55', 'height': '55', class: 'img img-circle')
             %td= bot_user.first_name
             %td= bot_user.last_name
             %td= bot_user.gender

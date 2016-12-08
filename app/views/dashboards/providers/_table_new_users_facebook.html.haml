@@ -1,6 +1,7 @@
 %table.table.table-striped.tableized
   %thead
     %tr
+      %th
       %th First Name
       %th Last Name
       %th Gender
@@ -10,6 +11,7 @@
   %tbody
     - tableized.each do |u|
       %tr{class: u.id}
+        %td= image_tag(u.profile_image_url, width: '55', 'height': '55', class: 'img img-circle')
         %td= u.first_name
         %td= u.last_name
         %td= u.gender

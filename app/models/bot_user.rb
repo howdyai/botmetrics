@@ -89,6 +89,10 @@ class BotUser < ActiveRecord::Base
     end
   end
 
+  def profile_image_url
+    self.user_attributes['profile_pic'] || self.user_attributes['profile_pic_url']
+  end
+
   def self.with_events(events_relation)
     where("bot_users.id" => events_relation.select("rolledup_events.bot_user_id").group("rolledup_events.bot_user_id"))
   end
