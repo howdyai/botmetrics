@@ -12,11 +12,11 @@ class FunnelsController < ApplicationController
 
   def new
     @funnel = @bot.funnels.build(name: "My #{(@bot.funnels.count + 1).ordinalize} Funnel")
-    @dashboards = @bot.dashboards.for_funnels.map { |d| [d.funnel_name, d.uid] }
+    @dashboards = @bot.dashboards.enabled.for_funnels.map { |d| [d.funnel_name, d.uid] }
   end
 
   def create
-    @dashboards = @bot.dashboards.for_funnels.map { |d| [d.funnel_name, d.uid] }
+    @dashboards = @bot.dashboards.enabled.for_funnels.map { |d| [d.funnel_name, d.uid] }
 
     @funnel = @bot.funnels.build(name: params[:funnel][:name], creator: current_user)
     update_dashboards_for_funnel!
@@ -57,7 +57,7 @@ class FunnelsController < ApplicationController
     @funnel = @bot.funnels.find_by(uid: params[:id])
     raise ActiveRecord::RecordNotFound if @funnel.blank?
 
-    @dashboards = @bot.dashboards.for_funnels.map { |d| [d.funnel_name, d.uid] }
+    @dashboards = @bot.dashboards.enabled.for_funnels.map { |d| [d.funnel_name, d.uid] }
   end
 
   def show
