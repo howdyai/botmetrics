@@ -60,7 +60,7 @@ module Queries
       ]
 
       if (rich_metrics = bot.dashboards.where(dashboard_type: DASHBOARDS, enabled: true).order("dashboard_type ASC")).count > 0
-        fields << ["Rich Metrics", to_fields(rich_metrics)]
+        fields << ["User Actions", to_fields(rich_metrics)]
       end
 
       if (custom_metrics = bot.dashboards.where(dashboard_type: 'custom', enabled: true).order("dashboard_type ASC")).count > 0
