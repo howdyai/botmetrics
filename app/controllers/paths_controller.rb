@@ -1,4 +1,4 @@
-class FunnelsController < ApplicationController
+class PathsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_bot
 
@@ -6,7 +6,7 @@ class FunnelsController < ApplicationController
 
   def index
     if (@funnels = @bot.funnels).count == 0
-      redirect_to(new_bot_funnel_path) && return
+      redirect_to(new_bot_path_path) && return
     end
   end
 
@@ -22,7 +22,7 @@ class FunnelsController < ApplicationController
     update_dashboards_for_funnel!
 
     if @funnel.save
-      redirect_to bot_funnel_path(@bot, @funnel)
+      redirect_to bot_path_path(@bot, @funnel)
     else
       render :new
     end
@@ -33,7 +33,7 @@ class FunnelsController < ApplicationController
     raise ActiveRecord::RecordNotFound if @funnel.blank?
 
     @funnel.destroy
-    redirect_to bot_funnels_path
+    redirect_to bot_paths_path
   end
 
   def update
@@ -47,7 +47,7 @@ class FunnelsController < ApplicationController
     update_dashboards_for_funnel!
 
     if @funnel.save
-      redirect_to bot_funnel_path(@bot, @funnel)
+      redirect_to bot_path_path(@bot, @funnel)
     else
       render :edit
     end

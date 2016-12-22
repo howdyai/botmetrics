@@ -1,11 +1,10 @@
 .secondary-menu.row
-  .col-md-5.col-sm-3.col-xs-6
-    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
-      %h2 All Funnels
+  .col-md-7.col-sm-7.col-xs-7
+    = link_to bot_paths_path(@bot), class: 'breadcrumb' do
+      %h2 All Paths
     %span.breadcrumb-separator
       \/
-    %h2
-      New Funnel
+    %h2= @funnel.name
 
 .container-fluid.retention-container
   .graph.row
@@ -16,3 +15,4 @@
   :javascript
     App.page = new App.FunnelsNew(#{@dashboards.to_json});
     App.page.run();
+

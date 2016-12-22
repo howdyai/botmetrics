@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     end
 
     resources :short_links, only: [:create]
-    resources :funnels do
+    resources :paths do
       member do
         get :insights
       end
