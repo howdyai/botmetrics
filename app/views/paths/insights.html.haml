@@ -1,10 +1,10 @@
 .secondary-menu.row
   .col-md-7.col-sm-9.col-xs-6
-    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
-      %h2 All Funnels
+    = link_to bot_paths_path(@bot), class: 'breadcrumb' do
+      %h2 All Paths
     %span.breadcrumb-separator
       \/
-    = link_to bot_funnel_path(@bot, @funnel), class: 'breadcrumb' do
+    = link_to bot_path_path(@bot, @funnel), class: 'breadcrumb' do
       %h2= @funnel.name
     %span.breadcrumb-separator
       \/

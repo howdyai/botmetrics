@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe FunnelsController, type: :controller do
+RSpec.describe PathsController, type: :controller do
   let!(:user) { create :user }
   let!(:bot)  { create :bot  }
   let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
@@ -13,9 +13,9 @@ RSpec.describe FunnelsController, type: :controller do
     end
 
     context 'without any created funnels' do
-      it 'should redirect to new_bot_funnel_path' do
+      it 'should redirect to new_bot_path_path' do
         do_request
-        expect(response).to redirect_to new_bot_funnel_path
+        expect(response).to redirect_to new_bot_path_path
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe FunnelsController, type: :controller do
 
       it 'should redirect to the funnel page ' do
         do_request(dashboards: [dashboard1.uid, dashboard2.uid, dashboard3.uid])
-        expect(response).to redirect_to bot_funnel_path(bot, funnel)
+        expect(response).to redirect_to bot_path_path(bot, funnel)
       end
 
       context 'with one of the dashboards is abandoned-chat' do
@@ -111,7 +111,7 @@ RSpec.describe FunnelsController, type: :controller do
         it 'should redirect to the funnel page' do
           do_request(dashboards: [dashboard1.uid, dashboard2.uid, dashboard3.uid, 'abandoned-chat'])
           funnel = bot.funnels.last
-          expect(response).to redirect_to bot_funnel_path(bot, funnel)
+          expect(response).to redirect_to bot_path_path(bot, funnel)
         end
       end
 
@@ -132,7 +132,7 @@ RSpec.describe FunnelsController, type: :controller do
 
         it 'should redirect to the funnel page ' do
           do_request(dashboards: [dashboard1.uid, dashboard2.uid, dashboard3.uid])
-          expect(response).to redirect_to bot_funnel_path(bot, funnel)
+          expect(response).to redirect_to bot_path_path(bot, funnel)
         end
       end
     end
@@ -261,7 +261,7 @@ RSpec.describe FunnelsController, type: :controller do
       it 'should redirect to the funnel name' do
         do_request(name: 'My First Funnel', dashboards: [dashboard1.uid, dashboard2.uid, dashboard3.uid])
         funnel = bot.funnels.last
-        expect(response).to redirect_to bot_funnel_path(bot, funnel)
+        expect(response).to redirect_to bot_path_path(bot, funnel)
       end
 
       context 'with one of the dashboards is abandoned-chat' do
@@ -284,7 +284,7 @@ RSpec.describe FunnelsController, type: :controller do
         it 'should redirect to the funnel name' do
           do_request(name: 'My First Funnel', dashboards: [dashboard1.uid, dashboard2.uid, dashboard3.uid, 'abandoned-chat'])
           funnel = bot.funnels.last
-          expect(response).to redirect_to bot_funnel_path(bot, funnel)
+          expect(response).to redirect_to bot_path_path(bot, funnel)
         end
       end
     end

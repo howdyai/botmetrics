@@ -85,7 +85,7 @@ class App.Funnel
 
   renderInsightAsync: ->
     self = this
-    url = "/bots/#{self.botId}/funnels/#{self.funnelId}/insights?step=#{self.step}&start=#{self.startDate}&end=#{self.endDate}"
+    url = "/bots/#{self.botId}/paths/#{self.funnelId}/insights?step=#{self.step}&start=#{self.startDate}&end=#{self.endDate}"
 
     $.getJSON url, (json) ->
       $("#step-col-#{self.step}").removeClass('loading')

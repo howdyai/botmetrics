@@ -12,7 +12,7 @@ class Funnel < ActiveRecord::Base
 
     dashboard1 = self.bot.dashboards.find_by(uid: self.dashboards[step].split(':').last)
     dashboard2 = self.bot.dashboards.find_by(uid: self.dashboards[step + 1].split(':').last)
-    exclude_other_dashboards = self.bot.dashboards.where(dashboard_type: ['messages', 'message-from-bot']).pluck(:id)
+    exclude_other_dashboards = self.bot.dashboards.where(dashboard_type: ['messages', 'messages-from-bot', 'new-users']).pluck(:id)
 
     dashboard_ids = [dashboard1.id, dashboard2.id] + exclude_other_dashboards
 

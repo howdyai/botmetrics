@@ -1,4 +1,4 @@
-= simple_form_for [@bot, @funnel] do |f|
+= simple_form_for [@bot, @funnel], url: @funnel.persisted? ? bot_path_path(@bot, @funnel) : bot_paths_path(@bot) do |f|
   = f.input :name, required: true, label: "Your Funnel's Name"
   .steps
     %h3 Pick the Order of Events
