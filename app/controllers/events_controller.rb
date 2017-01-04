@@ -22,7 +22,7 @@ class EventsController < ApplicationController
   protected
   def validate_event!
     begin
-      event = JSON.parse(params[:event])
+      event = JSON.parse(params[:event].to_s)
     rescue JSON::ParserError
       @error = "Event parameter is not valid JSON"
       raise BadEventError
