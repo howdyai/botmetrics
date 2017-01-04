@@ -22,6 +22,7 @@ RSpec.describe Queries::Slack do
                      'nickname', 'Nickname',
                      'email', 'Email',
                      'full_name', 'Full Name',
+                     'followed_link', 'Followed Link',
                      'interaction_count', 'Number of Interactions with Bot',
                      'interacted_at', 'Last Interacted With Bot',
                      'user_created_at', 'Signed Up'

@@ -4,7 +4,7 @@ RSpec.describe Query do
       it 'keys include' do
         expect(Queries::Slack::FIELDS.keys).to match_array %w(
           nickname email full_name interaction_count
-          interacted_at user_created_at
+          interacted_at user_created_at followed_link
         )
       end
     end
