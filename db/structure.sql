@@ -1290,6 +1290,13 @@ CREATE INDEX index_events_on_bot_user_id ON events USING btree (bot_user_id);
 
 
 --
+-- Name: index_events_on_bot_user_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_events_on_bot_user_id_and_created_at ON events USING btree (bot_user_id, created_at);
+
+
+--
 -- Name: index_events_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1308,6 +1315,13 @@ CREATE INDEX index_events_on_event_type ON events USING btree (event_type);
 --
 
 CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USING btree (event_type, bot_instance_id) WHERE ((event_type)::text = ANY ((ARRAY['bot-installed'::character varying, 'bot_disabled'::character varying])::text[]));
+
+
+--
+-- Name: index_events_on_event_type_and_bot_instance_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_events_on_event_type_and_bot_instance_id_and_created_at ON events USING btree (event_type, bot_instance_id, created_at);
 
 
 --
@@ -1399,6 +1413,20 @@ CREATE INDEX index_rolledup_events_on_created_at_and_dashboard_id ON rolledup_ev
 --
 
 CREATE UNIQUE INDEX index_settings_on_key ON settings USING btree (key);
+
+
+--
+-- Name: index_rolledup_events_on_created_at_did_buid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rolledup_events_on_created_at_did_buid ON rolledup_events USING btree (created_at, dashboard_id, bot_user_id);
+
+
+--
+-- Name: index_rolledup_events_on_dashboard_id_and_bot_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rolledup_events_on_dashboard_id_and_bot_user_id ON rolledup_events USING btree (dashboard_id, bot_user_id);
 
 
 --
@@ -1872,4 +1900,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161209022208');
 INSERT INTO schema_migrations (version) VALUES ('20161209023618');
 
 INSERT INTO schema_migrations (version) VALUES ('20161221182154');
+
+INSERT INTO schema_migrations (version) VALUES ('20170103192442');
+
+INSERT INTO schema_migrations (version) VALUES ('20170103195117');
 

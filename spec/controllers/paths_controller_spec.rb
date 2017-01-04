@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe PathsController, type: :controller do
   let!(:user) { create :user }
   let!(:bot)  { create :bot  }
+  let!(:bi)   { create :bot_instance, bot: bot }
   let!(:bc1)  { create :bot_collaborator, bot: bot, user: user }
 
   describe 'GET index' do
@@ -228,6 +229,60 @@ RSpec.describe PathsController, type: :controller do
       context 'when step is last element' do
         it 'should respond with 404' do
           do_request(step: 2)
+          expect(response).to have_http_status :missing
+        end
+      end
+    end
+  end
+
+  describe 'GET events' do
+    let!(:dashboard1) { create :dashboard, bot: bot, dashboard_type: 'new-users'       }
+    let!(:dashboard2) { create :dashboard, bot: bot, dashboard_type: 'messages-to-bot' }
+    let!(:dashboard3) { create :dashboard, bot: bot, dashboard_type: 'image-uploaded'  }
+
+    let!(:funnel)     { create :funnel, bot: bot, creator: user, dashboards: ["dashboard:#{dashboard1.uid}", "dashboard:#{dashboard2.uid}", "dashboard:#{dashboard3.uid}"] }
+    let!(:bot_user)   { create :bot_user, bot_instance: bi }
+
+    before do
+      dashboard1.set_event_type_and_query_options!
+      dashboard1.save
+
+      dashboard2.set_event_type_and_query_options!
+      dashboard2.save
+
+      dashboard3.set_event_type_and_query_options!
+      dashboard3.save
+
+      sign_in user
+    end
+
+    def do_request(params = {})
+      get :events, {bot_id: bot.uid, id: funnel.uid, format: 'json'}.merge(params)
+    end
+
+    context 'with valid params' do
+      it 'should respond with 200' do
+        do_request(bot_user_id: bot_user.id)
+        expect(response).to have_http_status :ok
+      end
+    end
+
+    context 'with invalid params' do
+      it 'should respond with 404' do
+        do_request(step: 3)
+        expect(response).to have_http_status :missing
+      end
+
+      context 'when step is last element' do
+        it 'should respond with 404' do
+          do_request(step: 2)
+          expect(response).to have_http_status :missing
+        end
+      end
+
+      context 'with non-existent user-id' do
+        it 'should respond with 404' do
+          do_request(step: 0, bot_user_id: 'non-existent')
           expect(response).to have_http_status :missing
         end
       end

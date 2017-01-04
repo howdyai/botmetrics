@@ -129,6 +129,24 @@ SQL
     Event.connection.execute("DROP FUNCTION IF EXISTS custom_append_to_rolledup_events_queue_on_update() CASCADE;")
   end
 
+  def in_words
+    if self.event_type == 'message'
+      "Said '#{self.text}'"
+    else
+      case self.event_type
+      when 'messaging_postbacks'
+        payload = self.event_attributes['payload']
+        begin
+          payload = JSON.parse(payload)
+        rescue JSON::ParserError
+          return "Clicked Button: #{payload}"
+        end
+
+        "Clicked Button with user defined payload"
+      end
+    end
+  end
+
   def created_at_string
     self.created_at.to_s('%Y-%m-%d %H:%M:%S.%N')
   end

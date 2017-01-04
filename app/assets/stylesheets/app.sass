@@ -449,9 +449,97 @@ body.retention.index
       font-family: Lucida Grande
 
 body.paths
+  &.events
+    .events-row
+      padding-top: 40px
+    .user,
+    .bot
+      top: 15px
+      position: absolute
+      left: -140px
+      text-align: right
+      .name
+        margin: 0
+      .timestamp
+        color: #aaa
+        margin: 0
+    .bot
+      left: 360px
+      width: 160px
+      text-align: left
+
+    .talk-bubble
+      margin: 20px
+      position: relative
+      width: 300px
+      height: auto
+      min-height: 80px
+      border: 4px solid #3bafda
+      border-radius: 5px
+      -webkit-border-radius: 5px
+      -moz-border-radius: 5px
+      align: left
+      &.from-bot
+        align: right
+      p
+        padding: 10px 20px 10px 20px
+        font-size: 16px
+
+    .tri-right
+      &.right-in:before
+        content: ' '
+        position: absolute
+        width: 0
+        height: 0
+        left: auto
+        right: -20px
+        top: -4px
+        bottom: auto
+        border: 10px solid
+        border-color: #3bafda transparent transparent #3bafda
+      &.right-in:after
+        content: ' '
+        position: absolute
+        width: 0
+        height: 0
+        left: auto
+        right: -20px
+        top: -4px
+        bottom: auto
+        border: 12px solid
+        border-color: transparent transparent transparent transparent
+
+      &.left-in:before
+        content: ' '
+        position: absolute
+        width: 0
+        height: 0
+        left: -20px
+        right: auto
+        top: -4px
+        bottom: auto
+        border: 10px solid
+        border-color: #3bafda #3bafda transparent transparent
+      &.left-in:after
+        content: ' '
+        position: absolute
+        width: 0
+        height: 0
+        left: -20px
+        right: auto
+        top: -4px
+        bottom: auto
+        border: 12px solid
+        border-color: transparent transparent transparent transparent
+
+
   .secondary-menu
     .btn-group
       margin-top: 15px
+  td.events-nav
+    i
+      font-size: 30px
+      opacity: 0.8
   td.step-col
     &.loading
       background-image: image-url('ellipsis.gif')
