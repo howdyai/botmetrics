@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.3.1'
+ruby '2.3.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.7.1'
@@ -48,7 +48,6 @@ gem 'pusher',                   '~> 0.15.1'
 gem 'passenger',                '~> 5.0.27'
 
 gem 'json-stream',              '~> 0.2.1', require: 'json/stream'
-gem 'validate_url',             github: 'perfectline/validates_url', ref: '725163e', require: 'validate_url'
 
 # Cron
 gem 'clockwork'
@@ -56,6 +55,8 @@ gem 'clockwork'
 gem 'font_assets',              '~> 0.1.12'
 
 gem 'rollbar',                  '~> 2.13.2'
+
+gem 'validate_url',             github: 'perfectline/validates_url', ref: '0844e25', require: 'validate_url'
 
 group :development do
   gem 'foreman',                  '~> 0.82.0'
