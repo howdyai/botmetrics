@@ -33,8 +33,8 @@ dependencies:
     - >
       case $CIRCLE_NODE_INDEX in
        0)
-         rvm-exec 2.3.1 gem install bundler
-         rvm-exec 2.3.1 bash -c "bundle check --path=vendor/bundle_2.3 || bundle install --path=vendor/bundle_2.3"
+         rvm-exec 2.3.2 gem install bundler
+         rvm-exec 2.3.2 bash -c "bundle check --path=vendor/bundle_2.3 || bundle install --path=vendor/bundle_2.3"
          ;;
        1)
          rvm-exec jruby gem install bundler
@@ -44,10 +44,10 @@ dependencies:
 
 database:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rake db:create db:migrate;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create db:migrate;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.2 bundle exec rake db:create db:migrate;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create db:migrate;; esac:
         parallel: true
 
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.1 bundle exec rspec spec;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rspec spec;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.2 bundle exec rspec spec;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rspec spec;; esac:
         parallel: true
