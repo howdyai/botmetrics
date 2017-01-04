@@ -58,7 +58,7 @@ class App.Funnel
               if steps == 0
                 "#{numUsers} use#{if numUsers == 1 then 'r' else 'rs'} performed the next action immediately"
               else
-                "#{numUsers} use#{if numUsers == 1 then 'r' else 'rs'} went through #{steps} ste#{if steps == 1 then 'p' else 'ps'} before the next action"
+                "#{numUsers} use#{if numUsers == 1 then 'r' else 'rs'} interacted #{steps} tim#{if steps == 1 then 'e' else 'es'} before the next action"
 
         legend:
           display: false
