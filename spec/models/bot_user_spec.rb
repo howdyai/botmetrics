@@ -70,6 +70,45 @@ RSpec.describe BotUser do
     end
   end
 
+  context 'followed link related scopes' do
+    let!(:timezone)   { 'Pacific Time (US & Canada)' }
+    let!(:bot)        { create :bot }
+    let!(:instance)   { create :bot_instance, :with_attributes, uid: 'B123', bot: bot, state: 'enabled' }
+    let!(:query_set)  { create :query_set, bot: bot }
+    let!(:query)      { build  :query, query_set: query_set, field: "followed_link" }
+
+    before  { travel_to Time.current.beginning_of_hour }
+    after   { travel_back }
+
+    let!(:user_1) { create(:bot_user) }
+    let!(:user_2) { create(:bot_user) }
+    let!(:user_3) { create(:bot_user) }
+    let!(:user_4) { create(:bot_user) }
+    let!(:user_5) { create(:bot_user) }
+
+    let!(:event_1) { create :event, event_type: 'followed-link', bot_instance: instance, event_attributes: { url: "https://host-#{user_1.id}.google.com" }, user: user_1 }
+    let!(:event_2) { create :event, event_type: 'followed-link', bot_instance: instance, event_attributes: { url: "https://host-#{user_2.id}.google.com" }, user: user_2 }
+    let!(:event_3) { create :event, event_type: 'followed-link', bot_instance: instance, event_attributes: { url: "https://host-#{user_3.id}.google.com" }, user: user_3 }
+    let!(:event_4) { create :event, event_type: 'followed-link', bot_instance: instance, event_attributes: { url: "https://host-#{user_4.id}.google.com" }, user: user_4 }
+    let!(:event_5) { create :event, event_type: 'followed-link', bot_instance: instance, event_attributes: { url: "https://host-#{user_5.id}.google.com" }, user: user_5 }
+
+    let!(:event_not_included) { create :event, event_type: 'followed-link', user: create(:bot_user), event_attributes: { url: "https://host-#{user_5.id}.google.com" } }
+
+    describe '.followed_link_eq' do
+      it 'return users that clicked a given link (with full equality)' do
+        result = BotUser.followed_link_eq(bot, "https://host-#{user_3.id}.google.com").map(&:id)
+        expect(result).to match_array [user_3.id]
+      end
+    end
+
+    describe '.followed_link_cont' do
+      it 'return users that clicked a given link (with partial match)' do
+        result = BotUser.followed_link_cont(bot, "google.com").map(&:id)
+        expect(result).to match_array [user_1.id, user_2.id, user_3.id, user_4.id, user_5.id]
+      end
+    end
+  end
+
   context 'dashboard related scopes' do
     let!(:timezone)   { 'Pacific Time (US & Canada)' }
     let!(:bot)        { create :bot }

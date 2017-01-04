@@ -33,13 +33,24 @@ class FilterBotUsersService
   end
 
   def chain_with_string_query(collection, query)
-    case
-      when query.method == 'equals_to'
-        collection.user_attributes_eq(query.field, query.value)
-      when query.method == 'contains'
-        collection.user_attributes_cont(query.field, query.value)
-      else
-        collection
+    if query.field == 'followed_link'
+      case
+        when query.method == 'equals_to'
+          collection.followed_link_eq(query_set.bot, query.value)
+        when query.method == 'contains'
+          collection.followed_link_cont(query_set.bot, query.value)
+        else
+          collection
+      end
+    else
+      case
+        when query.method == 'equals_to'
+          collection.user_attributes_eq(query.field, query.value)
+        when query.method == 'contains'
+          collection.user_attributes_cont(query.field, query.value)
+        else
+          collection
+      end
     end
   end
 

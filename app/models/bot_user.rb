@@ -8,6 +8,18 @@ class BotUser < ActiveRecord::Base
 
   after_create :create_user_added_event
 
+  scope :followed_link_eq, ->(bot, value) do
+    where(id: Event.where(bot_instance_id: bot.instances.select(:id), event_type: 'followed-link')
+                   .where("event_attributes->>'url' = ?", value)
+                   .select(:bot_user_id))
+  end
+
+  scope :followed_link_cont, ->(bot, value) do
+    where(id: Event.where(bot_instance_id: bot.instances.select(:id), event_type: 'followed-link')
+                   .where("event_attributes->>'url' ILIKE ?", "%#{value}%")
+                   .select(:bot_user_id))
+  end
+
   scope :user_attributes_eq, ->(field, value) do
     where(
       "bot_users.user_attributes->>:field = :value",
