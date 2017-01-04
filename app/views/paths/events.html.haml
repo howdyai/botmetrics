@@ -1,0 +1,49 @@
+.secondary-menu.row
+  .col-md-10.col-sm-10.col-xs-10
+    = link_to bot_paths_path(@bot), class: 'breadcrumb' do
+      %h2 All Paths
+    %span.breadcrumb-separator
+      \/
+    = link_to bot_path_path(@bot, @funnel, start: @start, end: @end), class: 'breadcrumb' do
+      %h2= @funnel.name
+    %span.breadcrumb-separator
+      \/
+    = link_to insights_bot_path_path(@bot, @funnel, step: @step, start: @start, end: @end), class: 'breadcrumb' do
+      %h2 Path Analysis
+    %span.breadcrumb-separator
+      \/
+      %h2
+        Interactions
+
+  .col-md-2.col-sm-2.col-xs-2.text-right
+    #report-range.pull-right
+      = icon('calendar')
+      %span
+      %b.caret
+
+.container-fluid.retention-container
+  .row.events-row
+    .col-md-8.col-sm-8.col-xs-8.col-md-offset-2.col-sm-offset-2.col-xs-offset-2
+      - @events.each do |e|
+        - if e.is_from_bot?
+          .row
+            .col-md-6.col-sm-6.col-xs-6.col-md-offset-6.col-sm-offset-6.col-xs-offset-6
+              .bot
+                %p.name.strong= @bot.name
+                %p.timestamp= "#{e.created_at.in_time_zone(current_user.timezone)}"
+              .talk-bubble.tri-right.right-in.from-bot{id: "event-#{e.id}"}
+                %p= formatted_event(e).html_safe
+        - else
+          .row
+            .col-md-6.col-sm-6.col-xs-6
+              .user
+                %p.name.strong= "#{@bot_user.first_name} #{@bot_user.last_name}"
+                %p.timestamp= "#{e.created_at.in_time_zone(current_user.timezone)}"
+              .talk-bubble.tri-right.left-in.for-bot{id: "event-#{e.id}"}
+                %p= formatted_event(e).html_safe
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.FunnelsInsights(#{@bot.uid.to_json}, #{@funnel.uid.to_json}, #{@step.to_json}, #{@insights_by_count.to_json}, #{@start.to_json}, #{@end.to_json});
+    App.page.run();
+

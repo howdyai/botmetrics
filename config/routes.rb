@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     resources :paths do
       member do
         get :insights
+        get :events
       end
     end
 

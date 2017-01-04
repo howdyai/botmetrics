@@ -7,12 +7,16 @@
           %th First Name
           %th Last Name
           %th Gender
-          %th Timezone
+          - if !@show_steps
+            %th Timezone
           %th Referrer
-          %th Signed Up
-          %th Last Interacted With Bot
+          - if !@show_steps
+            %th Signed Up
+            %th Last Interacted With Bot
           - if @show_steps
-            %th Number of Steps
+            %th Last Interaction
+            %th Interactions
+            %th
       %tbody
         - tableized.each do |bot_user|
           %tr{class: bot_user.id}
@@ -20,10 +24,16 @@
             %td= bot_user.first_name
             %td= bot_user.last_name
             %td= bot_user.gender
-            %td= bot_user.timezone.present? ? ActiveSupport::TimeZone[bot_user.timezone] : ''
+            - if !@show_steps
+              %td= bot_user.timezone.present? ? ActiveSupport::TimeZone[bot_user.timezone] : ''
             %td= bot_user.ref
-            %td= "#{time_ago_in_words(bot_user.created_at)} ago"
-            %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
+            - if !@show_steps
+              %td= "#{time_ago_in_words(bot_user.created_at)} ago"
+              %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
             - if @show_steps
+              %td= bot_user.last_event.try(:in_words)
               %td= bot_user.step_count
+              %td.events-nav
+                = link_to events_bot_path_path(@bot, @funnel, start: @start, end: @end, bot_user_id: bot_user.id, step: @step) do
+                  %i.fa.fa-chevron-circle-right
     = will_paginate tableized, renderer: BootstrapPagination::Rails

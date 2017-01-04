@@ -91,10 +91,39 @@ class PathsController < ApplicationController
 
       format.html do
         @users = BotUser.where(id: insights[:group_by_user].keys).order(:id).paginate(page: params[:page], total_entries: @insights_by_user.size)
-        @users.each { |u| u.step_count = @insights_by_user[u.id] }
+        @users.each do |u|
+          u.step_count = @insights_by_user[u.id]
+          u.last_event = @funnel.events(u, step: @step, start_time: @start, end_time: @end, most_recent: true)
+        end
+
         @show_steps = true
 
         render :insights
+      end
+    end
+  end
+
+  def events
+    @funnel = @bot.funnels.find_by(uid: params[:id])
+    raise ActiveRecord::RecordNotFound if @funnel.blank?
+
+    if (@step = params[:step].to_i).present?
+      raise ActiveRecord::RecordNotFound if(@step < 0 || @step >= @funnel.dashboards.length - 1)
+    end
+
+    @bot_user = BotUser.where(id: params[:bot_user_id].to_i, bot_instance_id: @bot.instances.select(:id)).first
+    raise ActiveRecord::RecordNotFound if @bot_user.blank?
+
+    @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call
+    @events = @funnel.events(@bot_user, step: @step, start_time: @start, end_time: @end, most_recent: params[:most_recent] == 'true')
+
+    respond_to do |format|
+      format.json do
+        render json: { events: @events }
+      end
+
+      format.html do
+        render :events
       end
     end
   end

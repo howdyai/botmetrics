@@ -4,7 +4,7 @@ FactoryGirl.define do
       channel: SecureRandom.hex(8),
       timestamp: Time.current.to_i, delivered: false,
       mid: 'mid',
-      seq: 74
+      seq: SecureRandom.hex(8)
     )
   }
 

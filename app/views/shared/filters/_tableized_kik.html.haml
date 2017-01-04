@@ -6,8 +6,10 @@
           %th
           %th First Name
           %th Last Name
-          %th Signed Up
+          - if !@show_steps
+            %th Signed Up
           - if @show_steps
+            %th Last Step
             %th Number of Steps
           %th Last Interacted With Bot
       %tbody
@@ -16,8 +18,10 @@
             %td= image_tag(bot_user.profile_image_url, width: '55', 'height': '55', class: 'img img-circle')
             %td= bot_user.first_name
             %td= bot_user.last_name
-            %td= "#{time_ago_in_words(bot_user.created_at)} ago"
+            - if !@show_steps
+              %td= "#{time_ago_in_words(user.created_at)} ago"
             - if @show_steps
+              %td= bot_user.last_event.try(:in_words)
               %td= bot_user.step_count
             %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
     = will_paginate tableized, renderer: BootstrapPagination::Rails
