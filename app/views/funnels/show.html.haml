@@ -1,0 +1,36 @@
+.secondary-menu.row
+  .col-md-7.col-sm-9.col-xs-6
+    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
+      %h2 All Funnels
+    %span.breadcrumb-separator
+      \/
+    %h2= @funnel.name
+  .col-md-5.col-sm-3.col-xs-6.text-right
+    #report-range.pull-right
+      = icon('calendar')
+      %span
+      %b.caret
+
+.container-fluid.retention-container
+  .graph.row
+    .col-md-8.col-sm-8.col-xs-8.col-md-offset-2.col-sm-offset-2.col-xs-offset-2
+      %canvas#funnel-canvas
+
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            - @x_axis.each do |x|
+              %th= x
+        %tbody
+          %tr
+            - @y_axis.each_with_index do |y, i|
+              %td
+                %strong= y
+                = "(#{i == 0 ? "100%" : number_to_percentage(y.to_f / @y_axis[i-1] * 100, precision: 1)})"
+
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.FunnelsShow(#{@x_axis.to_json}, #{@y_axis.to_json}, #{@start.to_json}, #{@end.to_json});
+    App.page.run();
+

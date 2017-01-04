@@ -30,3 +30,5 @@
 #= require pages/insights/filter
 #= require pages/retention/index
 #= require pages/dashboards/index
+#= require pages/funnels/new
+#= require pages/funnels/show

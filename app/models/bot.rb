@@ -19,6 +19,7 @@ class Bot < ActiveRecord::Base
   has_many :bot_collaborators
   has_many :collaborators, through: :bot_collaborators, source: :user
   has_many :owners, -> { where("bot_collaborators.collaborator_type" => 'owner') }, through: :bot_collaborators, source: :user
+  has_many :funnels
 
   has_many :notifications
   has_many :webhook_events
