@@ -21,6 +21,7 @@ RSpec.describe Queries::Kik do
     let(:values) { Hash[
                      'first_name', 'First Name',
                      'last_name', 'Last Name',
+                     'followed_link', 'Followed Link',
                      'interaction_count', 'Number of Interactions with Bot',
                      'interacted_at', 'Last Interacted With Bot',
                      'user_created_at', 'Signed Up'

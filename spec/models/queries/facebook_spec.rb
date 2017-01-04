@@ -23,6 +23,7 @@ RSpec.describe Queries::Facebook do
                      'last_name', 'Last Name',
                      'gender', 'Gender',
                      'ref', 'Referrer',
+                     'followed_link', 'Followed Link',
                      'interaction_count', 'Number of Interactions with Bot',
                      'interacted_at', 'Last Interacted With Bot',
                      'user_created_at', 'Signed Up'

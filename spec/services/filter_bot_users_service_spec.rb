@@ -53,6 +53,41 @@ RSpec.describe FilterBotUsersService do
         end
       end
 
+      context 'followed link queries' do
+        let!(:user_1)  { create :bot_user, bot_instance: instance_1 }
+        let!(:user_2)  { create :bot_user, bot_instance: instance_1 }
+        let!(:event_1) { create :event, event_type: 'followed-link', event_attributes: { url: "https://host-#{SecureRandom.hex(8)}.google.com" }, bot_instance: instance_1, user: user_1 }
+        let!(:event_2) { create :event, event_type: 'followed-link', event_attributes: { url: "https://host-#{SecureRandom.hex(8)}.google.com" }, bot_instance: instance_1, user: user_2 }
+
+        context 'followed link equals' do
+          before do
+            @query = create(:query,
+              provider: provider, field: "followed_link", method: :equals_to,
+              value: event_1.event_attributes['url'],
+              query_set: query_set
+            )
+          end
+
+          it 'returns filtered' do
+            expect(service.scope.map(&:id)).to match_array [user_1.id]
+          end
+        end
+
+        context 'followed link contains' do
+          before do
+            @query = create(:query,
+              provider: provider, field: "followed_link", method: :contains,
+              value: 'google.com',
+              query_set: query_set
+            )
+          end
+
+          it 'returns filtered' do
+            expect(service.scope.map(&:id)).to match_array [user_1.id, user_2.id]
+          end
+        end
+      end
+
       context 'datetime queries' do
         context 'dashboard queries' do
           let!(:dashboard)      { create :dashboard, bot: bot, dashboard_type: 'custom', regex: 'abc' }
