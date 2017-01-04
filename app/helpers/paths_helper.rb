@@ -9,6 +9,7 @@ module PathsHelper
           event.text.to_s
         end
       when 'messaging_postbacks' then "Clicked Button with payload: <code>#{event.event_attributes['payload']}</code>"
+      else ''
     end
   end
 end
