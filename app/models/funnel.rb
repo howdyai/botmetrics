@@ -7,6 +7,61 @@ class Funnel < ActiveRecord::Base
   belongs_to :bot
   belongs_to :creator, class_name: 'User', foreign_key: 'user_id'
 
+  def insights(step: 0, start_time: 1.week.ago, end_time: Time.current)
+    result = {}
+
+    dashboard1 = self.bot.dashboards.find_by(uid: self.dashboards[step].split(':').last)
+    dashboard2 = self.bot.dashboards.find_by(uid: self.dashboards[step + 1].split(':').last)
+    exclude_other_dashboards = self.bot.dashboards.where(dashboard_type: ['messages', 'message-from-bot']).pluck(:id)
+
+    dashboard_ids = [dashboard1.id, dashboard2.id] + exclude_other_dashboards
+
+    query = <<-SQL
+SELECT rolledup_events.bot_user_id, rolledup_events.dashboard_id, SUM(rolledup_events.count)
+FROM rolledup_events
+LEFT OUTER JOIN LATERAL (
+  SELECT e1.bot_user_id AS bot_user_id, dashboard_1_time, dashboard_2_time FROM
+  (
+    SELECT rolledup_events.bot_user_id, MIN(rolledup_events.created_at) AS dashboard_1_time
+    FROM rolledup_events
+    WHERE rolledup_events.dashboard_id = #{dashboard1.id}
+    AND rolledup_events.created_at BETWEEN '#{start_time.to_s(:db)}' AND '#{end_time.to_s(:db)}'
+    GROUP BY rolledup_events.bot_user_id
+  ) e0 LEFT JOIN LATERAL (
+    SELECT rolledup_events.bot_user_id, MIN(rolledup_events.created_at) AS dashboard_2_time
+    FROM rolledup_events
+    WHERE bot_user_id = e0.bot_user_id
+    AND rolledup_events.dashboard_id = #{dashboard2.id}
+    GROUP BY bot_user_id
+    HAVING MIN(rolledup_events.created_at) BETWEEN dashboard_1_time AND dashboard_1_time + INTERVAL '1 WEEK'
+  ) e1 ON TRUE
+) re ON TRUE
+WHERE rolledup_events.bot_user_id = re.bot_user_id
+AND rolledup_events.created_at BETWEEN re.dashboard_1_time AND re.dashboard_2_time
+GROUP BY rolledup_events.bot_user_id, rolledup_events.dashboard_id
+SQL
+    intermediate_result = Funnel.connection.execute(query).to_a
+
+    intermediate_result.each do |row|
+      dashboard_id = row['dashboard_id'].to_i
+      bot_user_id = row['bot_user_id'].to_i
+      sum = row['sum'].to_i
+
+      sum = dashboard_ids.index(dashboard_id).present? ? 0 : sum
+      result[bot_user_id] = result[bot_user_id].to_i + sum
+    end
+
+    group_by_count = {}
+    result.each do |k,v|
+      group_by_count[v] = group_by_count[v].to_i + 1
+    end
+    group_by_count = group_by_count.inject([]) do |arr, (k,v)|
+      arr << [k,v]
+    end.sort_by { |x| -x[1] }
+
+    {group_by_user: result, group_by_count: group_by_count}
+  end
+
   def conversion(start_time: 1.week.ago, end_time: Time.current)
     queries = {}
     dashboards_map = {}

@@ -41,8 +41,6 @@ class App.DashboardsIndex extends App.Base
         url += "?group_by=#{self.groupBy}" if self.groupBy && self.group_by != ""
 
         $.getJSON url, (json) ->
-          console.log("#{did} -------> ", json)
-
           if json.growth
             $("#dashboard-#{did}").append(renderGrowth(json.growth))
           $("#dashboard-#{did}").append("<p class='number'>#{numeral(json.count).format('0,0')}</p>")

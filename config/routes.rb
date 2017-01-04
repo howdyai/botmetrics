@@ -14,7 +14,11 @@ Rails.application.routes.draw do
     end
 
     resources :short_links, only: [:create]
-    resources :funnels
+    resources :funnels do
+      member do
+        get :insights
+      end
+    end
 
     get :verifying_webhook
     get :webhook_events, on: :member

@@ -1,0 +1,30 @@
+.secondary-menu.row
+  .col-md-7.col-sm-9.col-xs-6
+    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
+      %h2 All Funnels
+    %span.breadcrumb-separator
+      \/
+    = link_to bot_funnel_path(@bot, @funnel), class: 'breadcrumb' do
+      %h2= @funnel.name
+    %span.breadcrumb-separator
+      \/
+    %h2
+      Path Analysis
+
+  .col-md-5.col-sm-3.col-xs-6.text-right
+    #report-range.pull-right
+      = icon('calendar')
+      %span
+      %b.caret
+
+.container-fluid.retention-container
+  .graph.row
+    .col-md-12.col-sm-12.col-xs-12
+      %canvas.step{id: "step-#{@step}"}
+
+      = render 'shared/filters/tableized', tableized: @users, provider: @bot.provider
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.FunnelsInsights(#{@bot.uid.to_json}, #{@funnel.uid.to_json}, #{@step.to_json}, #{@insights_by_count.to_json}, #{@start.to_json}, #{@end.to_json});
+    App.page.run();
