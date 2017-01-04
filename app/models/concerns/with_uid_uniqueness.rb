@@ -13,5 +13,5 @@ module WithUidUniqueness
   protected
   def set_uid!
     self.uid = SecureRandom.hex(6) if self.uid.blank?
-  end  
+  end
 end

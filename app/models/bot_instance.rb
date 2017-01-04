@@ -3,6 +3,7 @@ class BotInstance < ActiveRecord::Base
   has_many :users, class_name: 'BotUser'
   has_many :events
   has_many :messages
+  has_many :short_links
 
   validates_presence_of :token, :bot_id, :provider
   validates_uniqueness_of :token

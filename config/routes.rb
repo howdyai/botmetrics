@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :short_links, only: [:create]
     resources :funnels
 
     get :verifying_webhook
@@ -54,6 +55,8 @@ Rails.application.routes.draw do
       patch :regenerate_api_key
     end
   end
+
+  resources :short_links, only: [:show], path: 'to'
 
   root 'static#index'
 
