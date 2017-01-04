@@ -2,7 +2,7 @@ module PathsHelper
   def formatted_event(event)
     case event.event_type
       when 'user-added' then 'User Signed Up'
-      when 'message'
+      when 'message', 'message:image-uploaded', 'message:link-uploaded', 'message:location-sent', 'message:video-uploaded'
         if (attachments = event.event_attributes['attachments']).present?
           "Message with Attachments: <code>#{attachments}</code>"
         else
