@@ -62,17 +62,17 @@ BEGIN
       END IF;
 
       IF NEW.event_type = 'message' AND NEW.is_from_bot = 't' THEN
-        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot' AND dashboards.bot_id = __bot_id;
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-from-bot' AND dashboards.bot_id = __bot_id LIMIT 1;
         IF NOT FOUND THEN
           RETURN NULL;
         END IF;
       ELSIF NEW.event_type = 'message' AND NEW.is_for_bot = 't' THEN
-        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot' AND dashboards.bot_id = __bot_id;
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.dashboard_type = 'messages-to-bot' AND dashboards.bot_id = __bot_id LIMIT 1;
         IF NOT FOUND THEN
           RETURN NULL;
         END IF;
       ELSE
-        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.event_type = NEW.event_type AND dashboards.bot_id = __bot_id;
+        SELECT dashboards.id FROM dashboards INTO __dashboard_id WHERE dashboards.event_type = NEW.event_type AND dashboards.bot_id = __bot_id LIMIT 1;
         IF NOT FOUND THEN
           RETURN NULL;
         END IF;
@@ -441,6 +441,41 @@ CREATE SEQUENCE events_id_seq
 --
 
 ALTER SEQUENCE events_id_seq OWNED BY events.id;
+
+
+--
+-- Name: funnels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE funnels (
+    id integer NOT NULL,
+    bot_id integer NOT NULL,
+    user_id integer NOT NULL,
+    uid character varying NOT NULL,
+    name character varying NOT NULL,
+    dashboards jsonb DEFAULT '[]'::jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: funnels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE funnels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: funnels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE funnels_id_seq OWNED BY funnels.id;
 
 
 --
@@ -848,6 +883,13 @@ ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::reg
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY funnels ALTER COLUMN id SET DEFAULT nextval('funnels_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY messages ALTER COLUMN id SET DEFAULT nextval('messages_id_seq'::regclass);
 
 
@@ -961,6 +1003,14 @@ ALTER TABLE ONLY dashboards
 
 ALTER TABLE ONLY events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: funnels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY funnels
+    ADD CONSTRAINT funnels_pkey PRIMARY KEY (id);
 
 
 --
@@ -1211,6 +1261,27 @@ CREATE UNIQUE INDEX index_events_on_event_type_and_bot_instance_id ON events USI
 
 
 --
+-- Name: index_funnels_on_bot_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_funnels_on_bot_id ON funnels USING btree (bot_id);
+
+
+--
+-- Name: index_funnels_on_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_funnels_on_uid ON funnels USING btree (uid);
+
+
+--
+-- Name: index_funnels_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_funnels_on_user_id ON funnels USING btree (user_id);
+
+
+--
 -- Name: index_messages_on_bot_instance_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1400,6 +1471,14 @@ ALTER TABLE ONLY events
 
 
 --
+-- Name: fk_rails_c18d553428; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY funnels
+    ADD CONSTRAINT fk_rails_c18d553428 FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
 -- Name: fk_rails_cbba591a9a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1429,6 +1508,14 @@ ALTER TABLE ONLY bot_collaborators
 
 ALTER TABLE ONLY dashboards
     ADD CONSTRAINT fk_rails_dbec2a54ad FOREIGN KEY (bot_id) REFERENCES bots(id);
+
+
+--
+-- Name: fk_rails_eb0a01482e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY funnels
+    ADD CONSTRAINT fk_rails_eb0a01482e FOREIGN KEY (bot_id) REFERENCES bots(id);
 
 
 --
@@ -1686,4 +1773,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161130143408');
 INSERT INTO schema_migrations (version) VALUES ('20161201051941');
 
 INSERT INTO schema_migrations (version) VALUES ('20161202193453');
+
+INSERT INTO schema_migrations (version) VALUES ('20161205181556');
 

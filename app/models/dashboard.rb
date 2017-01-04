@@ -24,6 +24,7 @@ class Dashboard < ActiveRecord::Base
 
   scope :custom, -> { where("dashboards.dashboard_type" => 'custom') }
   scope :enabled, -> { where("dashboards.enabled" => true) }
+  scope :for_funnels, -> { where("dashboards.dashboard_type NOT IN (?)", ['bots-installed', 'bots-uninstalled', 'messages', 'messages-from-bot']).order(:id) }
 
   attr_accessor :growth, :count, :data,
                 :group_by, :current, :start_time, :end_time, :page,
@@ -114,6 +115,20 @@ class Dashboard < ActiveRecord::Base
                     else
                       {}
                     end
+  end
+
+  def funnel_name
+    case dashboard_type
+    when 'messages-to-bot' then 'Sent a Message to Bot'
+    when 'image-uploaded'  then 'Uploaded an Image'
+    when 'audio-uploaded'  then 'Uploaded an Audio File'
+    when 'video-uploaded'  then 'Uploaded a Video'
+    when 'file-uploaded'   then 'Uploaded a File'
+    when 'location-sent'   then 'Shared a Location'
+    when 'user-actions'    then 'Clicked a Button'
+    when 'new-users'       then 'Signed Up'
+    else name.titleize
+    end
   end
 
   private

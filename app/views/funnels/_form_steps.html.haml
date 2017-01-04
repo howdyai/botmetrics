@@ -1,0 +1,6 @@
+- if @funnel.dashboards.count == 0
+  = form.input :dashboards, as: :select, collection: dashboards, label: "Step 1", input_html: { name: "funnel[dashboards][]" }, include_blank: false, selected: @dashboards[0][1]
+  = form.input :dashboards, as: :select, collection: dashboards, label: "Step 2", input_html: { name: "funnel[dashboards][]" }, include_blank: false, selected: @dashboards[1][1]
+- else
+  - @funnel.dashboards.each_with_index do |d, idx|
+    = form.input :dashboards, as: :select, collection: dashboards, label: "Step #{idx+1}", input_html: { name: "funnel[dashboards][]" }, include_blank: false, selected: d.split(':').last

@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :funnels
+
     get :verifying_webhook
     get :webhook_events, on: :member
 

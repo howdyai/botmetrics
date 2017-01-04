@@ -20,6 +20,5 @@ class GetStartEnd
   end
 
   private
-
-    attr_reader :start_time, :end_time, :user_time_zone
+  attr_reader :start_time, :end_time, :user_time_zone
 end

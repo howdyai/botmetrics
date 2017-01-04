@@ -14,6 +14,8 @@ module ApplicationHelper
       'active'
     elsif controller.controller_name == 'retention' && link == 'retention'
       'active'
+    elsif controller.controller_name == 'funnels' && link == 'funnels'
+      'active'
     end
   end
 

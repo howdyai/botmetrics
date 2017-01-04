@@ -1,0 +1,18 @@
+.secondary-menu.row
+  .col-md-7.col-sm-7.col-xs-7
+    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
+      %h2 All Funnels
+    %span.breadcrumb-separator
+      \/
+    %h2= @funnel.name
+
+.container-fluid.retention-container
+  .graph.row
+    .col-md-6.col-sm-6.col-xs-6.col-md-offset-3.col-sm-offset-3.col-xs-offset-3
+      = render 'form'
+
+- content_for :page_scripts do
+  :javascript
+    App.page = new App.FunnelsNew(#{@dashboards.to_json});
+    App.page.run();
+

@@ -7,7 +7,8 @@ body.notifications,
 body.new_notification,
 body.edit_notification,
 body.insights,
-body.retention.index
+body.retention.index,
+body.funnels
   .update-instance
     display: none
   .integrate-cta
@@ -101,7 +102,8 @@ body.new_notification,
 body.edit_notification,
 body.users,
 body.insights,
-body.retention.index
+body.retention.index,
+body.funnels
   &.edit
     h2.api
       padding-top: 10px
@@ -171,7 +173,8 @@ body.dashboards.users,
 body.dashboards.all_messages,
 body.dashboards.messages_to_bot,
 body.dashboards.messages_from_bot,
-body.retention.index
+body.retention.index,
+body.funnels
   .time-segmented-controls
     margin-right: 15px
   .tableized
@@ -213,7 +216,8 @@ body.edit_notification,
 body.users,
 body.bot_instances,
 body.insights,
-body.retention.index
+body.retention.index,
+body.funnels
   background-color: rgba(227,231,242, 0.1)
   .secondary-menu
     background-color: #fff
@@ -443,3 +447,21 @@ body.retention.index
   .cornelius-table
     td, th
       font-family: Lucida Grande
+
+body.funnels
+  .secondary-menu
+    .btn-group
+      margin-top: 15px
+  canvas#funnel-canvas
+    width: 100%
+    height: 500px
+    margin-top: 40px
+  select[name="funnel[dashboards][]"]
+    width: 80%
+    display: inline-block
+  a.remove-step
+    margin-left: 20px
+    cursor: pointer
+  .funnel_dashboards
+    span.help-inline
+      display: inline-block

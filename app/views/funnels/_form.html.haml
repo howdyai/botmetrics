@@ -1,0 +1,11 @@
+= simple_form_for [@bot, @funnel] do |f|
+  = f.input :name, required: true, label: "Your Funnel's Name"
+  .steps
+    %h3 Pick the Order of Events
+    %hr
+    = render 'form_steps', form: f, dashboards: @dashboards, funnel: @funnel
+  - if @funnel.dashboards.length < 3
+    .add_event.text-center
+      = link_to 'Add Step', '#', class: 'btn btn-warning add-step'
+  = f.submit 'Save'
+

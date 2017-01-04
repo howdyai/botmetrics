@@ -1,0 +1,28 @@
+.secondary-menu.row
+  .col-md-5.col-sm-3.col-xs-6
+    = link_to bot_funnels_path(@bot), class: 'breadcrumb' do
+      %h2 All Funnels
+  .col-md-7.col-sm-9.col-xs-6.text-right
+    .btn-group
+      = link_to new_bot_funnel_path(@bot), class: 'btn btn-primary' do
+        New Funnel
+
+.container-fluid.notifications-container
+  .row
+    .col-sm-8.col-sm-offset-2
+      %table.table.table-striped.tableized
+        %thead
+          %tr
+            %th Name
+            %th Actions
+        %tbody
+          - @funnels.each do |funnel|
+            %tr
+              %td= link_to funnel.name, bot_funnel_path(@bot, funnel)
+              %td
+                = link_to edit_bot_funnel_path(@bot, funnel) do
+                  = icon('wrench')
+                &nbsp;|&nbsp;
+                = link_to bot_funnel_path(@bot, funnel), method: :delete, data: { confirm: "Are you sure you want to delete this funnel?" } do
+                  = icon('trash')
+
