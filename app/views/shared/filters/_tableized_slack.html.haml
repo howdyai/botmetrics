@@ -9,6 +9,8 @@
           %th Team
           %th Signed Up
           %th Last Interacted With Bot
+          - if @show_steps
+            %th Number of Steps
       %tbody
         - tableized.each do |bot_user|
           %tr{class: bot_user.id}
@@ -18,4 +20,6 @@
             %td= bot_user.bot_instance.team_name
             %td= "#{time_ago_in_words(bot_user.created_at)} ago"
             %td= bot_user.last_interacted_with_bot_at.present? ? "#{time_ago_in_words(bot_user.last_interacted_with_bot_at)} ago" : '-'
+            - if @show_steps
+              %td= bot_user.step_count
     = will_paginate tableized, renderer: BootstrapPagination::Rails

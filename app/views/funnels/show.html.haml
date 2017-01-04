@@ -13,24 +13,29 @@
 
 .container-fluid.retention-container
   .graph.row
-    .col-md-8.col-sm-8.col-xs-8.col-md-offset-2.col-sm-offset-2.col-xs-offset-2
+    .col-md-12.col-sm-12.col-xs-12
       %canvas#funnel-canvas
 
       %table.table.table-striped.tableized
         %thead
           %tr
-            - @x_axis.each do |x|
-              %th= x
+            - @x_axis.each_with_index do |x, i|
+              %th.text-center= x
+              - if i < @x_axis.length - 1
+                %th.text-center
+                  Path Analysis
         %tbody
           %tr
             - @y_axis.each_with_index do |y, i|
-              %td
-                %strong= y
-                = "(#{i == 0 ? "100%" : number_to_percentage(y.to_f / @y_axis[i-1] * 100, precision: 1)})"
-
+              %td.text-center
+                = y
+                %strong= "(#{i == 0 ? "100%" : @y_axis[i-1] == 0 ? '-' : number_to_percentage(y.to_f / @y_axis[i-1] * 100, precision: 1)})"
+              - if i < @y_axis.length - 1
+                %td.step-col.text-center.loading{id: "step-col-#{i}"}
+                  %canvas.step{id: "step-#{i}", height: 45}
 
 - content_for :page_scripts do
   :javascript
-    App.page = new App.FunnelsShow(#{@x_axis.to_json}, #{@y_axis.to_json}, #{@start.to_json}, #{@end.to_json});
+    App.page = new App.FunnelsShow(#{@bot.uid.to_json}, #{@funnel.uid.to_json}, #{@funnel.dashboards.length.to_json}, #{@x_axis.to_json}, #{@y_axis.to_json}, #{@start.to_json}, #{@end.to_json});
     App.page.run();
 

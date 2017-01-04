@@ -8,9 +8,10 @@
 #= require moment-2.13.0/moment
 #= require daterangepicker/daterangepicker
 #= require jquery-timepicker-1.11.1/jquery.timepicker
-#= require chart.js-2.0.0-beta2/Chart
+#= require chart.js-2.2.0/Chart
 #= require cornelius-24d9358/cornelius
 #= require numeral-js-b50f4c9/numeral
+#= require underscore-1.8.3/underscore
 #= require chartkick
 #= require jsUri/Uri
 #= require cocoon
@@ -30,5 +31,7 @@
 #= require pages/insights/filter
 #= require pages/retention/index
 #= require pages/dashboards/index
+#= require pages/funnels/funnel
 #= require pages/funnels/new
 #= require pages/funnels/show
+#= require pages/funnels/insights

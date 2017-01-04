@@ -71,6 +71,34 @@ class FunnelsController < ApplicationController
     @y_axis = @conversion_data.values
   end
 
+  def insights
+    @funnel = @bot.funnels.find_by(uid: params[:id])
+    raise ActiveRecord::RecordNotFound if @funnel.blank?
+
+    if (@step = params[:step].to_i).present?
+      raise ActiveRecord::RecordNotFound if(@step < 0 || @step >= @funnel.dashboards.length - 1)
+    end
+
+    @start, @end = GetStartEnd.new(params[:start], params[:end], current_user.timezone).call
+    insights = @funnel.insights(step: @step, start_time: @start, end_time: @end)
+    @insights_by_count = insights[:group_by_count]
+    @insights_by_user = insights[:group_by_user]
+
+    respond_to do |format|
+      format.json do
+        render json: { insights: @insights_by_count }
+      end
+
+      format.html do
+        @users = BotUser.where(id: insights[:group_by_user].keys).order(:id).paginate(page: params[:page], total_entries: @insights_by_user.size)
+        @users.each { |u| u.step_count = @insights_by_user[u.id] }
+        @show_steps = true
+
+        render :insights
+      end
+    end
+  end
+
   protected
   def update_dashboards_for_funnel!
     dash_hash = {}

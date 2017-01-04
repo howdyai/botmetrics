@@ -3,15 +3,14 @@
 
 window.App ||= {}
 
-class App.FunnelsShow extends App.AppBase
-  constructor: (@botId, @funnelId, @steps, @xAxis, @yAxis, @startDate, @endDate) ->
+class App.FunnelsInsights extends App.AppBase
+  constructor: (@botId, @funnelId, @step, @insights, @startDate, @endDate) ->
     @start = moment(@startDate)
     @end = moment(@endDate)
     super()
 
   run: ->
     self = this
-    ctx = $('#funnel-canvas')
 
     cb = (start, end) ->
       $('#report-range span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'))
@@ -25,6 +24,7 @@ class App.FunnelsShow extends App.AppBase
         'Last 30 Days': [moment().subtract(29, 'days'), moment()]
         'This Month': [moment().startOf('month'), moment().endOf('month')]
       , cb
+
     $('#report-range').on 'apply.daterangepicker', (ev, picker) ->
       start = picker.startDate.format('MMM DD, YYYY')
       end = picker.endDate.format('MMM DD, YYYY')
@@ -33,26 +33,6 @@ class App.FunnelsShow extends App.AppBase
               replaceQueryParam('end', end).toString()
       Turbolinks.visit(uri)
 
-    new Chart ctx,
-      type: 'bar'
-      data:
-        labels: self.xAxis
-        datasets: [
-          data: self.yAxis
-          backgroundColor: 'rgba(59, 175, 218, 0.2)'
-          borderColor: 'rgb(59, 175, 218)'
-          borderWidth: 1
-        ]
-      options:
-        legend:
-          display: false
-        scales:
-          yAxes: [
-            ticks:
-              beginAtZero:true
-          ]
-
-    for step in [0...self.steps-1]
-      funnel = new App.Funnel(self.botId, self.funnelId, step, self.startDate, self.endDate)
-      funnel.renderInsightAsync()
+    funnel = new App.Funnel(@botId, @funnelId, @step, @startDate, @endDate, false)
+    funnel.renderChart(funnel.constructChartJsData(@insights))
 

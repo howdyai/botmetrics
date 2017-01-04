@@ -120,7 +120,7 @@ class Dashboard < ActiveRecord::Base
 
   def funnel_name
     case dashboard_type
-    when 'messages-to-bot' then 'Sent a Message to Bot'
+    when 'messages-to-bot' then 'Sent a Message to Bot for the First Time'
     when 'image-uploaded'  then 'Uploaded an Image'
     when 'audio-uploaded'  then 'Uploaded an Audio File'
     when 'video-uploaded'  then 'Uploaded a Video'

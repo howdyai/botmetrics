@@ -198,7 +198,40 @@ RSpec.describe FunnelsController, type: :controller do
         end
       end
     end
+  end
 
+  describe 'GET insights' do
+    let!(:dashboard1) { create :dashboard, bot: bot }
+    let!(:dashboard2) { create :dashboard, bot: bot }
+    let!(:dashboard3) { create :dashboard, bot: bot }
+    let!(:funnel)     { create :funnel, bot: bot, creator: user, dashboards: ["dashboard:#{dashboard1.uid}", "dashboard:#{dashboard2.uid}", "dashboard:#{dashboard3.uid}"] }
+
+    before { sign_in user }
+
+    def do_request(params = {})
+      get :insights, {bot_id: bot.uid, id: funnel.uid, format: 'json'}.merge(params)
+    end
+
+    context 'with valid params' do
+      it 'should respond with 200' do
+        do_request
+        expect(response).to have_http_status :ok
+      end
+    end
+
+    context 'with invalid params' do
+      it 'should respond with 404' do
+        do_request(step: 3)
+        expect(response).to have_http_status :missing
+      end
+
+      context 'when step is last element' do
+        it 'should respond with 404' do
+          do_request(step: 2)
+          expect(response).to have_http_status :missing
+        end
+      end
+    end
   end
 
   describe 'POST create' do
