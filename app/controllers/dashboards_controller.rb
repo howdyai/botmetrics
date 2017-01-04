@@ -34,6 +34,7 @@ class DashboardsController < ApplicationController
 
   def show
     @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true)
+    raise ActiveRecord::RecordNotFound if @dashboard.blank?
 
     @dashboard.group_by = @group_by
     @dashboard.start_time = @start
@@ -46,6 +47,8 @@ class DashboardsController < ApplicationController
 
   def load_async
     @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true)
+    raise ActiveRecord::RecordNotFound if @dashboard.blank?
+
     @group_by = params[:group_by].presence || 'today'
     @show_trends = (@group_by != 'all-time')
 
@@ -59,6 +62,8 @@ class DashboardsController < ApplicationController
 
   def destroy
     @dashboard = @bot.dashboards.find_by(uid: params[:id], enabled: true, dashboard_type: 'custom')
+    raise ActiveRecord::RecordNotFound if @dashboard.blank?
+
     @dashboard.update_attribute(:enabled, false)
 
     respond_to do |format|
