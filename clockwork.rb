@@ -21,4 +21,8 @@ module Clockwork
   every(5.minutes, 'Notification.recurring_send') do
     SendRecurringNotificationsJob.perform_async
   end
+
+  every(12.hours, 'SendHeartbeatJob') do
+    SendHeartbeatJob.perform_async
+  end
 end
