@@ -73,8 +73,8 @@ RSpec.describe Dashboard, type: :model do
     describe 'group_by is "today"' do
       before do
         dashboard.group_by = 'today'
-        now = Time.now
         Timecop.freeze(2016, 8, 22, 10, 0, 0)
+        @now = Time.now
       end
 
       after do
@@ -82,13 +82,13 @@ RSpec.describe Dashboard, type: :model do
       end
 
       describe 'bots-installed' do
-        let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now - 1.hour }
-        let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now }
-        let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.day.ago }
-        let!(:i4) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.day.ago - 1.hour }
-        let!(:i5) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.day.ago - 2.hours }
-        let!(:i6) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.days.ago }
-        let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.days.ago - 2.hours }
+        let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.hour }
+        let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
+        let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.day }
+        let!(:i4) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.day - 1.hour }
+        let!(:i5) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.day - 2.hours }
+        let!(:i6) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 2.days }
+        let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 2.days - 2.hours }
         let!(:i9) { create :bot_instance }
 
         let!(:e1) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i1, created_at: i1.created_at }
@@ -161,9 +161,9 @@ RSpec.describe Dashboard, type: :model do
     describe 'group_by is "this-month"' do
       before do
         dashboard.group_by = 'this-month'
-        now = Time.now
         # This date is a Monday so makes sure that everything works accordingly
         Timecop.freeze(2016, 8, 22, 10, 0, 0)
+        @now = Time.now
       end
 
       after do
@@ -171,15 +171,15 @@ RSpec.describe Dashboard, type: :model do
       end
 
       describe 'bots-installed' do
-        let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now }
-        let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: Time.now }
+        let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
+        let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
 
         # i3-i5 is Sunday
-        let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.month.ago }
-        let!(:i4) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.month.ago }
-        let!(:i5) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 1.month.ago }
-        let!(:i6) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.months.ago }
-        let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: 2.months.ago }
+        let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.month }
+        let!(:i4) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.month }
+        let!(:i5) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.month }
+        let!(:i6) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 2.months }
+        let!(:i7) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 2.months }
         let!(:i9) { create :bot_instance }
 
         let!(:e1) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i1, created_at: i1.created_at }
