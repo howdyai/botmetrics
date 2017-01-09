@@ -230,9 +230,9 @@ RSpec.describe Funnel, type: :model do
 
         # By making these only 40 minutes apart, they get rolled up as part of the same hour as the
         # RolledupEvent for 'messages-to-bot' event, but insights should still be able to distinguish between the two
-        create(:facebook_image_event, user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 40.minutes)
-        create(:facebook_image_event, user: @bu2, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 41.minutes)
-        create(:facebook_image_event, user: @bu3, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 42.minutes)
+        create(:facebook_image_event, user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 6.hours)
+        create(:facebook_image_event, user: @bu2, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 7.hours)
+        create(:facebook_image_event, user: @bu3, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 8.hours)
 
         create(:messages_to_bot_event, provider: 'facebook', user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 1.day)
         create(:messages_to_bot_event, provider: 'facebook', user: @bu2, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 1.day)
@@ -347,11 +347,11 @@ RSpec.describe Funnel, type: :model do
 
         # By making these only 40 minutes apart, they get rolled up as part of the same hour as the
         # RolledupEvent for 'messages-to-bot' event, but insights should still be able to distinguish between the two
-        @events << create(:messages_to_bot_event, user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 40.minutes)
+        @events << create(:messages_to_bot_event, user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 6.hours)
         create(:dashboard_event, dashboard: dashboard3, event: @events.last, created_at: @now)
-        @events << create(:messages_to_bot_event, user: @bu2, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 41.minutes)
+        @events << create(:messages_to_bot_event, user: @bu2, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 7.hours)
         create(:dashboard_event, dashboard: dashboard3, event: @events.last, created_at: @now)
-        @events << create(:messages_to_bot_event, user: @bu3, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 42.minutes)
+        @events << create(:messages_to_bot_event, user: @bu3, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 8.hours)
         create(:dashboard_event, dashboard: dashboard3, event: @events.last, created_at: @now)
 
         @events << create(:messages_to_bot_event, provider: 'facebook', user: @bu1, bot_instance: bot_instance, is_for_bot: true, created_at: @now + 1.day)

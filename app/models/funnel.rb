@@ -60,10 +60,10 @@ class Funnel < ActiveRecord::Base
     event_types_to_exclude << dashboard2.event_type if dashboard2.event_type.present?
 
     query = <<-SQL
-SELECT events.id, events.bot_user_id, events.event_type, events.is_for_bot, dashboard_events.dashboard_id
+SELECT events.id, events.bot_user_id, events.event_type, events.is_for_bot, events.created_at, dashboard_events.dashboard_id
 FROM events
 LEFT OUTER JOIN LATERAL (
-  SELECT e1.bot_user_id AS bot_user_id, dashboard_1_time FROM
+  SELECT e1.bot_user_id AS bot_user_id, dashboard_2_time FROM
   (
     SELECT rolledup_events.bot_user_id, MIN(rolledup_events.created_at) AS dashboard_1_time
     FROM rolledup_events
@@ -81,22 +81,21 @@ LEFT OUTER JOIN LATERAL (
 ) re ON TRUE
 LEFT JOIN dashboard_events ON dashboard_events.event_id = events.id
 WHERE events.bot_user_id = re.bot_user_id
-AND events.created_at BETWEEN re.dashboard_1_time AND re.dashboard_1_time + INTERVAL '12 HOURS'
-ORDER BY events.id ASC
+AND events.created_at BETWEEN '#{start_time.to_s(:db)}' AND re.dashboard_2_time + INTERVAL '12 HOURS'
+ORDER BY events.created_at ASC
 SQL
     intermediate_result = Funnel.connection.execute(query).to_a
 
-    start_counting, stop_counting = {}, {}
+    start_counting, stop_counting = Hash.new { |h,k| h[k] = false }, Hash.new { |h,k| h[k] = false }
 
     intermediate_result.each do |row|
       event_id, event_type, bot_user_id, dashboard_id = row['id'], row['event_type'], row['bot_user_id'].to_i, row['dashboard_id'].to_i
       not_for_bot = row['is_for_bot'] == 'f'
-      is_for_bot = !!not_for_bot
 
       start_counting[bot_user_id] = true if event_type == dashboard1.event_type || dashboard1.id == dashboard_id
-      stop_counting[bot_user_id] = true if event_type == dashboard2.event_type || dashboard2.id == dashboard_id
+      stop_counting[bot_user_id] = true if(event_type == dashboard2.event_type || dashboard2.id == dashboard_id) && start_counting[bot_user_id]
 
-      if start_counting[bot_user_id] && !!!stop_counting[bot_user_id]
+      if start_counting[bot_user_id] && !stop_counting[bot_user_id]
         sum = not_for_bot ? 0 : 1
         result[bot_user_id] = result[bot_user_id].to_i + sum
       end
