@@ -70,10 +70,10 @@ RSpec.describe Dashboard, type: :model do
       end
     end
 
-    describe 'group_by is "today"' do
+    context 'group_by is "today"' do
       before do
         dashboard.group_by = 'today'
-        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        Timecop.freeze(Time.utc(2016, 8, 22, 10))
         @now = Time.now.utc
       end
 
@@ -81,7 +81,7 @@ RSpec.describe Dashboard, type: :model do
         Timecop.return
       end
 
-      describe 'bots-installed' do
+      context 'bots-installed' do
         let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.hour }
         let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
         let!(:i3) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.day }
@@ -99,11 +99,8 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i6, created_at: i6.created_at }
         let!(:e7) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i7, created_at: i7.created_at }
 
-        before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
-        end
-
         it 'should return all installed bots in the last week' do
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
           dashboard.init!
           expect(dashboard.data.size).to eql 7
           expect(dashboard.data.values).to eql [0, 0, 0, 0, 2, 3, 2]
@@ -113,11 +110,10 @@ RSpec.describe Dashboard, type: :model do
       end
     end
 
-    describe 'group_by is "this-week"' do
+    context 'group_by is "this-week"' do
       before do
         dashboard.group_by = 'this-week'
-        # This date is a Monday so makes sure that everything works accordingly
-        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        Timecop.freeze(Time.utc(2016, 8, 22, 10))
         @now = Time.now.utc
       end
 
@@ -125,7 +121,7 @@ RSpec.describe Dashboard, type: :model do
         Timecop.return
       end
 
-      describe 'bots-installed' do
+      context 'bots-installed' do
         let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
         let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now - 1.hour }
         # i3-i5 is Sunday
@@ -144,11 +140,8 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :rolledup_event, count: 1, dashboard: dashboard, bot_instance: i6, created_at: i6.created_at }
         let!(:e7) { create :rolledup_event, count: 1, dashboard: dashboard, bot_instance: i7, created_at: i7.created_at }
 
-        before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
-        end
-
         it 'should return all installed bots in the last week' do
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
           dashboard.init!
           expect(dashboard.data.size).to eql 4
           expect(dashboard.data.values).to eql [0, 2, 3, 2]
@@ -158,11 +151,11 @@ RSpec.describe Dashboard, type: :model do
       end
     end
 
-    describe 'group_by is "this-month"' do
+    context 'group_by is "this-month"' do
       before do
         dashboard.group_by = 'this-month'
         # This date is a Monday so makes sure that everything works accordingly
-        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        Timecop.freeze(Time.utc(2016, 8, 22, 10))
         @now = Time.now.utc
       end
 
@@ -170,7 +163,7 @@ RSpec.describe Dashboard, type: :model do
         Timecop.return
       end
 
-      describe 'bots-installed' do
+      context 'bots-installed' do
         let!(:i1) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
         let!(:i2) { create :bot_instance, :with_attributes, uid: SecureRandom.hex(8), bot: bot, state: 'enabled', created_at: @now }
 
@@ -190,11 +183,8 @@ RSpec.describe Dashboard, type: :model do
         let!(:e6) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i6, created_at: i6.created_at }
         let!(:e7) { create :rolledup_event, dashboard: dashboard, count: 1, bot_instance: i7, created_at: i7.created_at }
 
-        before do
-          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
-        end
-
         it 'should return all installed bots in the last week' do
+          dashboard.update_attributes(dashboard_type: 'bots-installed', provider: 'slack', event_type: 'bot-installed')
           dashboard.init!
           expect(dashboard.data.size).to eql 12
           expect(dashboard.data.values).to eql [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 2]

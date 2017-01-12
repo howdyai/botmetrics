@@ -23,7 +23,7 @@ RSpec.describe Funnel, type: :model do
     context 'with regular event types' do
       before do
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
 
         @events = []
         @user_added_events = []
@@ -68,6 +68,8 @@ RSpec.describe Funnel, type: :model do
         @events << create(:facebook_image_event, user: @bu3, bot_instance: bot_instance, created_at: @now + 2.days)
       end
 
+      after { Timecop.return }
+
       it 'should return the events between the two steps (excluding the start and stop events)' do
         events = funnel.events(@bu1, step: 0, start_time: @now - 3.days, end_time: @now + 3.days)
         expect(events.to_a).to eql [@user_added_events[0], @events[0], @events[3], @events[6], @events[9]]
@@ -99,7 +101,7 @@ RSpec.describe Funnel, type: :model do
 
       before do
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
 
         @events, @user_added_events = [], []
 
@@ -145,6 +147,8 @@ RSpec.describe Funnel, type: :model do
         @events << create(:messages_to_bot_event, provider: 'facebook', user: @bu3, bot_instance: bot_instance, created_at: @now + 1.day)
       end
 
+      after { Timecop.return }
+
       it 'should return the events between the two steps (excluding the start and stop events)' do
         events = funnel.events(@bu1, step: 0, start_time: @now - 3.days, end_time: @now + 3.days)
         expect(events.to_a).to eql [@events[0], @events[3], @events[6], @events[9], @events[12]]
@@ -183,7 +187,7 @@ RSpec.describe Funnel, type: :model do
     context 'regular dashboards' do
       before do
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
 
         dashboard1.set_event_type_and_query_options!
         dashboard1.save
@@ -246,7 +250,7 @@ RSpec.describe Funnel, type: :model do
       end
 
       after do
-        travel_back
+        Timecop.return
       end
 
       context 'group_by_user' do
@@ -298,7 +302,7 @@ RSpec.describe Funnel, type: :model do
         dashboard3.update_attributes(dashboard_type: 'custom', regex: 'abc')
 
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
 
         @events = []
 
@@ -369,7 +373,7 @@ RSpec.describe Funnel, type: :model do
       end
 
       after do
-        travel_back
+        Timecop.return
       end
 
       context 'group_by_user' do
@@ -430,7 +434,7 @@ RSpec.describe Funnel, type: :model do
     context 'two step funnel' do
       before do
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
         @bot_users = []
         20.times { @bot_users << create(:bot_user, bot_instance: bot_instance) }
 
@@ -445,7 +449,7 @@ RSpec.describe Funnel, type: :model do
       end
 
       after do
-        travel_back
+        Timecop.return
       end
 
       it 'should return the conversion numbers in a hash' do
@@ -458,7 +462,7 @@ RSpec.describe Funnel, type: :model do
         funnel.update_attributes(dashboards: ["dashboard:#{dashboard1.uid}", "dashboard:#{dashboard2.uid}", "dashboard:#{dashboard3.uid}"])
 
         @now = Time.now
-        travel_to @now
+        Timecop.freeze @now
         @bot_users = []
         20.times { @bot_users << create(:bot_user, bot_instance: bot_instance) }
 
@@ -474,7 +478,7 @@ RSpec.describe Funnel, type: :model do
       end
 
       after do
-        travel_back
+        Timecop.return
       end
 
       it 'should return the conversion numbers in a hash' do

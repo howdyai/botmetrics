@@ -18,13 +18,13 @@ RSpec.describe Notification do
         end
 
         it 'is true when scheduled_at in Pacific/Apia (UTC+13/+14) >= current time' do
-          travel_to Time.parse('May 10, 2016 3:59 PM +1300') do
+          Timecop.travel Time.parse('May 10, 2016 3:59 PM +1300') do
             expect(notification.valid?(:schedule)).to be_truthy
           end
         end
 
         it 'is false when scheduled_at in Pacific/Apia (UTC+13/+14) < current time' do
-          travel_to Time.parse('May 10, 2016 4:01 PM +1300') do
+          Timecop.travel Time.parse('May 10, 2016 4:01 PM +1300') do
             expect(notification.valid?(:schedule)).to be_falsy
           end
 

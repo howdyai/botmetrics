@@ -14,6 +14,13 @@ GIT
       activemodel (>= 3.0.0)
       addressable
 
+GIT
+  remote: https://github.com/steakknife/timecop
+  revision: 8371a3abe23d93bbf2a68499fdf73a11587d042d
+  ref: 8371a3abe23d93bbf2a68499fdf73a11587d042d
+  specs:
+    timecop (0.8.8)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -143,7 +150,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
-    json (1.8.3)
+    json (1.8.5)
     json-stream (0.2.1)
     jwt (1.5.6)
     kramdown (1.11.1)
@@ -292,7 +299,6 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.5)
     tilt (2.0.5)
-    timecop (0.8.1)
     turbolinks (5.0.1)
       turbolinks-source (~> 5)
     turbolinks-source (5.0.0)
@@ -368,7 +374,7 @@ DEPENDENCIES
   sidekiq (~> 4.1.0)
   simple_form (~> 3.1.0)
   sinatra (~> 1.4.6)
-  timecop (~> 0.8.1)
+  timecop!
   turbolinks (~> 5.0.0.beta)
   uglifier (~> 2.7.1)
   validate_url!
