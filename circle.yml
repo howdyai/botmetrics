@@ -1,11 +1,8 @@
 machine:
-  timezone:
-    America/Los_Angeles
-  java:
-    version: openjdk7
+  ruby:
+    version: 2.3.2
   environment:
     RAILS_ENV: test
-    JRUBY_OPTS: -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -X-C -Xcompile.invokedynamic=false --1.9 -J-Xmx2g
     REDIS_URL: redis://localhost:6379
     JSON_WEB_TOKEN_SECRET: json_web_token_secret
     PUSHER_API_KEY: pusher-api-key
@@ -21,35 +18,3 @@ machine:
     SLACK_API_URL: http://localhost:9000/slack_api_mocks
     FACEBOOK_API_URL: https://graph.facebook.com/v2.6
     KIK_API_URL: https://api.kik.com/v1
-    DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
-
-dependencies:
-  cache_directories:
-    - '~/.rvm/rubies'
-    - 'vendor'
-
-  pre:
-    - gem install rake
-
-  override:
-    - >
-      case $CIRCLE_NODE_INDEX in
-       0)
-         rvm-exec 2.3.2 gem install bundler
-         rvm-exec 2.3.2 bash -c "bundle check --path=vendor/bundle_2.3 || bundle install --path=vendor/bundle_2.3"
-         ;;
-       1)
-         rvm-exec jruby gem install bundler
-         rvm-exec jruby bash -c "bundle check --path=vendor/bundle_java --gemfile Gemfile.jruby || bundle install --path=vendor/bundle_java --gemfile Gemfile.jruby"
-         ;;
-      esac
-
-database:
-  override:
-    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.2 bundle exec rake db:create db:migrate;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rake db:create db:migrate;; esac:
-        parallel: true
-
-test:
-  override:
-    - case $CIRCLE_NODE_INDEX in 0) rvm-exec 2.3.2 bundle exec rspec spec;; 2) BUNDLE_GEMFILE=Gemfile.jruby rvm-exec jruby bundle exec rspec spec;; esac:
-        parallel: true
