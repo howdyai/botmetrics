@@ -11,11 +11,11 @@ RSpec.describe RolledupEventQueue, type: :model do
     bot.create_default_dashboards_with!(owner)
     @now = Time.now.utc.beginning_of_hour
 
-    travel_to @now
+    Timecop.freeze @now
   end
 
   after do
-    travel_back
+    Timecop.return
   end
 
   context 'without any existing rolled up events' do

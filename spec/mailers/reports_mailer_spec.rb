@@ -33,7 +33,7 @@ RSpec.describe ReportsMailer do
     context 'weekly summary' do
       it 'has weekly summary if monday' do
         # May 23, is Monday
-        travel_to Time.parse('23 May, 2016 09:00 +0800') do
+        Timecop.travel Time.parse('23 May, 2016 09:00 +0800') do
           mail = ReportsMailer.daily_summary(user.id)
 
           expect(mail.body.encoded).to match 'Weekly Summary'
@@ -42,7 +42,7 @@ RSpec.describe ReportsMailer do
 
       it 'does not have weekly summary on non-mondays' do
         # May 24, is Tuesday
-        travel_to Time.parse('24 May, 2016 09:00 +0800') do
+        Timecop.travel Time.parse('24 May, 2016 09:00 +0800') do
           mail = ReportsMailer.daily_summary(user.id)
 
           expect(mail.body.encoded).to_not match 'Weekly Summary'

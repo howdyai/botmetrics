@@ -26,7 +26,6 @@ RSpec.configure do |config|
   FactoryGirl.reload
   I18n.backend.reload!
 
-  config.include ActiveSupport::Testing::TimeHelpers
   config.include FactoryGirl::Syntax::Methods
   config.include Devise::TestHelpers, type: :controller
 
@@ -78,10 +77,6 @@ RSpec.configure do |config|
   config.before :each do
     DatabaseCleaner.clean
     Sidekiq::Testing.inline!
-  end
-
-  config.after(:each) do
-    Timecop.return
   end
 
 # The settings below are suggested to provide a good initial experience

@@ -77,8 +77,8 @@ RSpec.describe BotUser do
     let!(:query_set)  { create :query_set, bot: bot }
     let!(:query)      { build  :query, query_set: query_set, field: "followed_link" }
 
-    before  { travel_to Time.current.beginning_of_hour }
-    after   { travel_back }
+    before  { Timecop.freeze Time.current.to_time.utc.beginning_of_hour }
+    after   { Timecop.return }
 
     let!(:user_1) { create(:bot_user) }
     let!(:user_2) { create(:bot_user) }
@@ -117,8 +117,8 @@ RSpec.describe BotUser do
     let!(:query_set)  { create :query_set, bot: bot }
     let!(:query)      { build  :query, query_set: query_set, field: "dashboard:#{dashboard.uid}" }
 
-    before  { travel_to Time.current.beginning_of_hour }
-    after   { travel_back }
+    before  { Timecop.freeze Time.current.to_time.utc.beginning_of_hour }
+    after   { Timecop.return }
 
     let!(:user_1) { create(:bot_user) }
     let!(:user_2) { create(:bot_user) }
@@ -250,8 +250,8 @@ RSpec.describe BotUser do
     let(:timezone) { 'Pacific Time (US & Canada)' }
     let(:query)    { create :query }
 
-    before { travel_to Time.current }
-    after { travel_back }
+    before { Timecop.freeze Time.current.to_time.utc }
+    after { Timecop.return }
 
     let!(:user_1_id) { create(:bot_user, last_interacted_with_bot_at: 1.days.ago).id }
     let!(:user_2_id) { create(:bot_user, last_interacted_with_bot_at: 2.days.ago).id }
@@ -303,7 +303,7 @@ RSpec.describe BotUser do
 
     context 'weekly retention' do
       before do
-        travel_to Time.current
+        Timecop.freeze Time.current.to_time.utc
         @start_time = 8.weeks.ago.beginning_of_week
 
         @users = []
@@ -340,7 +340,7 @@ RSpec.describe BotUser do
         RolledupEventQueue.flush!
       end
 
-      after { travel_back }
+      after { Timecop.return }
 
       it 'should return the number of users per cohort' do
         expect(BotUser.by_cohort(bot, start_time: 8.weeks.ago)).to eql [10, 9, 8, 7, 6, 5, 4, 3, 2]
@@ -351,7 +351,7 @@ RSpec.describe BotUser do
 
     context 'daily retention' do
       before do
-        travel_to Time.current
+        Timecop.freeze Time.current.to_time.utc
         @start_time = 8.days.ago.beginning_of_day
 
         @users = []
@@ -388,7 +388,7 @@ RSpec.describe BotUser do
         RolledupEventQueue.flush!
       end
 
-      after { travel_back }
+      after { Timecop.return }
 
       it 'should return the number of users per cohort' do
         expect(BotUser.by_cohort(bot, start_time: 8.days.ago, group_by: 'day')).to eql [10, 9, 8, 7, 6, 5, 4, 3, 2]
@@ -399,7 +399,7 @@ RSpec.describe BotUser do
 
     context 'monthly retention' do
       before do
-        travel_to Time.current
+        Timecop.freeze Time.current.to_time.utc
         @start_time = 8.months.ago.beginning_of_month
 
         @users = []
@@ -436,7 +436,7 @@ RSpec.describe BotUser do
         RolledupEventQueue.flush!
       end
 
-      after { travel_back }
+      after { Timecop.return }
 
       it 'should return the number of users per cohort' do
         expect(BotUser.by_cohort(bot, start_time: 8.months.ago, group_by: 'month')).to eql [10, 9, 8, 7, 6, 5, 4, 3, 2, 0]

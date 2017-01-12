@@ -1,7 +1,7 @@
 RSpec.describe GetStartEnd do
   describe '#call' do
-    before { travel_to Time.new(2016, 5, 16) }
-    after { travel_back }
+    before { Timecop.travel Time.new(2016, 5, 16) }
+    after { Timecop.return }
 
     it 'returns six days ago and end of today if no arguments given' do
       result = described_class.new(nil, nil).call

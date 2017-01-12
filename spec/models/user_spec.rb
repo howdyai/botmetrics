@@ -32,7 +32,7 @@ RSpec.describe User do
       let(:singaporean) { create(:user, timezone: 'Singapore') }
 
       it "find people's local time is after 9" do
-        travel_to Time.parse('6 June, 2016 09:30 +0800') do
+        Timecop.travel Time.parse('6 June, 2016 09:30 +0800') do
           result = User.local_time_is_after(9)
 
           expect(result).to match_array [singaporean]
@@ -85,7 +85,7 @@ RSpec.describe User do
 
     context 'exactly 24 hours' do
       it 'returns true' do
-        travel_to Time.parse('6 June, 2016 09:00 +0800') do
+        Timecop.travel Time.parse('6 June, 2016 09:00 +0800') do
           user = build_stubbed(:user, tracking_attributes: { 'last_daily_summary_sent_at': 24.hours.ago })
 
           expect(user.can_send_daily_summary?).to be true
@@ -97,7 +97,7 @@ RSpec.describe User do
       let(:timezone) { 'Asia/Singapore' }
 
       it 'pulls out user not sent yet' do
-        travel_to Time.parse('6 June, 2016 10:00 +0800') do
+        Timecop.travel Time.parse('6 June, 2016 10:00 +0800') do
           # Users sent
           create(:user, full_name: 'Sent', timezone: 'Asia/Singapore',
           tracking_attributes: Hash(last_daily_summary_sent_at: Time.current.to_i))

@@ -11,7 +11,7 @@ RSpec.describe DailyReportsService do
     it 'unsubscribed user' do
       create_singaporean(email_preferences: { daily_reports: '0' })
 
-      travel_to Time.parse('May 20, 2016 09:00 +0800') do
+      Timecop.travel Time.parse('May 20, 2016 09:00 +0800') do
         service.send_now
 
         expect(ReportsMailer).to_not have_received(:daily_summary)
@@ -19,7 +19,7 @@ RSpec.describe DailyReportsService do
     end
 
     it 'not sent, subscribed and 9am (in user timezone)' do
-      travel_to Time.parse('May 20, 2016 09:00 +0800') do
+      Timecop.travel Time.parse('May 20, 2016 09:00 +0800') do
         create_singaporean(
           email_preferences: { daily_reports: '1' },
           tracking_attributes: {
@@ -34,7 +34,7 @@ RSpec.describe DailyReportsService do
     end
 
     it 'sent still in 24-hour window, subscribed, 9 am (in user timezone)' do
-      travel_to Time.parse('May 20, 2016 09:00 +0800') do
+      Timecop.travel Time.parse('May 20, 2016 09:00 +0800') do
         create_singaporean(
           email_preferences: { daily_reports: '1' },
           tracking_attributes: { last_daily_summary_sent_at: 10.hours.ago.in_time_zone('Singapore').to_i }
@@ -47,7 +47,7 @@ RSpec.describe DailyReportsService do
     end
 
     it 'sent on the same day, subscribed, 9 am (in user timezone)' do
-      travel_to Time.parse('May 20, 2016 09:00 +0800') do
+      Timecop.travel Time.parse('May 20, 2016 09:00 +0800') do
         create_singaporean(
           email_preferences: { daily_reports: '1' },
           tracking_attributes: { last_daily_summary_sent_at: 9.hours.ago.in_time_zone('Singapore').to_i }

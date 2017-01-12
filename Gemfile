@@ -72,7 +72,7 @@ group :development, :test do
   gem 'rspec-rails',              '~> 3.4.2'
   gem 'rspec-its',                '~> 1.2.0'
   gem 'byebug',                   '~> 2.0.0'
-  gem 'timecop',                  '~> 0.8.1'
+  gem 'timecop',                  git: 'https://github.com/steakknife/timecop', ref: '8371a3abe23d93bbf2a68499fdf73a11587d042d'
   gem 'factory_girl_rails',       '~> 4.5.0'
   gem 'faker',                    '~> 1.6.6'
   gem 'pry-rails'

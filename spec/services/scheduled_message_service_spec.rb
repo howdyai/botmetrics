@@ -15,7 +15,8 @@ RSpec.describe ScheduledMessageService do
 
 
     context 'wrong timing' do
-      before { travel_to Time.zone.parse('2016-06-06 08:05 +1200') }
+      before { Timecop.freeze Time.zone.parse('2016-06-06 08:05 +1200') }
+      after  { Timecop.return }
 
       it 'does not send anything' do
         allow(SendMessageJob).to receive(:perform_async)
@@ -25,11 +26,11 @@ RSpec.describe ScheduledMessageService do
         expect(SendMessageJob).to have_received(:perform_async).exactly(0).times
       end
 
-      after { travel_back }
     end
 
     context 'exact timing' do
-      before { travel_to Time.parse('2016-06-06 08:05 +0800') }
+      before { Timecop.freeze Time.parse('2016-06-06 08:05 +0800') }
+      after { Timecop.return }
 
       it 'sends for scheduled message only' do
         allow(SendMessageJob).to receive(:perform_async)
@@ -38,8 +39,6 @@ RSpec.describe ScheduledMessageService do
 
         expect(SendMessageJob).to have_received(:perform_async).once
       end
-
-      after { travel_back }
     end
   end
 end
