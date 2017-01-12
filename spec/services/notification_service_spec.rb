@@ -285,6 +285,32 @@ RSpec.describe NotificationService do
           expect(SendMessageJob).to_not have_received(:perform_async)
         end
       end
+
+      context 'user has an invalid timezone' do
+        before do
+          bot_user.user_attributes['timezone'] = 14
+          bot_user.save
+        end
+
+        it 'creates and enqueues messages (after rounding up timezone to the nearest timezone)' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to change(notification.messages, :count).by(1)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
+          message = notification.messages.last
+          expect(message.team_id).to eq bot_user.bot_instance.team_id
+          expect(message.user).to eq bot_user.uid
+          expect(message.text).to eq notification.content
+
+          # with time zone information from bot_user
+          expect(message.scheduled_at).to eq notification.scheduled_at.in_time_zone('GMT').utc
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
     end
 
     context 'facebook' do
@@ -422,6 +448,32 @@ RSpec.describe NotificationService do
           expect(SendMessageJob).to_not have_received(:perform_async)
         end
       end
+
+      context 'user has an invalid timezone' do
+        before do
+          bot_user.user_attributes['timezone'] = 14
+          bot_user.save
+        end
+
+        it 'creates and enqueues messages (after rounding up timezone to the nearest timezone)' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to change(notification.messages, :count).by(1)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
+          message = notification.messages.last
+          expect(message.team_id).to eq bot_user.bot_instance.team_id
+          expect(message.user).to eq bot_user.uid
+          expect(message.text).to eq notification.content
+
+          # with time zone information from bot_user
+          expect(message.scheduled_at).to eq notification.scheduled_at.in_time_zone('GMT').utc
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
     end
 
     context 'kik' do
@@ -555,6 +607,32 @@ RSpec.describe NotificationService do
 
           # with time zone information from bot_user
           expect(message.scheduled_at).to eq notification.scheduled_at.in_time_zone(-8).utc
+
+          expect(SendMessageJob).to_not have_received(:perform_async)
+        end
+      end
+
+      context 'user has an invalid timezone' do
+        before do
+          bot_user.user_attributes['timezone'] = 14
+          bot_user.save
+        end
+
+        it 'creates and enqueues messages (after rounding up timezone to the nearest timezone)' do
+          expect {
+            service.enqueue_messages
+            notification.reload
+          }.to change(notification.messages, :count).by(1)
+
+          expect(FilterBotUsersService).to have_received(:new).with(query_set)
+
+          message = notification.messages.last
+          expect(message.team_id).to eq bot_user.bot_instance.team_id
+          expect(message.user).to eq bot_user.uid
+          expect(message.text).to eq notification.content
+
+          # with time zone information from bot_user
+          expect(message.scheduled_at).to eq notification.scheduled_at.in_time_zone('GMT').utc
 
           expect(SendMessageJob).to_not have_received(:perform_async)
         end
