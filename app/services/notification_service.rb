@@ -83,7 +83,15 @@ class NotificationService
     return nil if notification.scheduled_at.blank?
 
     if time_zone = bot_user.user_attributes['timezone']
-      notification.scheduled_at.in_time_zone(time_zone)
+      begin
+        notification.scheduled_at.in_time_zone(time_zone)
+      # If timezone is bad one (Facebook has known to set timezones as -7.5 for e.g.)
+      # round it up to the next one and try again
+      rescue ArgumentError => e
+        if e.message =~ /\AInvalid Timezone:/
+          return notification.scheduled_at.in_time_zone(time_zone.to_f.round)
+        end
+      end
     else
       Rails.logger.warn "[FAILED NOTIFICATION::TimeZone] Failed to schedule Notification #{notification.id} for BotUser #{bot_user.inspect}"
       notification.scheduled_at.in_time_zone('GMT')
