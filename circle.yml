@@ -1,6 +1,4 @@
 machine:
-  timezone:
-    America/Los_Angeles
   java:
     version: openjdk7
   environment:

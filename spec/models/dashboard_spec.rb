@@ -73,8 +73,8 @@ RSpec.describe Dashboard, type: :model do
     describe 'group_by is "today"' do
       before do
         dashboard.group_by = 'today'
-        Timecop.freeze(2016, 8, 22, 10, 0, 0)
-        @now = Time.now
+        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        @now = Time.now.utc
       end
 
       after do
@@ -117,8 +117,8 @@ RSpec.describe Dashboard, type: :model do
       before do
         dashboard.group_by = 'this-week'
         # This date is a Monday so makes sure that everything works accordingly
-        Timecop.freeze(2016, 8, 22, 10, 0, 0)
-        @now = Time.now
+        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        @now = Time.now.utc
       end
 
       after do
@@ -162,8 +162,8 @@ RSpec.describe Dashboard, type: :model do
       before do
         dashboard.group_by = 'this-month'
         # This date is a Monday so makes sure that everything works accordingly
-        Timecop.freeze(2016, 8, 22, 10, 0, 0)
-        @now = Time.now
+        Timecop.freeze(Time.zone.parse("2016-08-22 10:00:00"))
+        @now = Time.now.utc
       end
 
       after do
