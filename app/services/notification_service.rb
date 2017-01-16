@@ -32,7 +32,7 @@ class NotificationService
                   scope.
                   where("bot_users.uid NOT IN (?)", notification.messages.select("messages.message_attributes ->> 'user'"))
 
-    bot_users.each do |bot_user|
+    bot_users.find_each(batch_size: 500) do |bot_user|
       message_object = case bot_user.provider
                        when 'slack'    then Messages::Slack.new(message_params(bot_user))
                        when 'facebook' then Messages::Facebook.new(message_params(bot_user))

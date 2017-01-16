@@ -21,7 +21,11 @@
             %tr
               %td= truncate(notification.content, length: 20)
               %td
-                #{notification.messages.count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
+                - if notification.send_immediately?
+                  #{notification.messages.count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
+                - else
+                  - total_count = FilterBotUsersService.new(notification.query_set).scope.size if (total_count = notification.messages.count) == 0
+                  #{total_count} Queued / #{notification.messages.sent.count} Sent / #{notification.messages.failure.count} Failed / #{notification.messages.success.count} Success
               %td
                 - if notification.send_immediately?
                   = notification.created_at.strftime('%b %d, %Y %l:%M %p')
